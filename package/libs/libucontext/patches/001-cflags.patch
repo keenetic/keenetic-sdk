@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index 3277990..17d2da3 100644
+--- a/Makefile
++++ b/Makefile
+@@ -4,7 +4,7 @@ ifeq ($(ARCH),$(filter $(ARCH),i386 i686))
+ endif
+ 
+ LIBDIR := /lib
+-CFLAGS := -ggdb3 -O2 -Wall
++CFLAGS += -ggdb3 -O2 -Wall
+ CPPFLAGS := -Iarch/${ARCH} -Iarch/common
+ 
+ LIBUCONTEXT_C_SRC = $(wildcard arch/${ARCH}/*.c)

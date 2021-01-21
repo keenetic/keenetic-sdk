@@ -1,0 +1,62 @@
+menu "Firmware Options"
+
+	comment "Build Options ---"
+
+	config TARGET_VERSION
+		string  "Version name"
+
+	config TARGET_DEFAULT_PRODUCT
+		string  "Default product name"
+
+	config TARGET_DEVICE_MANUFACTURER
+		string  "Device manufacturer"
+
+	config TARGET_DEVICE_ID
+		string "Device ID"
+
+	config TARGET_EULA_ROOT_DIRECTORY
+		string
+		prompt "Root directory for EULA documents"
+		default "/usr/share/eula"
+
+	config TARGET_DPN_ROOT_DIRECTORY
+		string
+		prompt "Root directory for DPN documents"
+		default "/usr/share/dpn"
+
+	config TARGET_FEATURES
+		string
+		prompt "Webadmin Features"
+		default ""
+
+	config TARGET_DEVICE_WITHOUT_WLAN_LED
+		depends on TARGET_DEVICE_WIRELESS_SUPPORT
+		bool "Device without WLAN ACT LED"
+		default n
+
+comment "Marketing Options ---"
+
+	config TARGET_VENDOR
+		string "Vendor"
+		default "NDM Systems, Inc."
+
+	config TARGET_VENDOR_SHORT
+		string "Vendor (short variant)"
+		default "NDM"
+
+	config TARGET_MODEL_SERIES
+		string "Model series"
+		default "Keenetic series"
+
+	config TARGET_VENDOR_URL
+		string "Vendor URL"
+		default "http://www.ndmsystems.com"
+
+	config TARGET_VENDOR_EMAIL
+		string "Vendor e-mail"
+		default "info@ndmsystems.com"
+
+	config TARGET_CUSTOMER
+		string "Customer"
+		default "NDM"
+endmenu

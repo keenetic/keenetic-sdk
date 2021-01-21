@@ -1,0 +1,411 @@
+# Copyright (C) 2006-2013 OpenWrt.org
+#
+# This is free software, licensed under the GNU General Public License v2.
+# See /LICENSE for more information.
+#
+
+menu "Global build settings"
+
+	config ALL
+		bool "Select all packages by default"
+		default n
+
+	comment "General build options"
+
+	config DISPLAY_SUPPORT
+		bool "Show packages that require graphics support (local or remote)"
+		default n
+
+	config BUILD_PATENTED
+		default y
+		bool "Compile with support for patented functionality"
+		help
+		  When this option is disabled, software which provides patented functionality will not be built.
+		  In case software provides optional support for patented functionality,
+		  this optional support will get disabled for this package.
+
+	config BUILD_NLS
+		default n
+		bool "Compile with full language support"
+		help
+		  When this option is enabled, packages are built with the full versions of iconv and GNU gettext
+		  instead of the default OpenWrt stubs. If uClibc is used, it is also built with locale support.
+
+	config BUILD_STATIC_TOOLS
+		default n
+		bool "Attempt to link host utilities statically"
+		help
+		  Linking host utilities like sed or firmware-utils statically increases the portability of the
+		  generated ImageBuilder and SDK tarballs, however it may fail on some Linux distributions.
+
+	config SHADOW_PASSWORDS
+		bool
+		prompt "Enable shadow password support"
+		default y
+		help
+		  Enable shadow password support.
+
+	config CLEAN_IPKG
+		bool
+		prompt "Remove ipkg/opkg status data files in final images"
+		default n
+		help
+			This removes all ipkg/opkg status data files from the target directory before building the root fs
+
+	config COLLECT_KERNEL_DEBUG
+		bool
+		prompt "Collect kernel debug information"
+		select KERNEL_DEBUG_INFO
+		default n
+		help
+			This collects debugging symbols from the kernel and all compiled modules.
+			Useful for release builds, so that kernel issues can be debugged offline later.
+
+	comment "Kernel build options"
+
+	config KERNEL_BUILD_USER
+		string "Custom Kernel Build User Name"
+		default "developers"
+		help
+		  Sets the Kernel build user string, which for example will be returned
+		  by 'uname -a' on running systems.
+		  If not set, uses system user at build time.
+
+	config KERNEL_BUILD_DOMAIN
+		string "Custom Kernel Build Domain Name"
+		default "keenetic.com"
+		help
+		  Sets the Kernel build domain string, which for example will be
+		  returned by 'uname -a' on running systems.
+		  If not set, uses system hostname at build time.
+
+	#
+	# compile optimiziation setting
+	#
+	choice
+		prompt "Compiler optimization level"
+		default KERNEL_CC_OPTIMIZE_FOR_PERFORMANCE
+
+	config KERNEL_CC_OPTIMIZE_FOR_PERFORMANCE
+		bool "Optimize for performance"
+		help
+		  This is the default optimization level for the kernel, building
+		  with the "-O2" compiler flag for best performance and most
+		  helpful compile-time warnings.
+
+	config KERNEL_CC_OPTIMIZE_FOR_SIZE
+		bool "Optimize for size"
+		help
+		  Enabling this option will pass "-O2" with optimization flags to
+		  your compiler resulting in a smaller kernel.
+
+	endchoice
+
+	config KERNEL_MTD_NDM_BOOT_UPDATE
+		bool "Compile the kernel with bootloader updater"
+
+	config KERNEL_MTD_NDM_DUAL_IMAGE
+		bool "Compile the kernel with dual image support"
+
+	config KERNEL_IMAGE_CMDLINE_HACK
+		bool "Compile the kernel with OpenWrt specific image command line hack"
+
+	config KERNEL_DEBUG_FS
+		bool "Compile the kernel with Debug FileSystem enabled"
+		default y
+		help
+		  debugfs is a virtual file system that kernel developers use to put
+		  debugging files into. Enable this option to be able to read and
+		  write to these files.
+
+	config KERNEL_ARM_PMU
+		bool
+		default n
+		depends on (arm || aarch64)
+
+	config KERNEL_PERF_EVENTS
+		bool
+		default n
+		select KERNEL_ARM_PMU if (arm || aarch64)
+
+	config KERNEL_PROFILING
+		bool "Compile the kernel with profiling enabled"
+		default n
+		select KERNEL_PERF_EVENTS
+		help
+		  Enable the extended profiling support mechanisms used by profilers such
+		  as OProfile.
+
+	config KERNEL_KALLSYMS
+		bool "Compile the kernel with symbol table information"
+		default n
+		help
+		  This will give you more information in stack traces from kernel oopses
+
+	config KERNEL_FTRACE
+		bool "Compile the kernel with tracing support"
+		default n
+
+	config KERNEL_ENABLE_DEFAULT_TRACERS
+		bool "Trace process context switches and events"
+		depends on KERNEL_FTRACE
+		default n
+
+	config KERNEL_FUNCTION_TRACER
+		bool "Trace functions"
+		depends on KERNEL_FTRACE
+		default n
+
+	config KERNEL_FUNCTION_GRAPH_TRACER
+		bool "Trace function graph"
+		depends on KERNEL_FUNCTION_TRACER
+		default n
+
+	config KERNEL_FUNCTION_PROFILER
+		bool "Kernel function profiler"
+		depends on KERNEL_FUNCTION_TRACER
+		default n
+
+	config KERNEL_DEBUG_KERNEL
+		bool
+		default n
+
+	config KERNEL_DEBUG_INFO
+		bool "Compile the kernel with debug information"
+		default n
+		select KERNEL_DEBUG_KERNEL
+		help
+		  This will compile your kernel and modules with debug information.
+
+	config KERNEL_DEBUG_LL_UART_NONE
+		bool
+		default n
+		depends on arm
+
+	config KERNEL_DEBUG_LL
+		bool
+		default n
+		depends on arm
+		select KERNEL_DEBUG_LL_UART_NONE
+		help
+		  ARM low level debugging
+
+	config KERNEL_EARLY_PRINTK
+		bool "Compile the kernel with early printk"
+		default n
+		depends on arm
+		select KERNEL_DEBUG_KERNEL
+		select KERNEL_DEBUG_LL if arm
+		help
+		  Compile the kernel with early printk support.
+		  This is only useful for debugging purposes to send messages
+		  over the serial console in early boot.
+		  Enable this to debug early boot problems.
+
+	config KERNEL_AIO
+		bool "Compile the kernel with asynchronous IO support"
+		default n
+
+	config KERNEL_MAGIC_SYSRQ
+		bool "Compile the kernel with SysRq support"
+		default y
+
+	config KERNEL_ELF_CORE
+		bool "Enable process core dump support"
+		default y
+
+	config KERNEL_PROVE_LOCKING
+		bool "Enable kernel lock checking"
+		select KERNEL_DEBUG_KERNEL
+		default n
+
+	config KERNEL_PRINTK_TIME
+		bool "Enable printk timestamps"
+		default y
+
+	config KERNEL_SQUASHFS_FRAGMENT_CACHE_SIZE
+		int
+		default 8 if TARGET_ROOTFS_SQUASHFS_BLOCKSIZE_128K
+		default 4 if TARGET_ROOTFS_SQUASHFS_BLOCKSIZE_256K
+		default 2 if TARGET_ROOTFS_SQUASHFS_BLOCKSIZE_512K
+		default 1 if TARGET_ROOTFS_SQUASHFS_BLOCKSIZE_1024K
+		depends on TARGET_ROOTFS_SQUASHFS
+
+	config KERNEL_EFI_PARTITION
+		bool
+		default y if USB_STORAGE_SUPPORT
+
+	config KERNEL_MAC_PARTITION
+		bool
+		default y if USB_STORAGE_SUPPORT
+
+	config KERNEL_MSDOS_PARTITION
+		bool
+		default y if USB_STORAGE_SUPPORT
+
+	config KERNEL_SWAP
+		bool "Support for paging of anonymous memory (swap)"
+		default y
+
+	config USE_SPARSE
+		bool "Enable sparse check during kernel build"
+		default n
+
+	comment "Package build options"
+
+	config DEBUG
+		bool
+		prompt "Compile packages with debugging info"
+		default n
+		help
+		  Adds -g3 to the CFLAGS
+
+	config IPV6
+		bool
+		prompt "Enable IPv6 support in packages"
+		default y
+		help
+		  Enable IPV6 support in packages (passes --enable-ipv6 to configure scripts).
+
+	comment "Stripping options"
+
+	choice
+		prompt "Binary stripping method"
+		default USE_STRIP
+		help
+		  Select the binary stripping method you wish to use.
+
+		config NO_STRIP
+			bool "none"
+			help
+			  This will install unstripped binaries (useful for native compiling/debugging)
+
+		config USE_STRIP
+			bool "strip"
+			help
+			  This will install binaries stripped using strip from binutils
+
+
+		config USE_SSTRIP
+			bool "sstrip"
+			depends on !DEBUG
+			help
+			  This will install binaries stripped using sstrip
+	endchoice
+
+	config STRIP_ARGS
+		string
+		prompt "Strip arguments"
+		depends on USE_STRIP
+		default "--strip-unneeded --remove-section=.comment --remove-section=.note" if DEBUG
+		default "--strip-all"
+		help
+		  Specifies arguments passed to the strip command when stripping binaries
+
+	config STRIP_KERNEL_EXPORTS
+		bool "Strip unnecessary exports from the kernel image"
+		help
+		  Reduces kernel size by stripping unused kernel exports from the kernel image
+		  Note that this might make the kernel incompatible with any kernel modules that
+		  were not selected at the time the kernel image was created
+
+	config USE_MKLIBS
+		bool "Strip unnecessary functions from libraries"
+		help
+		  Reduces libraries to only those functions that are necessary for using all
+		  selected packages (including those selected as <M>)
+		  Note that this will make the system libraries incompatible with most of the packages
+		  that are not selected during the build process
+
+	choice
+		prompt "Preferred standard C++ library"
+		default USE_LIBSTDCXX
+		help
+		  Select the preferred standard C++ library for all packages that support this.
+
+		config USE_UCLIBCXX
+			bool "uClibc++"
+
+		config USE_LIBSTDCXX
+			bool "libstdc++"
+
+	endchoice
+
+	comment "Hardening build options"
+
+	config PKG_CHECK_FORMAT_SECURITY
+		bool
+		prompt "Enable gcc format-security"
+		default y
+		help
+		  Add -Wformat -Werror=format-security to the CFLAGS.  You can disable
+		  this per package by adding PKG_CHECK_FORMAT_SECURITY:=0 in the package
+		  Makefile.
+
+	choice
+		prompt "User space Stack-Smashing Protection"
+		default PKG_CC_STACKPROTECTOR_REGULAR
+		help
+		  Enable GCC Stack Smashing Protection (SSP) for userspace applications
+		config PKG_CC_STACKPROTECTOR_NONE
+			bool "None"
+		config PKG_CC_STACKPROTECTOR_REGULAR
+			bool "Regular"
+			select SSP_SUPPORT
+		config PKG_CC_STACKPROTECTOR_STRONG
+			bool "Strong"
+			select SSP_SUPPORT
+	endchoice
+
+	choice
+		prompt "Kernel space Stack-Smashing Protection"
+		default KERNEL_CC_STACKPROTECTOR_REGULAR
+		help
+		  Enable GCC Stack-Smashing Protection (SSP) for the kernel
+		config KERNEL_CC_STACKPROTECTOR_NONE
+			bool "None"
+		config KERNEL_CC_STACKPROTECTOR_REGULAR
+			bool "Regular"
+		config KERNEL_CC_STACKPROTECTOR_STRONG
+			bool "Strong"
+	endchoice
+
+	choice
+		prompt "Enable buffer-overflows detection (FORTIFY_SOURCE)"
+		default PKG_FORTIFY_SOURCE_1
+		help
+		  Enable the _FORTIFY_SOURCE macro which introduces additional
+		  checks to detect buffer-overflows in the following standard library
+		  functions: memcpy, mempcpy, memmove, memset, strcpy, stpcpy,
+		  strncpy, strcat, strncat, sprintf, vsprintf, snprintf, vsnprintf,
+		  gets.  "Conservative" (_FORTIFY_SOURCE set to 1) only introduces
+		  checks that sholdn't change the behavior of conforming programs,
+		  while "aggressive" (_FORTIFY_SOURCES set to 2) some more checking is
+		  added, but some conforming programs might fail.
+		config PKG_FORTIFY_SOURCE_NONE
+			bool "None"
+		config PKG_FORTIFY_SOURCE_1
+			bool "Conservative"
+		config PKG_FORTIFY_SOURCE_2
+			bool "Aggressive"
+	endchoice
+
+	choice
+		prompt "Enable RELRO protection"
+		default PKG_RELRO_FULL
+		help
+		  Enable a link-time protection know as RELRO (Relocation Read Only)
+		  which helps to protect from certain type of exploitation techniques
+		  altering the content of some ELF sections. "Partial" RELRO makes the
+		  .dynamic section not writeable after initialization, introducing
+		  almost no performance penalty, while "full" RELRO also marks the GOT
+		  as read-only at the cost of initializing all of it at startup.
+		config PKG_RELRO_NONE
+			bool "None"
+		config PKG_RELRO_PARTIAL
+			bool "Partial"
+		config PKG_RELRO_FULL
+			bool "Full"
+	endchoice
+
+endmenu

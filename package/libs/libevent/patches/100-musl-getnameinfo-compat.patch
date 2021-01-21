@@ -1,0 +1,53 @@
+diff --git a/http.c b/http.c
+--- a/http.c
++++ b/http.c
+@@ -80,6 +80,7 @@
+ #endif
+ 
+ #include <errno.h>
++#include <features.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -4366,22 +4367,32 @@ name_from_addr(struct sockaddr *sa, ev_socklen_t salen,
+ 		NI_NUMERICHOST|NI_NUMERICSERV);
+ 
+ 	if (ni_result != 0) {
++#if !defined(__GLIBC__) && defined(EVENT__HAVE_STRUCT_SOCKADDR_UN)
++		if (ni_result == EAI_FAMILY && sa->sa_family == AF_UNIX) {
++			strcpy(ntop, "localhost");
++			strport[0] = '\0';
++		} else  {
++#endif
+ #ifdef EAI_SYSTEM
+-		/* Windows doesn't have an EAI_SYSTEM. */
+-		if (ni_result == EAI_SYSTEM)
+-			event_err(1, "getnameinfo failed");
+-		else
++			/* Windows doesn't have an EAI_SYSTEM. */
++			if (ni_result == EAI_SYSTEM)
++				event_err(1, "getnameinfo failed");
++			else
+ #endif
+-			event_errx(1, "getnameinfo failed: %s", gai_strerror(ni_result));
+-		return;
++				event_errx(1, "getnameinfo failed: %s", gai_strerror(ni_result));
++			return;
++		}
++#if !defined(__GLIBC__) && defined(EVENT__HAVE_STRUCT_SOCKADDR_UN)
+ 	}
+-#else
++#endif
++
++#else /* !EVENT__HAVE_GETNAMEINFO */
+ 	ni_result = fake_getnameinfo(sa, salen,
+ 		ntop, sizeof(ntop), strport, sizeof(strport),
+ 		NI_NUMERICHOST|NI_NUMERICSERV);
+ 	if (ni_result != 0)
+-			return;
+-#endif
++		return;
++#endif /* EVENT__HAVE_GETNAMEINFO */
+ 
+ 	*phost = mm_strdup(ntop);
+ 	*pport = mm_strdup(strport);

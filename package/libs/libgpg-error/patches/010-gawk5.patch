@@ -1,0 +1,150 @@
+diff -Nuar libgpg-error-1.12/src/Makefile.am libgpg-error-1.12-patched/src/Makefile.am
+--- libgpg-error-1.12/src/Makefile.am	2020-10-06 00:06:56.871091274 +0300
++++ libgpg-error-1.12-patched/src/Makefile.am	2020-10-06 00:07:37.875297731 +0300
+@@ -184,7 +184,7 @@
+ 
+ errnos-sym.h: Makefile mkstrtable.awk errnos.in
+ 	$(AWK) -f $(srcdir)/mkstrtable.awk -v textidx=2 -v nogettext=1 \
+-		-v prefix=GPG_ERR_ -v namespace=errnos_ \
++		-v prefix=GPG_ERR_ -v pkg_namespace=errnos_ \
+ 		$(srcdir)/errnos.in >$@
+ 
+ # We depend on versioninfo.rc because that is build by config.status
+diff -Nuar libgpg-error-1.12/src/Makefile.in libgpg-error-1.12-patched/src/Makefile.in
+--- libgpg-error-1.12/src/Makefile.in	2020-10-06 00:06:56.871091274 +0300
++++ libgpg-error-1.12-patched/src/Makefile.in	2020-10-06 00:07:32.263269696 +0300
+@@ -1018,7 +1018,7 @@
+ 
+ errnos-sym.h: Makefile mkstrtable.awk errnos.in
+ 	$(AWK) -f $(srcdir)/mkstrtable.awk -v textidx=2 -v nogettext=1 \
+-		-v prefix=GPG_ERR_ -v namespace=errnos_ \
++		-v prefix=GPG_ERR_ -v pkg_namespace=errnos_ \
+ 		$(srcdir)/errnos.in >$@
+ 
+ # We depend on versioninfo.rc because that is build by config.status
+diff -Nuar libgpg-error-1.12/src/mkerrcodes1.awk libgpg-error-1.12-patched/src/mkerrcodes1.awk
+--- libgpg-error-1.12/src/mkerrcodes1.awk	2010-12-23 19:56:07.000000000 +0300
++++ libgpg-error-1.12-patched/src/mkerrcodes1.awk	2020-10-06 00:09:59.099981837 +0300
+@@ -81,7 +81,7 @@
+ }
+ 
+ !header {
+-  sub (/\#.+/, "");
++  sub (/#.+/, "");
+   sub (/[ 	]+$/, ""); # Strip trailing space and tab characters.
+ 
+   if (/^$/)
+diff -Nuar libgpg-error-1.12/src/mkerrcodes2.awk libgpg-error-1.12-patched/src/mkerrcodes2.awk
+--- libgpg-error-1.12/src/mkerrcodes2.awk	2010-12-23 19:56:07.000000000 +0300
++++ libgpg-error-1.12-patched/src/mkerrcodes2.awk	2020-10-06 00:10:07.152019726 +0300
+@@ -91,7 +91,7 @@
+ }
+ 
+ !header {
+-  sub (/\#.+/, "");
++  sub (/#.+/, "");
+   sub (/[ 	]+$/, ""); # Strip trailing space and tab characters.
+ 
+   if (/^$/)
+diff -Nuar libgpg-error-1.12/src/mkerrcodes.awk libgpg-error-1.12-patched/src/mkerrcodes.awk
+--- libgpg-error-1.12/src/mkerrcodes.awk	2010-12-23 19:56:07.000000000 +0300
++++ libgpg-error-1.12-patched/src/mkerrcodes.awk	2020-10-06 00:10:15.564059186 +0300
+@@ -85,7 +85,7 @@
+ }
+ 
+ !header {
+-  sub (/\#.+/, "");
++  sub (/#.+/, "");
+   sub (/[ 	]+$/, ""); # Strip trailing space and tab characters.
+ 
+   if (/^$/)
+diff -Nuar libgpg-error-1.12/src/mkerrnos.awk libgpg-error-1.12-patched/src/mkerrnos.awk
+--- libgpg-error-1.12/src/mkerrnos.awk	2010-12-23 19:56:07.000000000 +0300
++++ libgpg-error-1.12-patched/src/mkerrnos.awk	2020-10-06 00:10:32.840139873 +0300
+@@ -83,7 +83,7 @@
+ }
+ 
+ !header {
+-  sub (/\#.+/, "");
++  sub (/#.+/, "");
+   sub (/[ 	]+$/, ""); # Strip trailing space and tab characters.
+ 
+   if (/^$/)
+diff -Nuar libgpg-error-1.12/src/mkheader.awk libgpg-error-1.12-patched/src/mkheader.awk
+--- libgpg-error-1.12/src/mkheader.awk	2010-12-23 19:56:07.000000000 +0300
++++ libgpg-error-1.12-patched/src/mkheader.awk	2020-10-06 00:10:52.164229567 +0300
+@@ -86,7 +86,7 @@
+ }
+ 
+ sources_body {
+-  sub (/\#.+/, "");
++  sub (/#.+/, "");
+   sub (/[ 	]+$/, ""); # Strip trailing space and tab characters.
+ 
+   if (/^$/)
+@@ -115,7 +115,7 @@
+ }
+ 
+ codes_body {
+-  sub (/\#.+/, "");
++  sub (/#.+/, "");
+   sub (/[ 	]+$/, ""); # Strip trailing space and tab characters.
+ 
+   if (/^$/)
+@@ -144,7 +144,7 @@
+ }
+ 
+ errnos_body {
+-  sub (/\#.+/, "");
++  sub (/#.+/, "");
+   sub (/[ 	]+$/, ""); # Strip trailing space and tab characters.
+ 
+   if (/^$/)
+diff -Nuar libgpg-error-1.12/src/mkstrtable.awk libgpg-error-1.12-patched/src/mkstrtable.awk
+--- libgpg-error-1.12/src/mkstrtable.awk	2010-12-23 19:56:07.000000000 +0300
++++ libgpg-error-1.12-patched/src/mkstrtable.awk	2020-10-06 00:11:02.552277548 +0300
+@@ -77,7 +77,7 @@
+ #
+ # The variable prefix can be used to prepend a string to each message.
+ #
+-# The variable namespace can be used to prepend a string to each
++# The variable pkg_namespace can be used to prepend a string to each
+ # variable and macro name.
+ 
+ BEGIN {
+@@ -102,7 +102,7 @@
+       print "/* The purpose of this complex string table is to produce";
+       print "   optimal code with a minimum of relocations.  */";
+       print "";
+-      print "static const char " namespace "msgstr[] = ";
++      print "static const char " pkg_namespace "msgstr[] = ";
+       header = 0;
+     }
+   else
+@@ -110,7 +110,7 @@
+ }
+ 
+ !header {
+-  sub (/\#.+/, "");
++  sub (/#.+/, "");
+   sub (/[ 	]+$/, ""); # Strip trailing space and tab characters.
+ 
+   if (/^$/)
+@@ -150,7 +150,7 @@
+   else
+     print "  gettext_noop (\"" last_msgstr "\");";
+   print "";
+-  print "static const int " namespace "msgidx[] =";
++  print "static const int " pkg_namespace "msgidx[] =";
+   print "  {";
+   for (i = 0; i < coded_msgs; i++)
+     print "    " pos[i] ",";
+@@ -158,7 +158,7 @@
+   print "  };";
+   print "";
+   print "static GPG_ERR_INLINE int";
+-  print namespace "msgidxof (int code)";
++  print pkg_namespace "msgidxof (int code)";
+   print "{";
+   print "  return (0 ? 0";
+ 

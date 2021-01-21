@@ -1,0 +1,228 @@
+diff --git a/applets/usage_pod.c b/applets/usage_pod.c
+index 0b1c4aa..a67e8b4 100644
+--- a/applets/usage_pod.c
++++ b/applets/usage_pod.c
+@@ -71,7 +71,7 @@ int main(void)
+ 		} else {
+ 			printf(", ");
+ 		}
+-		printf(usage_array[i].aname);
++		printf("%s", usage_array[i].aname);
+ 		col += len2;
+ 	}
+ 	printf("\n\n");
+diff --git a/archival/libarchive/decompress_gunzip.c b/archival/libarchive/decompress_gunzip.c
+index 357c9bf..d6c9829 100644
+--- a/archival/libarchive/decompress_gunzip.c
++++ b/archival/libarchive/decompress_gunzip.c
+@@ -1007,7 +1007,7 @@ inflate_unzip_internal(STATE_PARAM transformer_state_t *xstate)
+ 	error_msg = "corrupted data";
+ 	if (setjmp(error_jmp)) {
+ 		/* Error from deep inside zip machinery */
+-		bb_error_msg(error_msg);
++		bb_error_msg("%s", error_msg);
+ 		n = -1;
+ 		goto ret;
+ 	}
+diff --git a/libbb/dump.c b/libbb/dump.c
+index 566881a..b465c5d 100644
+--- a/libbb/dump.c
++++ b/libbb/dump.c
+@@ -613,7 +613,7 @@ static void display(priv_dumper_t* dumper)
+ 							printf(pr->fmt, (char *) bp);
+ 							break;
+ 						case F_TEXT:
+-							printf(pr->fmt);
++							printf("%s", pr->fmt);
+ 							break;
+ 						case F_U:
+ 							conv_u(pr, bp);
+@@ -663,7 +663,7 @@ static void display(priv_dumper_t* dumper)
+ 				printf(pr->fmt, (unsigned) dumper->eaddress);
+ 				break;
+ 			case F_TEXT:
+-				printf(pr->fmt);
++				printf("%s", pr->fmt);
+ 				break;
+ 			}
+ 		}
+diff --git a/libbb/fflush_stdout_and_exit.c b/libbb/fflush_stdout_and_exit.c
+index b4bed86..24ee314 100644
+--- a/libbb/fflush_stdout_and_exit.c
++++ b/libbb/fflush_stdout_and_exit.c
+@@ -17,7 +17,7 @@ void FAST_FUNC fflush_stdout_and_exit(int retval)
+ {
+ 	xfunc_error_retval = retval;
+ 	if (fflush(stdout))
+-		bb_perror_msg_and_die(bb_msg_standard_output);
++		bb_perror_msg_and_die("%s", bb_msg_standard_output);
+ 	/* In case we are in NOFORK applet. Do not exit() directly,
+ 	 * but use xfunc_die() */
+ 	xfunc_die();
+diff --git a/libbb/wfopen.c b/libbb/wfopen.c
+index 76dc8b8..115b091 100644
+--- a/libbb/wfopen.c
++++ b/libbb/wfopen.c
+@@ -43,7 +43,7 @@ static FILE* xfdopen_helper(unsigned fd_and_rw_bit)
+ {
+ 	FILE* fp = fdopen(fd_and_rw_bit >> 1, fd_and_rw_bit & 1 ? "w" : "r");
+ 	if (!fp)
+-		bb_error_msg_and_die(bb_msg_memory_exhausted);
++		bb_error_msg_and_die("%s", bb_msg_memory_exhausted);
+ 	return fp;
+ }
+ FILE* FAST_FUNC xfdopen_for_read(int fd)
+diff --git a/libbb/xfuncs_printf.c b/libbb/xfuncs_printf.c
+index 7348890..21b47f2 100644
+--- a/libbb/xfuncs_printf.c
++++ b/libbb/xfuncs_printf.c
+@@ -37,7 +37,7 @@ void* FAST_FUNC malloc_or_warn(size_t size)
+ {
+ 	void *ptr = malloc(size);
+ 	if (ptr == NULL && size != 0)
+-		bb_error_msg(bb_msg_memory_exhausted);
++		bb_error_msg("%s", bb_msg_memory_exhausted);
+ 	return ptr;
+ }
+ 
+@@ -46,7 +46,7 @@ void* FAST_FUNC xmalloc(size_t size)
+ {
+ 	void *ptr = malloc(size);
+ 	if (ptr == NULL && size != 0)
+-		bb_error_msg_and_die(bb_msg_memory_exhausted);
++		bb_error_msg_and_die("%s", bb_msg_memory_exhausted);
+ 	return ptr;
+ }
+ 
+@@ -57,7 +57,7 @@ void* FAST_FUNC xrealloc(void *ptr, size_t size)
+ {
+ 	ptr = realloc(ptr, size);
+ 	if (ptr == NULL && size != 0)
+-		bb_error_msg_and_die(bb_msg_memory_exhausted);
++		bb_error_msg_and_die("%s", bb_msg_memory_exhausted);
+ 	return ptr;
+ }
+ #endif /* DMALLOC */
+@@ -81,7 +81,7 @@ char* FAST_FUNC xstrdup(const char *s)
+ 	t = strdup(s);
+ 
+ 	if (t == NULL)
+-		bb_error_msg_and_die(bb_msg_memory_exhausted);
++		bb_error_msg_and_die("%s", bb_msg_memory_exhausted);
+ 
+ 	return t;
+ }
+@@ -321,14 +321,14 @@ char* FAST_FUNC xasprintf(const char *format, ...)
+ 	va_end(p);
+ 
+ 	if (r < 0)
+-		bb_error_msg_and_die(bb_msg_memory_exhausted);
++		bb_error_msg_and_die("%s", bb_msg_memory_exhausted);
+ 	return string_ptr;
+ }
+ 
+ void FAST_FUNC xsetenv(const char *key, const char *value)
+ {
+ 	if (setenv(key, value, 1))
+-		bb_error_msg_and_die(bb_msg_memory_exhausted);
++		bb_error_msg_and_die("%s", bb_msg_memory_exhausted);
+ }
+ 
+ /* Handles "VAR=VAL" strings, even those which are part of environ
+diff --git a/networking/udhcp/arpping.c b/networking/udhcp/arpping.c
+index fad2283..a120973 100644
+--- a/networking/udhcp/arpping.c
++++ b/networking/udhcp/arpping.c
+@@ -54,7 +54,7 @@ int FAST_FUNC arpping(uint32_t test_nip,
+ 
+ 	s = socket(PF_PACKET, SOCK_PACKET, htons(ETH_P_ARP));
+ 	if (s == -1) {
+-		bb_perror_msg(bb_msg_can_not_create_raw_socket);
++		bb_perror_msg("%s", bb_msg_can_not_create_raw_socket);
+ 		return -1;
+ 	}
+ 
+diff --git a/networking/wget.c b/networking/wget.c
+index d4a9c0c..5802034 100644
+--- a/networking/wget.c
++++ b/networking/wget.c
+@@ -348,7 +348,7 @@ static FILE *open_socket(len_and_sockaddr *lsa)
+ 	/* hopefully it understands what ESPIPE means... */
+ 	fp = fdopen(fd, "r+");
+ 	if (!fp)
+-		bb_perror_msg_and_die(bb_msg_memory_exhausted);
++		bb_perror_msg_and_die("%s", bb_msg_memory_exhausted);
+ 
+ 	return fp;
+ }
+diff --git a/shell/ash.c b/shell/ash.c
+index 8a1628e..6a25aa2 100644
+--- a/shell/ash.c
++++ b/shell/ash.c
+@@ -3931,7 +3931,7 @@ sprint_status48(char *s, int status, int sigonly)
+ 		}
+ 		st &= 0x7f;
+ //TODO: use bbox's get_signame? strsignal adds ~600 bytes to text+rodata
+-		col = fmtstr(s, 32, strsignal(st));
++		col = fmtstr(s, 32, "%s", strsignal(st));
+ 		if (WCOREDUMP(status)) {
+ 			strcpy(s + col, " (core dumped)");
+ 			col += sizeof(" (core dumped)")-1;
+diff --git a/util-linux/mount.c b/util-linux/mount.c
+index cb40c80..f2ff24e 100644
+--- a/util-linux/mount.c
++++ b/util-linux/mount.c
+@@ -722,7 +722,7 @@ static int mount_it_now(struct mntent *mp, unsigned long vfsflags, char *filtero
+ 	// Abort entirely if permission denied.
+ 
+ 	if (rc && errno == EPERM)
+-		bb_error_msg_and_die(bb_msg_perm_denied_are_you_root);
++		bb_error_msg_and_die("%s", bb_msg_perm_denied_are_you_root);
+ 
+ 	// If the mount was successful, and we're maintaining an old-style
+ 	// mtab file by hand, add the new entry to it now.
+@@ -2001,7 +2001,7 @@ static int singlemount(struct mntent *mp, int ignore_busy)
+ 			mp->mnt_fsname = NULL; // will receive malloced loop dev name
+ 			if (set_loop(&mp->mnt_fsname, loopFile, 0, /*ro:*/ (vfsflags & MS_RDONLY)) < 0) {
+ 				if (errno == EPERM || errno == EACCES)
+-					bb_error_msg(bb_msg_perm_denied_are_you_root);
++					bb_error_msg("%s", bb_msg_perm_denied_are_you_root);
+ 				else
+ 					bb_perror_msg("can't setup loop device");
+ 				return errno;
+@@ -2198,7 +2198,7 @@ int mount_main(int argc UNUSED_PARAM, char **argv)
+ 		// argument when we get it.
+ 		if (argv[1]) {
+ 			if (nonroot)
+-				bb_error_msg_and_die(bb_msg_you_must_be_root);
++				bb_error_msg_and_die("%s", bb_msg_you_must_be_root);
+ 			mtpair->mnt_fsname = argv[0];
+ 			mtpair->mnt_dir = argv[1];
+ 			mtpair->mnt_type = fstype;
+@@ -2215,7 +2215,7 @@ int mount_main(int argc UNUSED_PARAM, char **argv)
+ 
+ 	cmdopt_flags = parse_mount_options(cmdopts, NULL);
+ 	if (nonroot && (cmdopt_flags & ~MS_SILENT)) // Non-root users cannot specify flags
+-		bb_error_msg_and_die(bb_msg_you_must_be_root);
++		bb_error_msg_and_die("%s", bb_msg_you_must_be_root);
+ 
+ 	// If we have a shared subtree flag, don't worry about fstab or mtab.
+ 	if (ENABLE_FEATURE_MOUNT_FLAGS
+@@ -2280,7 +2280,7 @@ int mount_main(int argc UNUSED_PARAM, char **argv)
+ 			// No, mount -a won't mount anything,
+ 			// even user mounts, for mere humans
+ 			if (nonroot)
+-				bb_error_msg_and_die(bb_msg_you_must_be_root);
++				bb_error_msg_and_die("%s", bb_msg_you_must_be_root);
+ 
+ 			// Does type match? (NULL matches always)
+ 			if (!match_fstype(mtcur, fstype))
+@@ -2360,7 +2360,7 @@ int mount_main(int argc UNUSED_PARAM, char **argv)
+ 			// fstab must have "users" or "user"
+ 			l = parse_mount_options(mtcur->mnt_opts, NULL);
+ 			if (!(l & MOUNT_USERS))
+-				bb_error_msg_and_die(bb_msg_you_must_be_root);
++				bb_error_msg_and_die("%s", bb_msg_you_must_be_root);
+ 		}
+ 
+ 		//util-linux-2.12 does not do this check.

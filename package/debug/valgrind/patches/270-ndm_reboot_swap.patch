@@ -1,0 +1,50 @@
+diff --git a/coregrind/m_syswrap/syswrap-mips32-linux.c b/coregrind/m_syswrap/syswrap-mips32-linux.c
+index ae05467..3755cd1 100644
+--- a/coregrind/m_syswrap/syswrap-mips32-linux.c
++++ b/coregrind/m_syswrap/syswrap-mips32-linux.c
+@@ -754,6 +754,25 @@ PRE(sys_setdomainname)
+    PRE_REG_READ2 (long, "setdomainname", const void *, name, int, len);
+ }
+ 
++PRE(sys_swapon)
++{
++   PRINT("sys_swapon ( %#lx, %ld )", ARG1, ARG2);
++   PRE_REG_READ2(long, "swapon", const void *, path, int, flags);
++}
++
++PRE(sys_swapoff)
++{
++   PRINT("sys_swapoff ( %#lx )", ARG1);
++   PRE_REG_READ1(long, "swapoff", const void *, path);
++}
++
++PRE(sys_reboot)
++{
++   PRINT("sys_reboot ( %ld )", ARG1);
++   PRE_REG_READ1(int, "reboot", int, flags);
++   *flags |= SfMayBlock;
++}
++
+ #undef PRE
+ #undef POST
+ 
+@@ -859,8 +878,8 @@ static SyscallTableEntry syscall_main_table[] = {
+    //..    //   (__NR_oldlstat,          sys_lstat),             // 84
+    GENX_ (__NR_readlink,               sys_readlink),                // 85
+    //..    //   (__NR_uselib,            sys_uselib),            // 86
+-   //..    //   (__NR_swapon,            sys_swapon),            // 87
+-   //..    //   (__NR_reboot,            sys_reboot),            // 88
++   PLAX_ (__NR_swapon,                 sys_swapon),              // 87
++   PLAX_ (__NR_reboot,                 sys_reboot),              // 88
+    //..    //   (__NR_readdir,           old_readdir),           // 89
+    PLAX_ (__NR_mmap,                   sys_mmap),                    // 90
+    GENXY (__NR_munmap,                 sys_munmap),                  // 91
+@@ -887,7 +906,7 @@ static SyscallTableEntry syscall_main_table[] = {
+    //..    GENX_(__NR_idle,              sys_ni_syscall),        // 112
+    //..    //   (__NR_vm86old,           sys_vm86old),           // 113
+    GENXY (__NR_wait4,                  sys_wait4),                   // 114
+-   //..    //   (__NR_swapoff,           sys_swapoff),           // 115
++   PLAX_ (__NR_swapoff,                sys_swapoff),             // 115
+    LINXY (__NR_sysinfo,                sys_sysinfo),                 // 116
+    LINXY (__NR_ipc,                    sys_ipc),                     // 117
+    GENX_ (__NR_fsync,                  sys_fsync),                   // 118

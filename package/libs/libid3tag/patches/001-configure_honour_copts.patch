@@ -1,0 +1,14 @@
+diff -Nuar libid3tag-0.15.1b/configure.ac libid3tag-0.15.1b-patched/configure.ac
+--- libid3tag-0.15.1b/configure.ac	2004-01-24 02:22:46.000000000 +0300
++++ libid3tag-0.15.1b-patched/configure.ac	2017-11-19 22:53:22.457094039 +0300
+@@ -106,6 +106,10 @@
+ 	-fomit-frame-pointer)
+ 	    shift
+ 	    ;;
++	-fhonour-copts)
++	    CFLAGS="$CFLAGS $1"
++	    shift
++	    ;;
+ 	-O*|-f*)
+ 	    optimize="$1"
+ 	    shift

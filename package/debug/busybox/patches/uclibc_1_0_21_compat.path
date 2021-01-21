@@ -1,0 +1,34 @@
+diff --git a/modutils/modprobe-small.c b/modutils/modprobe-small.c
+index 9c94106..f880416 100644
+--- a/modutils/modprobe-small.c
++++ b/modutils/modprobe-small.c
+@@ -19,9 +19,15 @@
+ #include <sys/utsname.h> /* uname() */
+ #include <fnmatch.h>
+ 
++#if defined(__UCLIBC__) && UCLIBC_VERSION < KERNEL_VERSION(1, 0, 21)
+ extern int init_module(void *module, unsigned long len, const char *options);
+ extern int delete_module(const char *module, unsigned flags);
+-extern int query_module(const char *name, int which, void *buf, size_t bufsize, size_t *ret);
++#else
++# include <sys/syscall.h>
++# define init_module(mod, len, opts) syscall(__NR_init_module, mod, len, opts)
++# define delete_module(mod, flags) syscall(__NR_delete_module, mod, flags)
++#endif
++
+ /* linux/include/linux/module.h has limit of 64 chars on module names */
+ #undef MODULE_NAME_LEN
+ #define MODULE_NAME_LEN 64
+diff --git a/modutils/modutils.c b/modutils/modutils.c
+index 84300d9..15a0fb8 100644
+--- a/modutils/modutils.c
++++ b/modutils/modutils.c
+@@ -7,7 +7,7 @@
+  */
+ #include "modutils.h"
+ 
+-#ifdef __UCLIBC__
++#if defined(__UCLIBC__) && UCLIBC_VERSION < KERNEL_VERSION(1, 0, 21)
+ extern int init_module(void *module, unsigned long len, const char *options);
+ extern int delete_module(const char *module, unsigned int flags);
+ #else

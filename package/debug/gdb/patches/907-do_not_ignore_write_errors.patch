@@ -1,0 +1,13 @@
+diff -Nuar gdb-8.2.1/readline/histfile.c gdb-8.2.1-patched/readline/histfile.c
+--- gdb-8.2.1/readline/histfile.c	2017-06-04 18:51:27.000000000 +0300
++++ gdb-8.2.1-patched/readline/histfile.c	2020-01-17 18:41:09.368189142 +0300
+@@ -407,7 +407,8 @@
+      truncate to. */
+   if (bp > buffer && ((file = open (filename, O_WRONLY|O_TRUNC|O_BINARY, 0600)) != -1))
+     {
+-      write (file, bp, chars_read - (bp - buffer));
++      if (write (file, bp, chars_read - (bp - buffer)) < 0)
++        rv = errno;
+ 
+ #if defined (__BEOS__)
+       /* BeOS ignores O_TRUNC. */

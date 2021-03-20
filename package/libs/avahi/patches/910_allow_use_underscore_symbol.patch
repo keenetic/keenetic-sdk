@@ -1,0 +1,13 @@
+diff --git a/avahi-core/domain-util.c b/avahi-core/domain-util.c
+index 6eed27f..38e42b4 100644
+--- a/avahi-core/domain-util.c
++++ b/avahi-core/domain-util.c
+@@ -44,7 +44,7 @@ static void strip_bad_chars(char *s) {
+         if ((*p >= 'a' && *p <= 'z') ||
+             (*p >= 'A' && *p <= 'Z') ||
+             (*p >= '0' && *p <= '9') ||
+-            *p == '-')
++            *p == '-' || *p == '_')
+             *(d++) = *p;
+ 
+     *d = 0;

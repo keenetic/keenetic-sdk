@@ -1,0 +1,79 @@
+diff -Nuar autoconf-2.69/lib/autoconf/c.m4 autoconf-2.69-patched/lib/autoconf/c.m4
+--- autoconf-2.69/lib/autoconf/c.m4	2017-11-26 23:55:29.418990420 +0300
++++ autoconf-2.69-patched/lib/autoconf/c.m4	2017-11-26 23:56:13.694897823 +0300
+@@ -509,14 +509,14 @@
+   [ac_save_c_werror_flag=$ac_c_werror_flag
+    ac_c_werror_flag=yes
+    ac_cv_prog_cc_g=no
+-   CFLAGS="-g"
++   CFLAGS="$CFLAGS -g"
+    _AC_COMPILE_IFELSE([AC_LANG_PROGRAM()],
+      [ac_cv_prog_cc_g=yes],
+-     [CFLAGS=""
++     [CFLAGS="$CFLAGS"
+       _AC_COMPILE_IFELSE([AC_LANG_PROGRAM()],
+ 	[],
+ 	[ac_c_werror_flag=$ac_save_c_werror_flag
+-	 CFLAGS="-g"
++	 CFLAGS="$CFLAGS -g"
+ 	 _AC_COMPILE_IFELSE([AC_LANG_PROGRAM()],
+ 	   [ac_cv_prog_cc_g=yes])])])
+    ac_c_werror_flag=$ac_save_c_werror_flag])
+@@ -524,15 +524,15 @@
+   CFLAGS=$ac_save_CFLAGS
+ elif test $ac_cv_prog_cc_g = yes; then
+   if test "$GCC" = yes; then
+-    CFLAGS="-g -O2"
++    CFLAGS="$CFLAGS -g -O2"
+   else
+-    CFLAGS="-g"
++    CFLAGS="$CFLAGS -g"
+   fi
+ else
+   if test "$GCC" = yes; then
+-    CFLAGS="-O2"
++    CFLAGS="$CFLAGS -O2"
+   else
+-    CFLAGS=
++    CFLAGS="$CFLAGS"
+   fi
+ fi[]dnl
+ ])# _AC_PROG_CC_G
+@@ -743,14 +743,14 @@
+   [ac_save_cxx_werror_flag=$ac_cxx_werror_flag
+    ac_cxx_werror_flag=yes
+    ac_cv_prog_cxx_g=no
+-   CXXFLAGS="-g"
++   CXXFLAGS="$CXXFLAGS -g"
+    _AC_COMPILE_IFELSE([AC_LANG_PROGRAM()],
+      [ac_cv_prog_cxx_g=yes],
+-     [CXXFLAGS=""
++     [CXXFLAGS="$CXXFLAGS"
+       _AC_COMPILE_IFELSE([AC_LANG_PROGRAM()],
+ 	[],
+ 	[ac_cxx_werror_flag=$ac_save_cxx_werror_flag
+-	 CXXFLAGS="-g"
++	 CXXFLAGS="$CXXFLAGS -g"
+ 	 _AC_COMPILE_IFELSE([AC_LANG_PROGRAM()],
+ 	   [ac_cv_prog_cxx_g=yes])])])
+    ac_cxx_werror_flag=$ac_save_cxx_werror_flag])
+@@ -758,15 +758,15 @@
+   CXXFLAGS=$ac_save_CXXFLAGS
+ elif test $ac_cv_prog_cxx_g = yes; then
+   if test "$GXX" = yes; then
+-    CXXFLAGS="-g -O2"
++    CXXFLAGS="$CXXFLAGS -g -O2"
+   else
+-    CXXFLAGS="-g"
++    CXXFLAGS="$CXXFLAGS -g"
+   fi
+ else
+   if test "$GXX" = yes; then
+-    CXXFLAGS="-O2"
++    CXXFLAGS="$CXXFLAGS -O2"
+   else
+-    CXXFLAGS=
++    CXXFLAGS="$CXXFLAGS"
+   fi
+ fi[]dnl
+ ])# _AC_PROG_CXX_G

@@ -1,0 +1,24 @@
+diff -Nuar gdb-8.2.1/gdb/symfile.c gdb-8.2.1-patched/gdb/symfile.c
+--- gdb-8.2.1/gdb/symfile.c	2018-12-23 08:51:54.000000000 +0300
++++ gdb-8.2.1-patched/gdb/symfile.c	2020-01-17 17:16:15.848860908 +0300
+@@ -3177,7 +3177,7 @@
+ {
+   int nmapped = 0;
+   struct objfile *objfile;
+-  struct obj_section *osect;
++  struct obj_section *osect = NULL;
+ 
+   if (overlay_debugging)
+     {
+diff -Nuar gdb-8.2.1/gdb/printcmd.c gdb-8.2.1-patched/gdb/printcmd.c
+--- gdb-8.2.1/gdb/printcmd.c	2018-12-23 08:51:54.000000000 +0300
++++ gdb-8.2.1-patched/gdb/printcmd.c	2020-01-17 17:29:57.840275076 +0300
+@@ -1272,7 +1272,7 @@
+ {
+   struct minimal_symbol *msymbol;
+   struct objfile *objfile;
+-  struct obj_section *osect;
++  struct obj_section *osect = NULL;
+   CORE_ADDR addr, sect_addr;
+   int matches = 0;
+   unsigned int offset;

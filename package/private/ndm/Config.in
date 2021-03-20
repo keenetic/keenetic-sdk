@@ -1,0 +1,62 @@
+menu "Configuration"
+	depends on PACKAGE_ndm
+
+config NDM_BACKTRACE
+	bool "Log a backtrace on a daemon crash"
+
+config NDM_GENERIC_DEBUG
+	bool "Generic debug"
+
+if NDM_GENERIC_DEBUG
+
+	config NDM_ALARM_DEBUG
+		bool "Alarm debug"
+
+	config NDM_IO_DEBUG
+		bool "I/O debug"
+
+	config NDM_CLOUD_DEBUG
+		bool "Cloud debug"
+
+endif
+
+config NDM_EVENT_DEBUG
+	bool "Event debug"
+
+	config NDM_EVENT_DEVICE_DEBUG
+		depends on NDM_EVENT_DEBUG
+		bool "Event::Device debug"
+		default n
+
+	config NDM_EVENT_STATS_DEBUG
+		depends on NDM_EVENT_DEBUG
+		bool "Event::Stats debug"
+		default n
+
+	config NDM_EVENT_TASK_DEBUG
+		depends on NDM_EVENT_DEBUG
+		bool "Event::TaskDone debug"
+		default n
+
+config NDM_ASAN_DEBUG
+	bool "Enable address sanitizer"
+	select NDM_BACKTRACE
+
+config NDM_UBSAN_DEBUG
+	bool "Enable undefined behaviour sanitizer"
+	select NDM_BACKTRACE
+
+config NDM_DEBUG_SYMBOLS
+	bool "Install debug symbol files"
+	select NDM_BACKTRACE
+
+	config NDM_DEBUG_OPTS
+		depends on NDM_DEBUG_SYMBOLS
+		string "Additional debug options"
+		default "-ggdb -O0"
+
+	config NDM_DEBUG_NO_LTO
+		depends on NDM_DEBUG_SYMBOLS
+		bool "Disable link time optimization"
+		default y
+endmenu

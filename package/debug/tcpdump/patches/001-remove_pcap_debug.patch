@@ -1,0 +1,24 @@
+diff -urN tcpdump-3.9.8.orig/tcpdump.c tcpdump-3.9.8/tcpdump.c
+--- tcpdump-3.9.8.orig/tcpdump.c	
++++ tcpdump-3.9.8/tcpdump.c	
+@@ -765,20 +765,6 @@
+ 				error("invalid data link type %s", gndo->ndo_dltname);
+ 			break;
+ 
+-#if defined(HAVE_PCAP_DEBUG) || defined(HAVE_YYDEBUG)
+-		case 'Y':
+-			{
+-			/* Undocumented flag */
+-#ifdef HAVE_PCAP_DEBUG
+-			extern int pcap_debug;
+-			pcap_debug = 1;
+-#else
+-			extern int yydebug;
+-			yydebug = 1;
+-#endif
+-			}
+-			break;
+-#endif
+ 		case 'Z':
+ 			if (optarg) {
+ 				username = strdup(optarg);

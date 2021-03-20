@@ -1,0 +1,12 @@
+diff -Naur a/ubifs-utils/mkfs.ubifs/mkfs.ubifs.h b/ubifs-utils/mkfs.ubifs/mkfs.ubifs.h
+--- a/ubifs-utils/mkfs.ubifs/mkfs.ubifs.h	2020-09-17 14:01:06.296406898 +0300
++++ b/ubifs-utils/mkfs.ubifs/mkfs.ubifs.h	2020-09-17 13:58:57.662086000 +0300
+@@ -43,7 +43,7 @@
+ #include <errno.h>
+ #include <libgen.h>
+ #include <ctype.h>
+-#include <uuid.h>
++#include <uuid/uuid.h>
+ #include <sys/file.h>
+ 
+ #ifdef WITH_CRYPTO

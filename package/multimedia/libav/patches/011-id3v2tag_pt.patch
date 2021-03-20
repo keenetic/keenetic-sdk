@@ -1,0 +1,26 @@
+--- a/libavformat/id3v2.c	2016-05-25 03:36:32.000000000 +0300
++++ b/libavformat/id3v2.c	2016-08-23 14:47:08.073093700 +0300
+@@ -196,6 +196,7 @@
+     }
+ 
+     switch (encoding) {
++/*
+     case ID3v2_ENCODING_ISO8859:
+         while (left && ch) {
+             ch = avio_r8(pb);
+@@ -203,6 +204,7 @@
+             left--;
+         }
+         break;
++*/
+ 
+     case ID3v2_ENCODING_UTF16BOM:
+         if ((left -= 2) < 0) {
+@@ -234,6 +236,7 @@
+             left += 2;  /* did not read last char from pb */
+         break;
+ 
++    case ID3v2_ENCODING_ISO8859:
+     case ID3v2_ENCODING_UTF8:
+         while (left && ch) {
+             ch = avio_r8(pb);

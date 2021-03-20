@@ -1,0 +1,4 @@
+config MTK_VENDOR_LIB_HCI_TYPE
+	bool "HCI Type Vendor Library"
+	default y
+	depends on PACKAGE_bluedroid

@@ -1,0 +1,49 @@
+menu "Configuration"
+	depends on PACKAGE_libopenssl
+
+config OPENSSL_OPTIMIZE_SPEED
+	bool
+	default n
+	prompt "Enable optimization for speed instead of size"
+
+config OPENSSL_TLS13
+	bool
+	default y
+	prompt "Enable TLS13 support"
+
+config OPENSSL_OCSP
+	bool
+	default y
+	prompt "Enable OCSP support"
+
+config OPENSSL_OLD_PROTOS
+	bool
+	default y
+	prompt "Enable SSLv2/SSLv3/TLSv1.1 support"
+
+config OPENSSL_OLD_ALGOS
+	bool
+	default y
+	prompt "Enable DSA/CAST support"
+
+config OPENSSL_ENGINE
+	bool "Enable engine support"
+	default n
+
+config OPENSSL_ENGINE_BUILTIN
+	bool "Build chosen engines into libcrypto"
+	depends on OPENSSL_ENGINE
+	default y
+
+config OPENSSL_ENGINE_BUILTIN_DEVCRYPTO
+	bool
+	prompt "Acceleration support through /dev/crypto"
+	depends on OPENSSL_ENGINE_BUILTIN
+
+config OPENSSL_WITH_ASYNC
+	bool
+	prompt "Enable asynchronous jobs support"
+	depends on OPENSSL_ENGINE
+
+
+endmenu

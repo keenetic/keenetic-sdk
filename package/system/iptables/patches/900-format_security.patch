@@ -1,0 +1,35 @@
+diff --git a/extensions/libipt_icmp.c b/extensions/libipt_icmp.c
+index 5418997..e76257c 100644
+--- a/extensions/libipt_icmp.c
++++ b/extensions/libipt_icmp.c
+@@ -236,7 +236,7 @@ static unsigned int type_xlate_print(struct xt_xlate *xl, unsigned int icmptype,
+ 			if (icmp_codes[i].type == icmptype &&
+ 			    icmp_codes[i].code_min == code_min &&
+ 			    icmp_codes[i].code_max == code_max) {
+-				xt_xlate_add(xl, icmp_codes[i].name);
++				xt_xlate_add(xl, "%s", icmp_codes[i].name);
+ 				return 1;
+ 			}
+ 	}
+diff --git a/extensions/libip6t_icmp6.c b/extensions/libip6t_icmp6.c
+index 45a7187..cc7bfae 100644
+--- a/extensions/libip6t_icmp6.c
++++ b/extensions/libip6t_icmp6.c
+@@ -230,7 +230,7 @@ static unsigned int type_xlate_print(struct xt_xlate *xl, unsigned int icmptype,
+ 	type_name = icmp6_type_xlate(icmptype);
+ 
+ 	if (type_name) {
+-		xt_xlate_add(xl, type_name);
++		xt_xlate_add(xl, "%s", type_name);
+ 	} else {
+ 		for (i = 0; i < ARRAY_SIZE(icmpv6_codes); ++i)
+ 			if (icmpv6_codes[i].type == icmptype &&
+@@ -239,7 +239,7 @@ static unsigned int type_xlate_print(struct xt_xlate *xl, unsigned int icmptype,
+ 				break;
+ 
+ 		if (i != ARRAY_SIZE(icmpv6_codes))
+-			xt_xlate_add(xl, icmpv6_codes[i].name);
++			xt_xlate_add(xl, "%s", icmpv6_codes[i].name);
+ 		else
+ 			return 0;
+ 	}

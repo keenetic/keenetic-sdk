@@ -1,0 +1,15 @@
+if PACKAGE_libcurl
+
+comment "Supported protocols"
+
+config LIBCURL_NGHTTP2
+	bool "HTTP2 protocol"
+	default n
+
+comment "Miscellaneous"
+
+config LIBCURL_CA
+	bool "Enable CA bundle support"
+	default n
+
+endif

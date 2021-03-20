@@ -1,0 +1,12 @@
+diff -uprN wireless_tools.29/Makefile wireless_tools.29_patched/Makefile
+--- wireless_tools.29/Makefile	2007-09-18 03:56:46.000000000 +0400
++++ wireless_tools.29_patched/Makefile	2015-03-26 17:41:05.071336527 +0300
+@@ -145,7 +145,7 @@ wireless.h:
+ 
+ # Compilation of the dynamic library
+ $(DYNAMIC): $(OBJS:.o=.so)
+-	$(CC) -shared -o $@ -Wl,-soname,$@ $(STRIPFLAGS) $(LIBS) -lc $^
++	$(CC) $(LDFLAGS) -shared -o $@ -Wl,-soname,$@ $(STRIPFLAGS) $(LIBS) -lc $^
+ 
+ # Compilation of the static library
+ $(STATIC): $(OBJS:.o=.so)

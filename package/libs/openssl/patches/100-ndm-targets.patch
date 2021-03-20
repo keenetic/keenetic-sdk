@@ -1,0 +1,44 @@
+diff -Naur ./Configurations/10-main.conf ./Configurations/10-main.conf
+--- ./Configurations/10-main.conf	2018-09-11 15:48:19.000000000 +0300
++++ ./Configurations/10-main.conf	2018-09-11 22:38:40.483127000 +0300
+@@ -680,6 +680,40 @@
+         perlasm_scheme   => "linux64le",
+     },
+ 
++    "linux-mips-ndm32" => {
++        inherit_from     => [ "BASE_unix", asm("mips32_asm") ],
++        CC               => "gcc",
++        CXX              => "g++",
++        CFLAGS           => picker(default => "-Wall -mabi=32",
++                                   debug   => "-O0 -g",
++                                   release => ""),
++        CXXFLAGS         => picker(default => "-Wall -mabi=32",
++                                   debug   => "-O0 -g",
++                                   release => ""),
++        cflags           => threads("-pthread"),
++        cxxflags         => combine("-std=c++11", threads("-pthread")),
++        lib_cppflags     => "-DOPENSSL_USE_NODELETE",
++        ex_libs          => add("-ldl", threads("-pthread")),
++        bn_ops           => "BN_LLONG RC4_CHAR",
++        thread_scheme    => "pthreads",
++        dso_scheme       => "dlfcn",
++        shared_target    => "linux-shared",
++        shared_cflag     => "-fPIC",
++        shared_ldflag    => "-Wl,-znodelete -mabi=32",
++        shared_extension => ".so.\$(SHLIB_VERSION_NUMBER)",
++        perlasm_scheme   => "o32",
++    },
++
++    "linux-mips-ndm32le" => {
++        inherit_from     => [ "linux-mips-ndm32" ],
++        cflags           => add("-DL_ENDIAN"),
++    },
++
++    "linux-mips-ndm32eb" => {
++        inherit_from     => [ "linux-mips-ndm32" ],
++        cflags           => add("-DB_ENDIAN"),
++    },
++
+     "linux-armv4" => {
+         ################################################################
+         # Note that -march is not among compiler options in linux-armv4

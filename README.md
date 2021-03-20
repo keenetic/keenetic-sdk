@@ -1,8 +1,8 @@
 # Keenetic SDK
 
-This file will show you how to build the working firmware.
+This is the buildsystem for the KeeneticOS.
 
-The KeeneticOS build system is based on the OpenWrt project (https://openwrt.org/).
+Keenetic SDK is based on the OpenWrt project (https://openwrt.org/).
 We recommend to read OpenWrt build system manual (https://openwrt.org/docs/guide-developer/build-system/use-buildsystem) before following the next steps.
 
 ## Step 1. Save the current version of KeeneticOS
@@ -10,7 +10,7 @@ We recommend to read OpenWrt build system manual (https://openwrt.org/docs/guide
 Connect to the Keenetic web interface and go to the 'System settings' page.
 In the 'System files' section, select the firmware file and click the 'Save to computer' button to download the copy of this file.
 
-Write down the version of KeeneticOS (e.g. '3.06.A.16.0-1').
+Write down the version of KeeneticOS (e.g. '3.07.A.1.0-1').
 
 ## Step 2. Set up environment
 
@@ -34,7 +34,7 @@ We recommend to use lastest long-term support (LTS) version of Ubuntu (https://u
 	
 	$ make
 
-You can find the firmware file in the 'bin' directory (e.g. 'bin/mt7628/20210121_1200_Firmware-Keenetic_Air-3.06.A.16.0-1.bin')
+You can find the firmware file in the 'bin' directory (e.g. `bin/mt7628/20210320_1100_Firmware-Keenetic_Air-3.07.A.1.0-0.bin`)
 
 ## Step 6. Customization
 

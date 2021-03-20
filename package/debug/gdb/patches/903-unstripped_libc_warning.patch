@@ -1,0 +1,60 @@
+diff -Nuar gdb-8.2.1/gdb/po/gdb.pot gdb-8.2.1-patched/gdb/po/gdb.pot
+--- gdb-8.2.1/gdb/po/gdb.pot	2018-12-23 08:55:35.000000000 +0300
++++ gdb-8.2.1-patched/gdb/po/gdb.pot	2020-01-17 16:09:29.359622374 +0300
+@@ -26010,7 +26010,10 @@
+ msgid ""
+ "Unable to find dynamic linker breakpoint function.\n"
+ "GDB will be unable to debug shared library initializers\n"
+-"and track explicitly loaded dynamic code."
++"and track explicitly loaded dynamic code.\n"
++"********************************************************\n"
++"*** MAKE SURE YOU HAVE UNSTRIPPED LIBC/LIBDL LIBRARY ***\n"
++"********************************************************"
+ msgstr ""
+ 
+ #: solib-dsbt.c:989 solib-frv.c:850
+diff -Nuar gdb-8.2.1/gdb/solib-dsbt.c gdb-8.2.1-patched/gdb/solib-dsbt.c
+--- gdb-8.2.1/gdb/solib-dsbt.c	2018-09-05 10:27:13.000000000 +0300
++++ gdb-8.2.1-patched/gdb/solib-dsbt.c	2020-01-17 16:10:53.694003867 +0300
+@@ -769,7 +769,10 @@
+ {
+   warning (_("Unable to find dynamic linker breakpoint function.\n"
+ 	     "GDB will be unable to debug shared library initializers\n"
+-	     "and track explicitly loaded dynamic code."));
++	     "and track explicitly loaded dynamic code.\n"
++	     "********************************************************\n"
++	     "*** MAKE SURE YOU HAVE UNSTRIPPED LIBC/LIBDL LIBRARY ***\n"
++	     "********************************************************"));
+ }
+ 
+ /* Helper function for gdb_bfd_lookup_symbol.  */
+diff -Nuar gdb-8.2.1/gdb/solib-frv.c gdb-8.2.1-patched/gdb/solib-frv.c
+--- gdb-8.2.1/gdb/solib-frv.c	2018-09-05 10:27:13.000000000 +0300
++++ gdb-8.2.1-patched/gdb/solib-frv.c	2020-01-17 16:13:15.073995056 +0300
+@@ -485,7 +485,10 @@
+ {
+   warning (_("Unable to find dynamic linker breakpoint function.\n"
+            "GDB will be unable to debug shared library initializers\n"
+-	   "and track explicitly loaded dynamic code."));
++	   "and track explicitly loaded dynamic code.\n"
++	   "********************************************************\n"
++	   "*** MAKE SURE YOU HAVE UNSTRIPPED LIBC/LIBDL LIBRARY ***\n"
++	   "********************************************************"));
+ }
+ 
+ /* Helper function for gdb_bfd_lookup_symbol.  */
+diff -Nuar gdb-8.2.1/gdb/solib-svr4.c gdb-8.2.1-patched/gdb/solib-svr4.c
+--- gdb-8.2.1/gdb/solib-svr4.c	2018-12-23 08:51:54.000000000 +0300
++++ gdb-8.2.1-patched/gdb/solib-svr4.c	2020-01-17 16:13:25.514289735 +0300
+@@ -2446,7 +2446,10 @@
+       xfree (interp_name);
+       warning (_("Unable to find dynamic linker breakpoint function.\n"
+                "GDB will be unable to debug shared library initializers\n"
+-               "and track explicitly loaded dynamic code."));
++               "and track explicitly loaded dynamic code.\n"
++               "********************************************************\n"
++               "*** MAKE SURE YOU HAVE UNSTRIPPED LIBC/LIBDL LIBRARY ***\n"
++               "********************************************************"));
+     }
+ 
+   /* Scan through the lists of symbols, trying to look up the symbol and

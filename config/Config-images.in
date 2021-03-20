@@ -1,0 +1,195 @@
+menu "Target Images"
+
+	menuconfig TARGET_ROOTFS_INITRAMFS
+		bool "Initramfs"
+		default y if USES_INITRAMFS
+		help
+		  Embed the rootfs into the kernel (initramfs)
+
+		choice
+			prompt "Compression"
+			default TARGET_INITRAMFS_COMPRESSION_LZMA if TARGET_ar71xx
+			default TARGET_INITRAMFS_COMPRESSION_LZMA if TARGET_ramips
+			default TARGET_INITRAMFS_COMPRESSION_NONE
+			depends on TARGET_ROOTFS_INITRAMFS
+			help
+			  Select ramdisk compression.
+
+			config TARGET_INITRAMFS_COMPRESSION_NONE
+				bool "none"
+
+			config TARGET_INITRAMFS_COMPRESSION_GZIP
+				bool "gzip"
+
+			config TARGET_INITRAMFS_COMPRESSION_BZIP2
+				bool "bzip2"
+
+			config TARGET_INITRAMFS_COMPRESSION_LZMA
+				bool "lzma"
+
+			config TARGET_INITRAMFS_COMPRESSION_LZO
+				bool "lzo"
+
+			config TARGET_INITRAMFS_COMPRESSION_XZ
+				bool "xz"
+		endchoice
+
+		config EXTERNAL_CPIO
+			string
+			prompt "Use external cpio" if TARGET_ROOTFS_INITRAMFS
+			default ""
+			help
+			  Kernel uses specified external cpio as INITRAMFS_SOURCE
+
+	comment "Root filesystem archives"
+
+	config TARGET_ROOTFS_CPIOGZ
+		bool "cpio.gz"
+		default y if USES_CPIOGZ
+		help
+		  Build a compressed cpio archive of the the root filesystem
+
+	config TARGET_ROOTFS_TARGZ
+		bool "tar.gz"
+		default y if USES_TARGZ
+		help
+		  Build a compressed tar archive of the the root filesystem
+
+	comment "Root filesystem images"
+
+	config TARGET_ROOTFS_EXT4FS
+		bool "ext4"
+		default y if USES_EXT4
+		depends on !TARGET_ROOTFS_INITRAMFS
+		help
+		  Ext4 file system with some free space for uml images
+
+	config TARGET_ROOTFS_ISO
+		bool "iso"
+		default n
+		depends on TARGET_ROOTFS_INITRAMFS && TARGET_x86
+		help
+		  Create some bootable ISO image
+
+	config TARGET_ROOTFS_JFFS2
+		bool "jffs2"
+		default y if USES_JFFS2
+		depends on !TARGET_ROOTFS_INITRAMFS
+		help
+		  Build a jffs2 root filesystem
+
+	config TARGET_ROOTFS_JFFS2_NAND
+		bool "jffs2 for NAND"
+		default y if USES_JFFS2_NAND
+		depends on !TARGET_ROOTFS_INITRAMFS && USES_JFFS2_NAND
+		help
+		  Build a jffs2 root filesystem for NAND flash
+
+	config TARGET_ROOTFS_SQUASHFS
+		bool "squashfs"
+		default y if USES_SQUASHFS
+		depends on !TARGET_ROOTFS_INITRAMFS
+		help
+		  Build a squashfs-lzma root filesystem
+
+	choice
+		prompt "Root filesystem block size"
+		depends on TARGET_ROOTFS_SQUASHFS
+		help
+		  Select a SquashFS block size for the root filesystem
+
+		config TARGET_ROOTFS_SQUASHFS_BLOCKSIZE_128K
+			bool "128k"
+
+		config TARGET_ROOTFS_SQUASHFS_BLOCKSIZE_256K
+			bool "256k"
+
+		config TARGET_ROOTFS_SQUASHFS_BLOCKSIZE_512K
+			bool "512k"
+
+		config TARGET_ROOTFS_SQUASHFS_BLOCKSIZE_1024K
+			bool "1024k"
+	endchoice
+
+	config TARGET_ROOTFS_SQUASHFS_BLOCKSIZE
+		int
+		default 128 if TARGET_ROOTFS_SQUASHFS_BLOCKSIZE_128K
+		default 256 if TARGET_ROOTFS_SQUASHFS_BLOCKSIZE_256K
+		default 512 if TARGET_ROOTFS_SQUASHFS_BLOCKSIZE_512K
+		default 1024 if TARGET_ROOTFS_SQUASHFS_BLOCKSIZE_1024K
+		depends on TARGET_ROOTFS_SQUASHFS
+
+	config TARGET_ROOTFS_NDMSFS
+		bool "ndmsfs"
+		depends on !TARGET_ROOTFS_INITRAMFS
+		help
+		  Build a ndmsfs root filesystem
+
+	config TARGET_ROOTFS_UBIFS
+		bool "ubifs"
+		default y if USES_UBIFS
+		depends on !TARGET_ROOTFS_INITRAMFS && USES_UBIFS
+		help
+		  Build a ubifs root filesystem
+
+	comment "Image Options"
+
+	source "target/linux/*/image/Config.in"
+
+	config TARGET_ROOTFS_PARTSIZE
+		int "Root filesystem partition size (in MB)"
+		depends on X86_GRUB_IMAGES || TARGET_ROOTFS_EXT4FS || TARGET_rb532
+		default 48
+		help
+		    Allows you to change the root filesystem partition size
+
+	config TARGET_ROOTFS_MAXINODE
+		int "Maximum number of inodes in root filesystem"
+		depends on TARGET_ROOTFS_EXT4FS
+		default 6000
+		help
+		    Allows you to change the maximum number of inodes in the root filesystem
+
+	menuconfig TARGET_SIGN_FIRMWARE
+		bool "Sign a firmware with a builder certificate"
+		depends on KERNEL_MTD_NDM_DUAL_IMAGE
+		default n
+
+		config TARGET_SIGN_TYPE
+			string "Signature type (OpenSSL digest name)"
+			depends on TARGET_SIGN_FIRMWARE
+			default "sha256"
+
+	config TARGET_MTD_BLOCK_SIZE
+	    string "The size of a MTD block"
+	    default 0x10000
+		help
+		    Configures a MTD block size for kernel and root FS image alignments
+
+	config TARGET_FIRMWARE_SIZE
+		string "The maximum firmware file size"
+		depends on !TARGET_SPLIT_FIRMWARE_SIZE
+
+	menuconfig TARGET_SPLIT_FIRMWARE_SIZE
+		bool "Split the firmware size to kernel and root FS parts"
+		default y
+
+		config TARGET_KERNEL_SIZE
+			string "The maximum size of the kernel" if TARGET_SPLIT_FIRMWARE_SIZE
+			default 0x130000 if TARGET_keenetic || TARGET_keenetic_giga
+			default 0xF0000 if TARGET_keenetic_lite || TARGET_keenetic_4g || TARGET_keenetic_vdsl
+
+		config TARGET_ROOTFS_SIZE
+			string "The maximum size of the rootfs" if TARGET_SPLIT_FIRMWARE_SIZE
+			default 0x470000 if TARGET_keenetic || TARGET_keenetic_giga
+			default 0x2B0000 if TARGET_keenetic_lite || TARGET_keenetic_4g || TARGET_keenetic_vdsl
+
+	config TARGET_DEV_CONSOLE
+	    string "The console device"
+	    default ttyS1
+
+	config TARGET_USER_DEV_CONSOLE
+	    string "The console device for userspace programm"
+	    default console
+
+endmenu

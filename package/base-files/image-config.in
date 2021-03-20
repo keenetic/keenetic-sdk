@@ -1,0 +1,104 @@
+# Copyright (C) 2006-2012 OpenWrt.org
+# Copyright (C) 2010 Vertical Communications
+#
+# This is free software, licensed under the GNU General Public License v2.
+# See /LICENSE for more information.
+#
+
+menuconfig INITOPT
+	bool "Init configuration options" if IMAGEOPT
+	default n
+	help
+		These option choose the command that will run as the 'init' command
+		(that is which is responsible for controlling the system once preinit
+		transfers control to it) as well as some options controlling its
+		behaviour.  Normally init is /sbin/init.
+
+	config TARGET_INIT_PATH
+		string
+		prompt "PATH for regular boot" if INITOPT
+		default "/bin:/sbin:/usr/bin:/usr/sbin"
+		help
+			Default PATH used during normal operation
+
+	config TARGET_INIT_ENV
+		string
+		prompt "Environment variables to set when starting init (start with none)" if INITOPT
+		default ""
+		help
+			Should be a space seperated list of variable assignments.  These
+			variables will be present in the environment.  Spaces may not be
+			present (including through expansion) even in a quoted string
+			(env doesn't understanding quoting).
+
+	config TARGET_INIT_CMD
+		string
+		prompt "Init command" if INITOPT
+		default "/sbin/init"
+		help
+			The executable to run as the init process.  Is 'exec'd by
+			preinit (which is the init that the kernel launches on boot).
+
+	config TARGET_INIT_SUPPRESS_STDERR
+		bool
+		prompt "Suppress stderr messages of init" if INITOPT
+		default y
+		help
+			Prevents showing stderr messages for init command if not already
+			suppressed during preinit.  This is the default behaviour in
+			previous versions of OpenWRT.  Removing this does nothing if
+			stderr is suppressed during preinit (which is the default).
+
+
+menuconfig VERSIONOPT
+	bool "Version configuration options" if IMAGEOPT
+	default n
+	help
+		These options allow to override the version information embedded in
+		the /etc/openwrt_version, /etc/openwrt_release, /etc/banner and
+		/etc/opkg.conf files. Usually there is no need to set these, but
+		they're useful for release builds or custom OpenWrt redistributions
+		that should carry custom version tags.
+
+	config VERSION_DIST
+		string
+		prompt "Release distribution" if VERSIONOPT
+		default "OpenWrt" if VERSIONOPT
+		help
+			This is the name of the release distribution.
+			If unspecified, it defaults to OpenWrt.
+
+	config VERSION_NICK
+		string
+		prompt "Release version nickname" if VERSIONOPT
+		default "Attitude Adjustment" if VERSIONOPT
+		help
+			This is the release codename embedded in the image.
+			If unspecified, it defaults to the name of source branch.
+
+	config VERSION_NUMBER
+		string
+		prompt "Release version number" if VERSIONOPT
+		help
+			This is the release version number embedded in the image.
+			If unspecified, it defaults to the svn or git-svn revision
+			of the build tree.
+
+	config VERSION_REPO
+		string
+		prompt "Release repository" if VERSIONOPT
+		default "http://downloads.openwrt.org/attitude_adjustment/12.09-rc1/%S/packages" if VERSIONOPT
+		help
+			This is the repository address embedded in the image, it defaults
+			to the trunk snapshot repo; the url may contain the following placeholders:
+			 %R .. Revision number
+			 %V .. Release version or revision number, uppercase
+			 %v .. Release version or revision number, lowercase
+			 %C .. Release version or "Bleeding Edge", uppercase
+			 %c .. Release version or "bleeding_edge", lowercase
+			 %N .. Release name, uppercase
+			 %n .. Release name, lowercase
+			 %D .. Distribution name or "OpenWrt", uppercase
+			 %d .. Distribution name or "openwrt", lowercase
+			 %T .. Target name
+			 %S .. Target/Subtarget name

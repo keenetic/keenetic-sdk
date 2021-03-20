@@ -1,0 +1,9 @@
+# accel-ppp configuration
+
+if PACKAGE_accel-ppp
+
+config ACCEL_PPP_BACKTRACE
+	bool "Log a backtrace on a server crash"
+	default n
+
+endif

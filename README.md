@@ -1,9 +1,9 @@
 # Keenetic SDK
 
-This is the buildsystem for the KeeneticOS.
+This is the build system for the KeeneticOS.
 
 Keenetic SDK is based on the OpenWrt project (https://openwrt.org/).
-We recommend to read OpenWrt build system manual (https://openwrt.org/docs/guide-developer/build-system/use-buildsystem) before following the next steps.
+We recommend to read the OpenWrt build system manual (https://openwrt.org/docs/guide-developer/build-system/use-buildsystem) before following the next steps.
 
 ## Step 1. Save the current version of KeeneticOS
 
@@ -12,10 +12,10 @@ In the 'System files' section, select the firmware file and click the 'Save to c
 
 Write down the version of KeeneticOS (e.g. '3.07.A.1.0-1').
 
-## Step 2. Set up environment
+## Step 2. Set up your environment
 
-You need 64-bit Debian-based Linux distribution.
-We recommend to use lastest long-term support (LTS) version of Ubuntu (https://ubuntu.com/download).
+You need the 64-bit Debian-based Linux distribution.
+We recommend to use the latest long-term support (LTS) version of Ubuntu (https://ubuntu.com/download).
 
 	# apt install bc build-essential curl file git libjson-perl libhtml-parser-perl
 

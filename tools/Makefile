@@ -17,6 +17,10 @@ ifdef CONFIG_GCC_USE_GRAPHITE
   endif
 endif
 
+ifeq ($(wildcard $(SCRIPT_DIR)/private),)
+  BUILD_ZYIMAGE = y
+endif
+
 tools-y += m4 libtool autoconf automake flex bison pkg-config ragel
 tools-y += sstrip ipkg-utils cmake missing-macros
 tools-y += quilt mkimage libndm libndmfw ndmfw tze
@@ -28,6 +32,7 @@ tools-$(CONFIG_KERNEL_IMAGE_CMDLINE_HACK) += patch-cmdline
 tools-$(CONFIG_USE_MKLIBS) += mklibs
 tools-$(CONFIG_USE_SPARSE) += sparse
 tools-$(BUILD_PPL_CLOOG) += ppl cloog
+tools-$(BUILD_ZYIMAGE) += zyimage
 
 # builddir dependencies
 $(curdir)/bison/compile := $(curdir)/flex/install

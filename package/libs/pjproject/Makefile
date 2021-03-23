@@ -15,21 +15,6 @@ include $(INCLUDE_DIR)/package.mk
 define Build/Compile
 endef
 
-define Package/pjproject-utils
-  CATEGORY:=Utilities
-  TITLE:=PJSIP
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +pjproject
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/pjproject-utils/install
-	if [ -d ./files-pjproject-utils ]; then \
-		$(CP) ./files-pjproject-utils/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,pjproject-utils))
-
 define Package/pjproject
   CATEGORY:=Libraries
   TITLE:=PJSIP
@@ -44,3 +29,18 @@ define Package/pjproject/install
 endef
 
 $(eval $(call BuildPackage,pjproject))
+
+define Package/pjproject-utils
+  CATEGORY:=Utilities
+  TITLE:=PJSIP
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +pjproject
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/pjproject-utils/install
+	if [ -d ./files-pjproject-utils ]; then \
+		$(CP) ./files-pjproject-utils/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,pjproject-utils))

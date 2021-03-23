@@ -15,21 +15,6 @@ include $(INCLUDE_DIR)/package.mk
 define Build/Compile
 endef
 
-define Package/transmission-web-control-tiny
-  CATEGORY:=Network
-  TITLE:=Transmission Web Control (tiny)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +transmission-daemon
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/transmission-web-control-tiny/install
-	if [ -d ./files-transmission-web-control-tiny ]; then \
-		$(CP) ./files-transmission-web-control-tiny/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,transmission-web-control-tiny))
-
 define Package/transmission-web-control-full
   CATEGORY:=Network
   TITLE:=Transmission Web Control (full)
@@ -44,3 +29,18 @@ define Package/transmission-web-control-full/install
 endef
 
 $(eval $(call BuildPackage,transmission-web-control-full))
+
+define Package/transmission-web-control-tiny
+  CATEGORY:=Network
+  TITLE:=Transmission Web Control (tiny)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +transmission-daemon
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/transmission-web-control-tiny/install
+	if [ -d ./files-transmission-web-control-tiny ]; then \
+		$(CP) ./files-transmission-web-control-tiny/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,transmission-web-control-tiny))

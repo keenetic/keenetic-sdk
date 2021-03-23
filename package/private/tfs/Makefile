@@ -48,22 +48,6 @@ endef
 
 $(eval $(call KernelPackage,tfat))
 
-define KernelPackage/thfsplus
-  SUBMENU:=Filesystems
-  CATEGORY:=Kernel modules
-  TITLE:=Tuxera HFS+ driver
-  DEPENDS:=+kmod-nls-base
-  DISABLE_RSTRIP:=y
-endef
-
-define KernelPackage/thfsplus/install
-	if [ -d ./files-thfsplus ]; then \
-		$(CP) ./files-thfsplus/* $(1); \
-	fi
-endef
-
-$(eval $(call KernelPackage,thfsplus))
-
 define KernelPackage/tntfs
   SUBMENU:=Filesystems
   CATEGORY:=Kernel modules
@@ -79,3 +63,19 @@ define KernelPackage/tntfs/install
 endef
 
 $(eval $(call KernelPackage,tntfs))
+
+define KernelPackage/thfsplus
+  SUBMENU:=Filesystems
+  CATEGORY:=Kernel modules
+  TITLE:=Tuxera HFS+ driver
+  DEPENDS:=+kmod-nls-base
+  DISABLE_RSTRIP:=y
+endef
+
+define KernelPackage/thfsplus/install
+	if [ -d ./files-thfsplus ]; then \
+		$(CP) ./files-thfsplus/* $(1); \
+	fi
+endef
+
+$(eval $(call KernelPackage,thfsplus))

@@ -65,10 +65,14 @@ cfg_cleanup() {
 	echo "Cleanup..."
 	echo
 
-	make $cfg 2>&1 | grep '^' && echo
+	make $cfg 2>&1 | tee .pipe
 	if [ ${PIPESTATUS[0]} -ne 0 ]; then
+		rm .pipe
 		return 1
 	fi
+
+	[ -s .pipe ] && echo
+	rm .pipe
 
 	egrep -v '^CONFIG_PACKAGE_' -v $cfg > ${prefix_path}_1
 	egrep '^CONFIG_PACKAGE_ndm-mod-' $cfg > ${prefix_path}_2
@@ -122,11 +126,15 @@ preset_apply () {
 
 	rm -f tmp/presets.config
 
-	make $cfg 2>&1 | grep '^' && echo
+	make $cfg 2>&1 | tee .pipe
 	if [ ${PIPESTATUS[0]} -ne 0 ]; then
+		rm .pipe
 		mv .config_backup $cfg
 		return 1
 	fi
+
+	[ -s .pipe ] && echo
+	rm .pipe
 
 	if [ $preset = "manual" ]; then
 		echo "Paste comma-separated list from \"show version\" and press Ctrl+D."

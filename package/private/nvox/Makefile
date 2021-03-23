@@ -15,51 +15,6 @@ include $(INCLUDE_DIR)/package.mk
 define Build/Compile
 endef
 
-define Package/nvox
-  CATEGORY:=Multimedia
-  TITLE:=NDM telephony
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +libopenssl +libsupcxx +libusb +pjproject +USE_GLIBC:libc-locales
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/nvox/config
-	config NVOX_BACKTRACE
-		bool "Backtrace"
-		depends on PACKAGE_nvox
-		default n
-	config NVOX_DECT
-		bool "DECT support"
-		depends on PACKAGE_nvox
-		default y
-	config NVOX_VERBOSE
-		bool "Verbose app logs"
-		depends on PACKAGE_nvox
-		default n
-endef
-
-define Package/nvox/install
-	if [ -d ./files-nvox ]; then \
-		$(CP) ./files-nvox/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,nvox))
-
-define Package/nvox-fxs-prod-flash
-  CATEGORY:=Multimedia
-  TITLE:=NDM telephony (FXS flasher)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +libopenssl +libsupcxx +libusb +pjproject +USE_GLIBC:libc-locales
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/nvox-fxs-prod-flash/install
-	if [ -d ./files-nvox-fxs-prod-flash ]; then \
-		$(CP) ./files-nvox-fxs-prod-flash/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,nvox-fxs-prod-flash))
-
 define Package/nvox-fxs-prod-int
   CATEGORY:=Multimedia
   TITLE:=NDM telephony (FXS inward tests)
@@ -89,3 +44,48 @@ define Package/nvox-fxs-prod-test/install
 endef
 
 $(eval $(call BuildPackage,nvox-fxs-prod-test))
+
+define Package/nvox-fxs-prod-flash
+  CATEGORY:=Multimedia
+  TITLE:=NDM telephony (FXS flasher)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +libopenssl +libsupcxx +libusb +pjproject +USE_GLIBC:libc-locales
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/nvox-fxs-prod-flash/install
+	if [ -d ./files-nvox-fxs-prod-flash ]; then \
+		$(CP) ./files-nvox-fxs-prod-flash/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,nvox-fxs-prod-flash))
+
+define Package/nvox
+  CATEGORY:=Multimedia
+  TITLE:=NDM telephony
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +libopenssl +libsupcxx +libusb +pjproject +USE_GLIBC:libc-locales
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/nvox/config
+	config NVOX_BACKTRACE
+		bool "Backtrace"
+		depends on PACKAGE_nvox
+		default n
+	config NVOX_DECT
+		bool "DECT support"
+		depends on PACKAGE_nvox
+		default y
+	config NVOX_VERBOSE
+		bool "Verbose app logs"
+		depends on PACKAGE_nvox
+		default n
+endef
+
+define Package/nvox/install
+	if [ -d ./files-nvox ]; then \
+		$(CP) ./files-nvox/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,nvox))

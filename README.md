@@ -10,31 +10,31 @@ We recommend to read the OpenWrt build system manual (https://openwrt.org/docs/g
 Connect to the Keenetic web interface and go to the 'System settings' page.
 In the 'System files' section, select the firmware file and click the 'Save to computer' button to download the copy of this file.
 
-Write down the version of KeeneticOS (e.g. '3.07.A.1.0-1').
+Write down the version of KeeneticOS (e.g. `3.07.A.2.0-2`).
 
 ## Step 2. Set up your environment
 
 You need the 64-bit Debian-based Linux distribution.
 We recommend to use the latest long-term support (LTS) version of Ubuntu (https://ubuntu.com/download).
 
-	# apt install bc build-essential curl file git libjson-perl libhtml-parser-perl
+	# apt install attr bc build-essential curl gawk git libhtml-parser-perl libjson-perl libncurses-dev libssl-dev libxml-libxml-perl python python3 subversion unzip zlib1g-dev
 
 ## Step 3. Prepare source
 
 	$ # replace '<version>' below with yours from Step 1
-	$ git clone --depth 1 --branch <version> https://github.com/keenetic/keenetic-sdk.git 
+	$ git clone --depth 1 --branch <version> https://github.com/keenetic/keenetic-sdk.git
 	$ cd keenetic-sdk
 
 ## Step 4. Unpack firmware
 
-	$ # replace '<firmware.bin>' below with the path to your firmware from Step 1 
+	$ # replace '<firmware.bin>' below with the path to your firmware from Step 1
 	$ ./unpack.sh <firmware.bin>
 
 ## Step 5. Build firmware
-	
+
 	$ make
 
-You can find the firmware file in the 'bin' directory (e.g. `bin/mt7628/20210320_1100_Firmware-Keenetic_Air-3.07.A.1.0-0.bin`)
+You can find the firmware file in the 'bin' directory (e.g. `bin/mt7621/20210324_0010_KN-1010-3.07.A.2.0-2.bin`)
 
 ## Step 6. Customization
 

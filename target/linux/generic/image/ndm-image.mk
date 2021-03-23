@@ -1,3 +1,10 @@
+#
+# Copyright (C) 2021 Keenetic Limited
+#
+# This is free software, licensed under the GNU General Public License v2.
+# See /LICENSE for more information.
+#
+
 MTD_BLOCK_SIZE = $(call qstrip,$(CONFIG_TARGET_MTD_BLOCK_SIZE))
 TLV_BLOCK_SIZE = $(if $(CONFIG_TARGET_SIGN_FIRMWARE),$(MTD_BLOCK_SIZE),0x0)
 TLV_BLOCK_SCMD = stat -c%s $(KERNEL_FILE)
@@ -49,7 +56,10 @@ ifneq ($(wildcard $(STAGING_DIR_HOST)/bin/ndmfw),)
 	-D "$(TARGET_CA_CERTS_SIGN_DIR)" \
 	$(FIRMWARE_FILE)
 else
-  NDMFW_MARK     = true
+  NDMFW_MARK     = zyimage \
+	-d $(CONFIG_TARGET_DEVICE_ID) \
+	-v "$(FIRMWARE_DESC)" \
+	$(FIRMWARE_FILE)
   NDMFW_SIGN     = true
   NDMFW_DUMP     = true
 endif

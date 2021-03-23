@@ -154,10 +154,6 @@ $(eval $(call RequireCommand,python, \
 	Please install python. \
 ))
 
-$(eval $(call RequireCommand,wget, \
-	Please install wget. \
-))
-
 $(eval $(call RequireCommand,curl, \
 	Please install curl. \
 ))

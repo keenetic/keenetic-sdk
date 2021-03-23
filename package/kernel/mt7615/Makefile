@@ -16,23 +16,6 @@ include $(INCLUDE_DIR)/package.mk
 define Build/Compile
 endef
 
-define KernelPackage/mt7615-ate
-  SUBMENU:=Wireless
-  CATEGORY:=Kernel modules
-  TITLE:=Wireless MediaTek MT7615 driver (ATE)
-  KCONFIG:=CONFIG_MT7615_AP CONFIG_FW_LOADER=y
-  DEPENDS:=@HAS_MT7615_RADIO +kmod-phr
-  DISABLE_RSTRIP:=y
-endef
-
-define KernelPackage/mt7615-ate/install
-	if [ -d ./files-mt7615-ate ]; then \
-		$(CP) ./files-mt7615-ate/* $(1); \
-	fi
-endef
-
-$(eval $(call KernelPackage,mt7615-ate))
-
 define KernelPackage/mt7615
   SUBMENU:=Wireless
   CATEGORY:=Kernel modules
@@ -49,3 +32,20 @@ define KernelPackage/mt7615/install
 endef
 
 $(eval $(call KernelPackage,mt7615))
+
+define KernelPackage/mt7615-ate
+  SUBMENU:=Wireless
+  CATEGORY:=Kernel modules
+  TITLE:=Wireless MediaTek MT7615 driver (ATE)
+  KCONFIG:=CONFIG_MT7615_AP CONFIG_FW_LOADER=y
+  DEPENDS:=@HAS_MT7615_RADIO +kmod-phr
+  DISABLE_RSTRIP:=y
+endef
+
+define KernelPackage/mt7615-ate/install
+	if [ -d ./files-mt7615-ate ]; then \
+		$(CP) ./files-mt7615-ate/* $(1); \
+	fi
+endef
+
+$(eval $(call KernelPackage,mt7615-ate))

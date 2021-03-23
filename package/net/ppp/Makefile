@@ -15,6 +15,21 @@ include $(INCLUDE_DIR)/package.mk
 define Build/Compile
 endef
 
+define Package/ppp-mod-radius
+  CATEGORY:=Network
+  TITLE:=RADIUS plugin
+  DEPENDS:=+libc +SSP_SUPPORT:libssp ppp
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ppp-mod-radius/install
+	if [ -d ./files-ppp-mod-radius ]; then \
+		$(CP) ./files-ppp-mod-radius/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ppp-mod-radius))
+
 define Package/ppp-mod-pppol2tp
   CATEGORY:=Network
   TITLE:=L2TP plugin
@@ -59,21 +74,6 @@ define Package/ppp-mod-pppoe/install
 endef
 
 $(eval $(call BuildPackage,ppp-mod-pppoe))
-
-define Package/ppp-mod-radius
-  CATEGORY:=Network
-  TITLE:=RADIUS plugin
-  DEPENDS:=+libc +SSP_SUPPORT:libssp ppp
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/ppp-mod-radius/install
-	if [ -d ./files-ppp-mod-radius ]; then \
-		$(CP) ./files-ppp-mod-radius/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,ppp-mod-radius))
 
 define Package/ppp-mod-pptp
   CATEGORY:=Network

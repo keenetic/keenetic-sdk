@@ -15,21 +15,6 @@ include $(INCLUDE_DIR)/package.mk
 define Build/Compile
 endef
 
-define Package/keenetic-dpn-pt
-  CATEGORY:=Base system
-  TITLE:=Keenetic DPN document files (PT)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp @!NO_DPN base-files
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/keenetic-dpn-pt/install
-	if [ -d ./files-keenetic-dpn-pt ]; then \
-		$(CP) ./files-keenetic-dpn-pt/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,keenetic-dpn-pt))
-
 define Package/keenetic-dpn-es
   CATEGORY:=Base system
   TITLE:=Keenetic DPN document files (ES)
@@ -44,66 +29,6 @@ define Package/keenetic-dpn-es/install
 endef
 
 $(eval $(call BuildPackage,keenetic-dpn-es))
-
-define Package/keenetic-dpn-sv
-  CATEGORY:=Base system
-  TITLE:=Keenetic DPN document files (SV)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp @!NO_DPN base-files
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/keenetic-dpn-sv/install
-	if [ -d ./files-keenetic-dpn-sv ]; then \
-		$(CP) ./files-keenetic-dpn-sv/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,keenetic-dpn-sv))
-
-define Package/keenetic-dpn-uk
-  CATEGORY:=Base system
-  TITLE:=Keenetic DPN document files (UK)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp @!NO_DPN base-files
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/keenetic-dpn-uk/install
-	if [ -d ./files-keenetic-dpn-uk ]; then \
-		$(CP) ./files-keenetic-dpn-uk/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,keenetic-dpn-uk))
-
-define Package/keenetic-dpn-tr
-  CATEGORY:=Base system
-  TITLE:=Keenetic DPN document files (TR)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp @!NO_DPN base-files
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/keenetic-dpn-tr/install
-	if [ -d ./files-keenetic-dpn-tr ]; then \
-		$(CP) ./files-keenetic-dpn-tr/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,keenetic-dpn-tr))
-
-define Package/keenetic-dpn-fr
-  CATEGORY:=Base system
-  TITLE:=Keenetic DPN document files (FR)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp @!NO_DPN base-files
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/keenetic-dpn-fr/install
-	if [ -d ./files-keenetic-dpn-fr ]; then \
-		$(CP) ./files-keenetic-dpn-fr/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,keenetic-dpn-fr))
 
 define Package/keenetic-dpn-en
   CATEGORY:=Base system
@@ -120,6 +45,21 @@ endef
 
 $(eval $(call BuildPackage,keenetic-dpn-en))
 
+define Package/keenetic-dpn-sv
+  CATEGORY:=Base system
+  TITLE:=Keenetic DPN document files (SV)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp @!NO_DPN base-files
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/keenetic-dpn-sv/install
+	if [ -d ./files-keenetic-dpn-sv ]; then \
+		$(CP) ./files-keenetic-dpn-sv/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,keenetic-dpn-sv))
+
 define Package/keenetic-dpn-de
   CATEGORY:=Base system
   TITLE:=Keenetic DPN document files (DE)
@@ -135,20 +75,35 @@ endef
 
 $(eval $(call BuildPackage,keenetic-dpn-de))
 
-define Package/keenetic-dpn-ru
+define Package/keenetic-dpn-pt
   CATEGORY:=Base system
-  TITLE:=Keenetic DPN document files (RU)
+  TITLE:=Keenetic DPN document files (PT)
   DEPENDS:=+libc +SSP_SUPPORT:libssp @!NO_DPN base-files
   DISABLE_RSTRIP:=y
 endef
 
-define Package/keenetic-dpn-ru/install
-	if [ -d ./files-keenetic-dpn-ru ]; then \
-		$(CP) ./files-keenetic-dpn-ru/* $(1); \
+define Package/keenetic-dpn-pt/install
+	if [ -d ./files-keenetic-dpn-pt ]; then \
+		$(CP) ./files-keenetic-dpn-pt/* $(1); \
 	fi
 endef
 
-$(eval $(call BuildPackage,keenetic-dpn-ru))
+$(eval $(call BuildPackage,keenetic-dpn-pt))
+
+define Package/keenetic-dpn-fr
+  CATEGORY:=Base system
+  TITLE:=Keenetic DPN document files (FR)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp @!NO_DPN base-files
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/keenetic-dpn-fr/install
+	if [ -d ./files-keenetic-dpn-fr ]; then \
+		$(CP) ./files-keenetic-dpn-fr/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,keenetic-dpn-fr))
 
 define Package/keenetic-dpn-pl
   CATEGORY:=Base system
@@ -179,3 +134,48 @@ define Package/keenetic-dpn-it/install
 endef
 
 $(eval $(call BuildPackage,keenetic-dpn-it))
+
+define Package/keenetic-dpn-ru
+  CATEGORY:=Base system
+  TITLE:=Keenetic DPN document files (RU)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp @!NO_DPN base-files
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/keenetic-dpn-ru/install
+	if [ -d ./files-keenetic-dpn-ru ]; then \
+		$(CP) ./files-keenetic-dpn-ru/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,keenetic-dpn-ru))
+
+define Package/keenetic-dpn-uk
+  CATEGORY:=Base system
+  TITLE:=Keenetic DPN document files (UK)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp @!NO_DPN base-files
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/keenetic-dpn-uk/install
+	if [ -d ./files-keenetic-dpn-uk ]; then \
+		$(CP) ./files-keenetic-dpn-uk/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,keenetic-dpn-uk))
+
+define Package/keenetic-dpn-tr
+  CATEGORY:=Base system
+  TITLE:=Keenetic DPN document files (TR)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp @!NO_DPN base-files
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/keenetic-dpn-tr/install
+	if [ -d ./files-keenetic-dpn-tr ]; then \
+		$(CP) ./files-keenetic-dpn-tr/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,keenetic-dpn-tr))

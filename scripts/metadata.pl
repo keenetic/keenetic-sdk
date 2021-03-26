@@ -884,7 +884,7 @@ EOF
 
 sub gen_package_makefile() {
 	parse_package_metadata($ARGV[0]) or exit 1;
-	foreach my $name (sort {uc($a) cmp uc{$b}} keys %package) {
+	foreach my $name (sort {uc($a) cmp uc($b)} keys %package) {
 		my $pkg = $package{$name};
 		if ($pkg->{name} && $pkg->{makefile}) {
 			print "$pkg->{name}: ";
@@ -938,7 +938,7 @@ sub gen_strip_description($) {
 
 sub gen_package_legalcsv() {
 	parse_package_metadata($ARGV[0]) or exit 1;
-	foreach my $name (sort {uc($a) cmp uc{$b}} keys %package) {
+	foreach my $name (sort {uc($a) cmp uc($b)} keys %package) {
 		my $pkg = $package{$name};
 		if ($pkg->{name} &&
 			$pkg->{license} &&

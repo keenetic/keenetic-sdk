@@ -15,51 +15,6 @@ include $(INCLUDE_DIR)/package.mk
 define Build/Compile
 endef
 
-define Package/nvox-fxs-prod-int
-  CATEGORY:=Multimedia
-  TITLE:=NDM telephony (FXS inward tests)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +libopenssl +libsupcxx +libusb +pjproject +USE_GLIBC:libc-locales
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/nvox-fxs-prod-int/install
-	if [ -d ./files-nvox-fxs-prod-int ]; then \
-		$(CP) ./files-nvox-fxs-prod-int/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,nvox-fxs-prod-int))
-
-define Package/nvox-fxs-prod-test
-  CATEGORY:=Multimedia
-  TITLE:=NDM telephony (FXS tester)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +libopenssl +libsupcxx +libusb +pjproject +USE_GLIBC:libc-locales
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/nvox-fxs-prod-test/install
-	if [ -d ./files-nvox-fxs-prod-test ]; then \
-		$(CP) ./files-nvox-fxs-prod-test/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,nvox-fxs-prod-test))
-
-define Package/nvox-fxs-prod-flash
-  CATEGORY:=Multimedia
-  TITLE:=NDM telephony (FXS flasher)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +libopenssl +libsupcxx +libusb +pjproject +USE_GLIBC:libc-locales
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/nvox-fxs-prod-flash/install
-	if [ -d ./files-nvox-fxs-prod-flash ]; then \
-		$(CP) ./files-nvox-fxs-prod-flash/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,nvox-fxs-prod-flash))
-
 define Package/nvox
   CATEGORY:=Multimedia
   TITLE:=NDM telephony
@@ -89,3 +44,48 @@ define Package/nvox/install
 endef
 
 $(eval $(call BuildPackage,nvox))
+
+define Package/nvox-fxs-prod-flash
+  CATEGORY:=Multimedia
+  TITLE:=NDM telephony (FXS flasher)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +libopenssl +libsupcxx +libusb +pjproject +USE_GLIBC:libc-locales
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/nvox-fxs-prod-flash/install
+	if [ -d ./files-nvox-fxs-prod-flash ]; then \
+		$(CP) ./files-nvox-fxs-prod-flash/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,nvox-fxs-prod-flash))
+
+define Package/nvox-fxs-prod-int
+  CATEGORY:=Multimedia
+  TITLE:=NDM telephony (FXS inward tests)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +libopenssl +libsupcxx +libusb +pjproject +USE_GLIBC:libc-locales
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/nvox-fxs-prod-int/install
+	if [ -d ./files-nvox-fxs-prod-int ]; then \
+		$(CP) ./files-nvox-fxs-prod-int/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,nvox-fxs-prod-int))
+
+define Package/nvox-fxs-prod-test
+  CATEGORY:=Multimedia
+  TITLE:=NDM telephony (FXS tester)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +libopenssl +libsupcxx +libusb +pjproject +USE_GLIBC:libc-locales
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/nvox-fxs-prod-test/install
+	if [ -d ./files-nvox-fxs-prod-test ]; then \
+		$(CP) ./files-nvox-fxs-prod-test/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,nvox-fxs-prod-test))

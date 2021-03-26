@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=minidlna
-PKG_VERSION:=1.3.0-2
+PKG_VERSION:=1.3.0-3
 PKG_LICENSE:=GPL-2.0
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)

@@ -15,21 +15,6 @@ include $(INCLUDE_DIR)/package.mk
 define Build/Compile
 endef
 
-define Package/iperf3-ssl
-  CATEGORY:=Network
-  TITLE:=Internet Protocol bandwidth measuring tool with iperf_auth support
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +libopenssl
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/iperf3-ssl/install
-	if [ -d ./files-iperf3-ssl ]; then \
-		$(CP) ./files-iperf3-ssl/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,iperf3-ssl))
-
 define Package/iperf3
   CATEGORY:=Network
   TITLE:=Internet Protocol bandwidth measuring tool
@@ -44,3 +29,18 @@ define Package/iperf3/install
 endef
 
 $(eval $(call BuildPackage,iperf3))
+
+define Package/iperf3-ssl
+  CATEGORY:=Network
+  TITLE:=Internet Protocol bandwidth measuring tool with iperf_auth support
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +libopenssl
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/iperf3-ssl/install
+	if [ -d ./files-iperf3-ssl ]; then \
+		$(CP) ./files-iperf3-ssl/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,iperf3-ssl))

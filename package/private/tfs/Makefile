@@ -16,22 +16,6 @@ include $(INCLUDE_DIR)/package.mk
 define Build/Compile
 endef
 
-define Package/tntfs-utils
-  SUBMENU:=Filesystem
-  CATEGORY:=Utilities
-  TITLE:=Tuxera NTFS driver utilities
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +kmod-tntfs
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/tntfs-utils/install
-	if [ -d ./files-tntfs-utils ]; then \
-		$(CP) ./files-tntfs-utils/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,tntfs-utils))
-
 define KernelPackage/tfat
   SUBMENU:=Filesystems
   CATEGORY:=Kernel modules
@@ -47,6 +31,22 @@ define KernelPackage/tfat/install
 endef
 
 $(eval $(call KernelPackage,tfat))
+
+define KernelPackage/thfsplus
+  SUBMENU:=Filesystems
+  CATEGORY:=Kernel modules
+  TITLE:=Tuxera HFS+ driver
+  DEPENDS:=+kmod-nls-base
+  DISABLE_RSTRIP:=y
+endef
+
+define KernelPackage/thfsplus/install
+	if [ -d ./files-thfsplus ]; then \
+		$(CP) ./files-thfsplus/* $(1); \
+	fi
+endef
+
+$(eval $(call KernelPackage,thfsplus))
 
 define KernelPackage/tntfs
   SUBMENU:=Filesystems
@@ -64,18 +64,18 @@ endef
 
 $(eval $(call KernelPackage,tntfs))
 
-define KernelPackage/thfsplus
-  SUBMENU:=Filesystems
-  CATEGORY:=Kernel modules
-  TITLE:=Tuxera HFS+ driver
-  DEPENDS:=+kmod-nls-base
+define Package/tntfs-utils
+  SUBMENU:=Filesystem
+  CATEGORY:=Utilities
+  TITLE:=Tuxera NTFS driver utilities
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +kmod-tntfs
   DISABLE_RSTRIP:=y
 endef
 
-define KernelPackage/thfsplus/install
-	if [ -d ./files-thfsplus ]; then \
-		$(CP) ./files-thfsplus/* $(1); \
+define Package/tntfs-utils/install
+	if [ -d ./files-tntfs-utils ]; then \
+		$(CP) ./files-tntfs-utils/* $(1); \
 	fi
 endef
 
-$(eval $(call KernelPackage,thfsplus))
+$(eval $(call BuildPackage,tntfs-utils))

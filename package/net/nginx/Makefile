@@ -15,21 +15,6 @@ include $(INCLUDE_DIR)/package.mk
 define Build/Compile
 endef
 
-define Package/nginx-stream-module
-  CATEGORY:=Network
-  TITLE:=Nginx stream module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +nginx
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/nginx-stream-module/install
-	if [ -d ./files-nginx-stream-module ]; then \
-		$(CP) ./files-nginx-stream-module/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,nginx-stream-module))
-
 define Package/nginx
   CATEGORY:=Network
   TITLE:=Nginx web server
@@ -48,3 +33,18 @@ define Package/nginx/install
 endef
 
 $(eval $(call BuildPackage,nginx))
+
+define Package/nginx-stream-module
+  CATEGORY:=Network
+  TITLE:=Nginx stream module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +nginx
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/nginx-stream-module/install
+	if [ -d ./files-nginx-stream-module ]; then \
+		$(CP) ./files-nginx-stream-module/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,nginx-stream-module))

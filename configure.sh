@@ -8,6 +8,7 @@
 
 PRESET=
 PRESETS_CFG=package/private/ndm/presets.config
+REMOVE_MODULES=false
 
 # $1 - config
 # $2 - option
@@ -118,12 +119,7 @@ preset_apply () {
 	fi
 
 	cp $cfg .config_backup
-
-	t=$(egrep '^CONFIG_PACKAGE_ndm-mod-.*=y' $cfg | cut -d = -f 1)
-	for i in $t; do
-		sed -i "s/\($i=\)y/\1m/" $cfg
-	done
-
+	sed -i 's/^\(CONFIG_PACKAGE_ndm-mod-.*=\)y$/\1m/' $cfg
 	rm -f tmp/presets.config
 
 	make $cfg 2>&1 | tee .pipe
@@ -164,9 +160,13 @@ preset_apply () {
 		fi
 
 		echo -e "\t$i"
-		sed -i "s/\($t=\)m/\1y/" $cfg
+		sed -i "s/^\($t=\)m$/\1y/" $cfg
 	done
 	echo
+
+	if [ "$REMOVE_MODULES" = true ]; then
+		sed -i 's/^\(CONFIG_PACKAGE_ndm-mod-.*\)=m$/# \1 is not set/' $cfg
+	fi
 
 	rm .config_backup
 	cfg_cleanup $cfg false >/dev/null
@@ -323,6 +323,7 @@ usage () {
 	echo -e "\t-i - display information about current config"
 	echo -e "\t-l - list all devices"
 	echo -e "\t-p <preset>" - apply given preset
+	echo -e "\t-r - remove components selected as modules (only with -p)"
 	echo -e "\t-s - save current config"
 	echo
 	echo "Available presets:"
@@ -332,7 +333,7 @@ usage () {
 }
 
 ACTION=
-while getopts cdhilp:s opt; do
+while getopts cdhilp:rs opt; do
 	case $opt in
 		h)
 			usage
@@ -355,6 +356,9 @@ while getopts cdhilp:s opt; do
 			;;
 		p)
 			PRESET=$OPTARG
+			;;
+		r)
+			REMOVE_MODULES=true
 			;;
 
 	esac

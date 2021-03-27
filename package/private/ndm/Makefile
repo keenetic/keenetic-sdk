@@ -710,7 +710,7 @@ define Package/ndm-mod-lang-all
   SUBMENU:=Languages
   CATEGORY:=NDM
   TITLE:=All
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-de +ndm-mod-lang-en +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-es +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-fr +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-it +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-pl +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-pt +ndm-mod-lang-ru +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-sv +!OLD_MODEL_1:ndm-mod-lang-tr +ndm-mod-lang-uk
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +!(BUDDY_FACTORY||OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-de +ndm-mod-lang-en +!(BUDDY_FACTORY||OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-es +!(BUDDY_FACTORY||OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-fr +!(BUDDY_FACTORY||OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-it +!(BUDDY_FACTORY||OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-pl +!(BUDDY_FACTORY||OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-pt +ndm-mod-lang-ru +!(BUDDY_FACTORY||OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-sv +!OLD_MODEL_1:ndm-mod-lang-tr +ndm-mod-lang-uk
   DISABLE_RSTRIP:=y
 endef
 
@@ -726,7 +726,7 @@ define Package/ndm-mod-lang-de
   SUBMENU:=Languages
   CATEGORY:=NDM
   TITLE:=German
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +angular-ndw-de-locale +keenetic-eula-de +!NO_DPN:keenetic-dpn-de @!(OLD_MODEL_1||OLD_MODEL_2)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +angular-ndw-de-locale +keenetic-eula-de +!NO_DPN:keenetic-dpn-de @!(BUDDY_FACTORY||OLD_MODEL_1||OLD_MODEL_2)
   DISABLE_RSTRIP:=y
 endef
 
@@ -758,7 +758,7 @@ define Package/ndm-mod-lang-es
   SUBMENU:=Languages
   CATEGORY:=NDM
   TITLE:=Spanish
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +angular-ndw-es-locale +keenetic-eula-es +!NO_DPN:keenetic-dpn-es @!(OLD_MODEL_1||OLD_MODEL_2)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +angular-ndw-es-locale +keenetic-eula-es +!NO_DPN:keenetic-dpn-es @!(BUDDY_FACTORY||OLD_MODEL_1||OLD_MODEL_2)
   DISABLE_RSTRIP:=y
 endef
 
@@ -774,7 +774,7 @@ define Package/ndm-mod-lang-fr
   SUBMENU:=Languages
   CATEGORY:=NDM
   TITLE:=French
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +angular-ndw-fr-locale +keenetic-eula-fr +!NO_DPN:keenetic-dpn-fr @!(OLD_MODEL_1||OLD_MODEL_2)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +angular-ndw-fr-locale +keenetic-eula-fr +!NO_DPN:keenetic-dpn-fr @!(BUDDY_FACTORY||OLD_MODEL_1||OLD_MODEL_2)
   DISABLE_RSTRIP:=y
 endef
 
@@ -790,7 +790,7 @@ define Package/ndm-mod-lang-it
   SUBMENU:=Languages
   CATEGORY:=NDM
   TITLE:=Italian
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +angular-ndw-it-locale +keenetic-eula-it +!NO_DPN:keenetic-dpn-it @!(OLD_MODEL_1||OLD_MODEL_2)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +angular-ndw-it-locale +keenetic-eula-it +!NO_DPN:keenetic-dpn-it @!(BUDDY_FACTORY||OLD_MODEL_1||OLD_MODEL_2)
   DISABLE_RSTRIP:=y
 endef
 
@@ -806,7 +806,7 @@ define Package/ndm-mod-lang-pl
   SUBMENU:=Languages
   CATEGORY:=NDM
   TITLE:=Polish
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +angular-ndw-pl-locale +keenetic-eula-pl +!NO_DPN:keenetic-dpn-pl @!(OLD_MODEL_1||OLD_MODEL_2)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +angular-ndw-pl-locale +keenetic-eula-pl +!NO_DPN:keenetic-dpn-pl @!(BUDDY_FACTORY||OLD_MODEL_1||OLD_MODEL_2)
   DISABLE_RSTRIP:=y
 endef
 
@@ -822,7 +822,7 @@ define Package/ndm-mod-lang-pt
   SUBMENU:=Languages
   CATEGORY:=NDM
   TITLE:=Portuguese
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +angular-ndw-pt-locale +keenetic-eula-pt +!NO_DPN:keenetic-dpn-pt @!(OLD_MODEL_1||OLD_MODEL_2)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +angular-ndw-pt-locale +keenetic-eula-pt +!NO_DPN:keenetic-dpn-pt @!(BUDDY_FACTORY||OLD_MODEL_1||OLD_MODEL_2)
   DISABLE_RSTRIP:=y
 endef
 
@@ -854,7 +854,7 @@ define Package/ndm-mod-lang-sv
   SUBMENU:=Languages
   CATEGORY:=NDM
   TITLE:=Swedish
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +angular-ndw-sv-locale +keenetic-eula-sv +!NO_DPN:keenetic-dpn-sv @!(OLD_MODEL_1||OLD_MODEL_2)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +angular-ndw-sv-locale +keenetic-eula-sv +!NO_DPN:keenetic-dpn-sv @!(BUDDY_FACTORY||OLD_MODEL_1||OLD_MODEL_2)
   DISABLE_RSTRIP:=y
 endef
 

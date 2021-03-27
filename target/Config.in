@@ -123,6 +123,9 @@ config HAS_WHNAT
 config ARCH_64BIT
 	bool
 
+config BUDDY_FACTORY
+	bool
+
 config IS_EXTENDER
 	bool
 

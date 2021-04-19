@@ -20,7 +20,7 @@ define KernelPackage/fastvpn
   SUBMENU:=Other modules
   CATEGORY:=Kernel modules
   TITLE:=Kernel module for FastVPN
-  DEPENDS:=+kmod-fast-nat +kmod-bridge +kmod-ubridge
+  DEPENDS:=+kmod-bridge +kmod-ubridge
   DISABLE_RSTRIP:=y
 endef
 

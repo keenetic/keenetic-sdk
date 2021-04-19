@@ -6,6 +6,9 @@
 # See /LICENSE for more information.
 #
 
+TLV_BLOCK_SIZE=131072
+TLV_FILE=.tlv
+
 message () {
         local yellow='\e[1;33m'
         local reset='\e[0m'
@@ -13,21 +16,26 @@ message () {
         echo -e "${yellow}$@${reset}"
 }
 
-profile () {
+squashfs_offset () {
+	echo $(grep --byte-offset --max-count=1 --only-matching \
+		--text "hsqs" $1 | cut -d : -f 1)
+}
+
+tlv_offset () {
+	echo $(grep --byte-offset --max-count=1 --only-matching \
+		--text "TLV.NDM" $1 | cut -d : -f 1)
+}
+
+tlv_profile () {
 	local o=$(grep --byte-offset --max-count=1 --only-matching --binary \
 		--text --perl-regexp "\x00\x00\x00\x01\x00\x00\x00" $1 | cut -d : -f 1)
 	[ -n "$o" ] && echo $(tail -c +$((o+8+1)) $1 | strings | head -1)
 }
 
-components () {
+tlv_components () {
 	local o=$(grep --byte-offset --max-count=1 --only-matching --binary \
 		--text --perl-regexp "\x00\x00\x00\x12\x00" $1 | cut -d : -f 1)
 	[ -n "$o" ] && echo $(tail -c +$((o+8+1)) $1 | strings | head -1)
-}
-
-squashfs_offset () {
-	echo $(grep --byte-offset --max-count=1 --only-matching \
-		--text "hsqs" $1 | cut -d : -f 1)
 }
 
 package_dir () {
@@ -70,17 +78,33 @@ if [ $# -ne 1 ]; then
 fi
 
 FIRMWARE=$1
-PROFILE=$(profile $FIRMWARE)
-if [ -z "$PROFILE" ]; then
-	echo "Unable to detect device."
+
+TLV_OFFSET=$(tlv_offset $FIRMWARE)
+if [ -z "$TLV_OFFSET" ]; then
+	echo "Unable to find TLV table offset."
 	exit 1
 fi
 
-COMPONENTS=$(components $FIRMWARE)
-if [ -z "$COMPONENTS" ]; then
-	echo "Unable to detect components."
+if ! dd if=$FIRMWARE of=$TLV_FILE bs=1 count=$TLV_BLOCK_SIZE skip=$TLV_OFFSET status=none; then
+	echo "Unable to copy TLV table."
 	exit 1
 fi
+
+PROFILE=$(tlv_profile $TLV_FILE)
+if [ -z "$PROFILE" ]; then
+	echo "Unable to detect device."
+	rm $TLV_FILE
+	exit 1
+fi
+
+COMPONENTS=$(tlv_components $TLV_FILE)
+if [ -z "$COMPONENTS" ]; then
+	echo "Unable to detect components."
+	rm $TLV_FILE
+	exit 1
+fi
+
+rm $TLV_FILE
 
 message "[Information]"
 echo -e "file:\t\t$FIRMWARE"

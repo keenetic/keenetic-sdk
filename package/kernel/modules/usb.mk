@@ -159,8 +159,10 @@ define KernelPackage/usb3/config
 		bool
 		default y if TARGET_en7512_KN_2010
 		default y if TARGET_en7512_KN_2011
+		default y if TARGET_en7512_KN_2012
 		default y if TARGET_en7512_KN_2110
 		default y if TARGET_en7512_KN_2111
+		default y if TARGET_en7516_KN_2112
 		default y if TARGET_mt7621_KN_1910
 		default y if TARGET_mt7621_KN_2310
 		default n

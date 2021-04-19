@@ -8,13 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gdb
-PKG_VERSION:=8.2.1
+PKG_VERSION:=8.3.1
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNU/gdb
-PKG_MD5SUM:=6a11cc642b626541777d9e5f96ae406f
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_HASH:=1e55b4d7cdca7b34be12f4ceae651623aa73b2fd640152313f9f66a7149757c4
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -55,6 +54,8 @@ CONFIGURE_ARGS  += --disable-gdbtk \
                    --disable-sim \
                    --disable-tui \
                    --disable-werror \
+                   --disable-source-highlight \
+                   --enable-gdbserver \
                    --without-develop \
                    --without-expat \
                    --without-included-gettext \
@@ -68,7 +69,7 @@ OLD_OPTS        := -O0 -O1 -O2 -O3 -Os $(TARGET_LTO_FLAGS)
 NEW_OPTS        := -Os -ffunction-sections -fdata-sections
 TARGET_CFLAGS   := $(filter-out $(OLD_OPTS),$(TARGET_CFLAGS)) $(NEW_OPTS)
 TARGET_CXXFLAGS := $(filter-out $(OLD_OPTS),$(TARGET_CXXFLAGS)) $(NEW_OPTS)
-TARGET_LDFLAGS  := $(filter-out $(OLD_OPTS),$(TARGET_LDFLAGS)) -Os -Wl,--gc-sections
+TARGET_LDFLAGS  := $(filter-out $(OLD_OPTS),$(TARGET_LDFLAGS)) -Os -static-libstdc++ -Wl,--gc-sections
 
 # disable -fhonour-copts checking
 export GCC_HONOUR_COPTS=s
@@ -88,6 +89,7 @@ define Package/gdb/install
 	$(INSTALL_DIR) $(1)$(dir $(GDBINIT))
 	echo "set auto-load safe-path /"           > $(1)$(GDBINIT)
 	echo "set auto-solib-add off"             >> $(1)$(GDBINIT)
+	echo "handle SIGILL nostop noprint pass"  >> $(1)$(GDBINIT)
 	echo "handle SIGPIPE nostop noprint pass" >> $(1)$(GDBINIT)
 endef
 

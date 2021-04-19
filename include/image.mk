@@ -529,64 +529,72 @@ endef
 
 NDMFW_DESCRIPTION = "$(call qstrip,$(CONFIG_TARGET_ARCH_PACKAGES)) $(NDM_FIRMWARE_VERSION)"
 
-ifneq ($(CONFIG_TARGET_SIGN_FIRMWARE),)
+ifneq ($(wildcard $(STAGING_DIR_HOST)/bin/ndmfw),)
 
   NDMFW_COMPONENTS = $(subst $(space),$(comma),$(sort $(NDM_PACKAGES)))
 
   define Build/ndmfw-dump
-	ndmfw dump \
-		-B $(call size_expand,$(1)) \
-		-D $(TARGET_CA_CERTS_SIGN_DIR) \
-		$@
+	$(if $(CONFIG_TARGET_SIGN_FIRMWARE), \
+		ndmfw dump \
+			-B $(call size_expand,$(1)) \
+			-D $(TARGET_CA_CERTS_SIGN_DIR) \
+			$@ \
+	)
   endef
 
   define Build/ndmfw-mark
 	ksize="$$(stat -c%s $(word 1,$^))"; \
 	ndmfw mark \
-		-O $$ksize \
-		-B $(call size_expand,$(1)) \
-		-D $(TARGET_CA_CERTS_SIGN_DIR) \
-		-N $(CONFIG_TARGET_SIGN_TYPE) \
-		-T "        firmware_id: $(call qstrip,$(CONFIG_TARGET_DEVICE_ID))" \
-		-T "        hardware_id: $(call qstrip,$(CONFIG_TARGET_ARCH_PACKAGES))" \
-		-T "           customer: $(call qstrip,$(CONFIG_TARGET_CUSTOMER))" \
-		-T "device_manufacturer: $(call qstrip,$(CONFIG_TARGET_DEVICE_MANUFACTURER))" \
-		-T "       model_series: $(call qstrip,$(CONFIG_TARGET_MODEL_SERIES))" \
-		-T "             vendor: $(call qstrip,$(CONFIG_TARGET_VENDOR))" \
-		-T "       vendor_email: $(call qstrip,$(CONFIG_TARGET_VENDOR_EMAIL))" \
-		-T "       vendor_short: $(call qstrip,$(CONFIG_TARGET_VENDOR_SHORT))" \
-		-T "         vendor_url: $(call qstrip,$(CONFIG_TARGET_VENDOR_URL))" \
-		-T "            version: $(call qstrip,$(NDM_FIRMWARE_VERSION))" \
-		-T "         components: $(call qstrip,$(NDMFW_COMPONENTS))" \
+		$(if $(CONFIG_TARGET_SIGN_FIRMWARE), \
+			-O $$ksize \
+			-B $(call size_expand,$(1)) \
+			-D $(TARGET_CA_CERTS_SIGN_DIR) \
+			-N $(CONFIG_TARGET_SIGN_TYPE) \
+			-T "        firmware_id: $(call qstrip,$(CONFIG_TARGET_DEVICE_ID))" \
+			-T "        hardware_id: $(call qstrip,$(CONFIG_TARGET_ARCH_PACKAGES))" \
+			-T "           customer: $(call qstrip,$(CONFIG_TARGET_CUSTOMER))" \
+			-T "device_manufacturer: $(call qstrip,$(CONFIG_TARGET_DEVICE_MANUFACTURER))" \
+			-T "       model_series: $(call qstrip,$(CONFIG_TARGET_MODEL_SERIES))" \
+			-T "             vendor: $(call qstrip,$(CONFIG_TARGET_VENDOR))" \
+			-T "       vendor_email: $(call qstrip,$(CONFIG_TARGET_VENDOR_EMAIL))" \
+			-T "       vendor_short: $(call qstrip,$(CONFIG_TARGET_VENDOR_SHORT))" \
+			-T "         vendor_url: $(call qstrip,$(CONFIG_TARGET_VENDOR_URL))" \
+			-T "            version: $(call qstrip,$(NDM_FIRMWARE_VERSION))" \
+			-T "         components: $(call qstrip,$(NDMFW_COMPONENTS))" \
+		) \
 		-v $(NDMFW_DESCRIPTION) \
 		-f $(CONFIG_TARGET_DEVICE_ID) \
 		$@
   endef
 
   define Build/ndmfw-pad
-	dd if=/dev/zero bs=$(call size_expand,$(1)) count=1 | tr '\000' '\377' >> $@
+	$(if $(CONFIG_TARGET_SIGN_FIRMWARE), \
+		dd if=/dev/zero bs=$(call size_expand,$(1)) count=1 | tr '\000' '\377' >> $@ \
+	)
   endef
 
   define Build/ndmfw-sign
-	if [ -f "$(BUILDER_KEY)" ] && [ -f "$(BUILDER_CRT)" ]; then \
-		ndmfw sign \
-			-B $(call size_expand,$(1)) \
-			-K "$(BUILDER_KEY)" \
-			-C "$(BUILDER_CRT)" \
-			$@; \
-	fi
+	$(if $(CONFIG_TARGET_SIGN_FIRMWARE), \
+		if [ -f "$(BUILDER_KEY)" ] && [ -f "$(BUILDER_CRT)" ]; then \
+			ndmfw sign \
+				-B $(call size_expand,$(1)) \
+				-K "$(BUILDER_KEY)" \
+				-C "$(BUILDER_CRT)" \
+				$@; \
+		fi \
+	)
   endef
 
-else # CONFIG_TARGET_SIGN_FIRMWARE
+else # ($(wildcard $(STAGING_DIR_HOST)/bin/ndmfw),)
 
   define Build/ndmfw-dump
 	@true
   endef
 
   define Build/ndmfw-mark
-	ndmfw mark \
+	zyimage \
+		-d $(CONFIG_TARGET_DEVICE_ID) \
 		-v $(NDMFW_DESCRIPTION) \
-		-f $(CONFIG_TARGET_DEVICE_ID) \
 		$@
   endef
 
@@ -598,7 +606,7 @@ else # CONFIG_TARGET_SIGN_FIRMWARE
 	@true
   endef
 
-endif # CONFIG_TARGET_SIGN_FIRMWARE
+endif # ($(wildcard $(STAGING_DIR_HOST)/bin/ndmfw),)
 
 
 define Device/Init

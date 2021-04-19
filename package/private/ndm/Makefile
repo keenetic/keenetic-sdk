@@ -18,7 +18,7 @@ endef
 define Package/ndm
   CATEGORY:=NDM
   TITLE:=Network device manager
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +libsupcxx +tzdata +wmond +libopenssl +ping +arping +traceroute +reboot +nlldp +nginx +telnetd +init +fwupdate +ndnproxy +libndmacl_stub +libndm +zlib +kmod-ipt-core +kmod-ipt-filter +kmod-ipt-conntrack +kmod-ipt-nat +kmod-ipt-nat6 +kmod-phr +kmod-tun +kmod-nacct +kmod-zram +kmod-ipt-ndm-extra +kmod-nf-nat-cone +nsh +kmod-mtdoops_proc +kmod-nf-conntrack-netlink +kmod-sched-base +kmod-sch_cake +kmod-ipt-ipset-base +NDM_BACKTRACE:libunwind +NDM_ASAN_DEBUG:busybox +NDM_ASAN_DEBUG:libasan +NDM_ASAN_DEBUG:libssp +NDM_UBSAN_DEBUG:busybox +NDM_UBSAN_DEBUG:libubsan +angular-ndw +HAS_BTMTK:uart_launcher
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +libsupcxx +tzdata +wmond +libopenssl +ping +arping +traceroute +reboot +nlldp +nginx +telnetd +init +fwupdate +ndnproxy +libndmacl_stub +libndm +zlib +kmod-ipt-core +kmod-ipt-filter +kmod-ipt-conntrack +kmod-ip6tables +kmod-ipt-ipopt +kmod-ipt-nat +kmod-ipt-nat6 +kmod-phr +kmod-tun +kmod-nacct +kmod-zram +kmod-ipt-ndm-extra +kmod-nf-nat-cone +!IS_EXTENDER:kmod-fast-nat +nsh +kmod-mtdoops_proc +kmod-nf-conntrack-netlink +kmod-sched-base +kmod-sch_cake +kmod-ipt-ipset-base +NDM_BACKTRACE:libunwind +NDM_ASAN_DEBUG:busybox +NDM_ASAN_DEBUG:libasan +NDM_ASAN_DEBUG:libssp +NDM_UBSAN_DEBUG:busybox +NDM_UBSAN_DEBUG:libubsan +angular-ndw +HAS_BTMTK:uart_launcher
   DISABLE_RSTRIP:=y
 endef
 
@@ -502,7 +502,7 @@ define Package/ndm-mod-factory
   SUBMENU:=Factory
   CATEGORY:=NDM
   TITLE:=NDM Factory module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +phr_ctl +ated +HAS_BTMTK:bluedroid +HAS_MT7603_RADIO:kmod-mt7603-ate +HAS_MT7610_RADIO:kmod-mt7610-ate +HAS_MT7613_RADIO:kmod-mt7613-ate +HAS_MT7615_RADIO:kmod-mt7615-ate +HAS_MT7628_RADIO:kmod-mt7628-ate +HAS_MT76X2_RADIO:kmod-mt76x2-ate +HAS_MT7915_RADIO:kmod-mt7915-ate +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):ndm-mod-usbqmi +(TARGET_en7516):ndm-mod-dsl
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +phr_ctl +ated +HAS_BTMTK:bluedroid +HAS_MT7603_RADIO:kmod-mt7603-ate +HAS_MT7610_RADIO:kmod-mt7610-ate +HAS_MT7613_RADIO:kmod-mt7613-ate +HAS_MT7615_RADIO:kmod-mt7615-ate +HAS_MT7628_RADIO:kmod-mt7628-ate +HAS_MT76X2_RADIO:kmod-mt76x2-ate +HAS_MT7915_RADIO:kmod-mt7915-ate +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):ndm-mod-usbqmi +(TARGET_en7516||TARGET_en7512_KN_2012):ndm-mod-dsl
   DISABLE_RSTRIP:=y
 endef
 
@@ -582,7 +582,7 @@ define Package/ndm-mod-igmp
   SUBMENU:=Base system
   CATEGORY:=NDM
   TITLE:=NDM IGMP module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +nimproxy +kmod-igmpsn +kmod-ipt-ipopt
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +nimproxy +kmod-igmpsn
   DISABLE_RSTRIP:=y
 endef
 
@@ -630,7 +630,7 @@ define Package/ndm-mod-ip6
   SUBMENU:=Networking
   CATEGORY:=NDM
   TITLE:=NDM IPv6 support module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +radvd +dhcpv6 +rdisc6d +kmod-ipv6 +kmod-sit +kmod-ip6tables +kmod-ipv6_pt
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +radvd +dhcpv6 +rdisc6d +kmod-ipv6 +kmod-sit +kmod-ipv6_pt
   DISABLE_RSTRIP:=y
 endef
 
@@ -1286,7 +1286,7 @@ define Package/ndm-mod-opkg-kmod-netfilter
   SUBMENU:=Opkg
   CATEGORY:=NDM
   TITLE:=NDM Opkg kernel netfilter modules
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +ndm-mod-opkg +ndm-mod-ip6 +kmod-arptables +kmod-ebtables +kmod-ebtables-ipv4 +kmod-ebtables-ipv6 +kmod-ip6tables +kmod-ip6tables-extra +kmod-ipt-nat6 +kmod-nf-nat6 +kmod-nf-nat6-extra +kmod-ipt-conntrack +kmod-ipt-conntrack-extra +kmod-ipt-extra +kmod-ipt-filter +kmod-ipt-hashlimit +kmod-ipt-ipopt +kmod-ipt-ipopt-extended +kmod-ipt-iprange +kmod-ipt-ipsec +kmod-ipt-nat +kmod-ipt-nat-extra +kmod-ipt-tee +kmod-ipt-tproxy +kmod-ipt-u32 +kmod-ipt-nflog +kmod-nf-conntrack-netlink +kmod-nfnetlink-queue +kmod-nfnetlink-log +kmod-ipt-ipset +kmod-lib-textsearch +kmod-xfrm-interface +kmod-ip-vti +kmod-ip6-vti
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +ndm-mod-opkg +ndm-mod-ip6 +kmod-arptables +kmod-ebtables +kmod-ebtables-ipv4 +kmod-ebtables-ipv6 +kmod-ip6tables-extra +kmod-ipt-nat6 +kmod-nf-nat6 +kmod-nf-nat6-extra +kmod-ipt-conntrack +kmod-ipt-conntrack-extra +kmod-ipt-extra +kmod-ipt-filter +kmod-ipt-hashlimit +kmod-ipt-ipopt-extended +kmod-ipt-iprange +kmod-ipt-ipsec +kmod-ipt-nat +kmod-ipt-nat-extra +kmod-ipt-tee +kmod-ipt-tproxy +kmod-ipt-u32 +kmod-ipt-nflog +kmod-nf-conntrack-netlink +kmod-nfnetlink-queue +kmod-nfnetlink-log +kmod-ipt-ipset +kmod-lib-textsearch +kmod-xfrm-interface +kmod-ip-vti +kmod-ip6-vti
   DISABLE_RSTRIP:=y
 endef
 

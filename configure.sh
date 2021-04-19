@@ -50,6 +50,11 @@ config_subtarget_dir_get () {
 }
 
 # $1 - config
+config_components_get () {
+	echo $(sed -ne 's|^CONFIG_PACKAGE_ndm-mod-\(.*\)=y$|\1|p' $1 | sort)
+}
+
+# $1 - config
 # $2 - do backup
 BACKUP_SUFFIX="~"
 cfg_cleanup() {
@@ -134,7 +139,7 @@ preset_apply () {
 
 	if [ $preset = "manual" ]; then
 		echo "Paste comma-separated list from \"show version\" and press Ctrl+D."
-		t=$(cat | tr -d '\n ' | tr ',' '\n')
+		t=$(cat | tr -d '\n\t ' | tr ',' '\n')
 		t+=$'\ncomponents' # hidden and always needed
 	else
 		t=$(grep '^CONFIG' tmp/presets.config)
@@ -143,7 +148,7 @@ preset_apply () {
 	fi
 
 	t+=$'\nndss-override' # NDMS-893
-	components=$(echo "$t" | sort)
+	components=$(echo "$t" | sort | uniq)
 
 	echo "Preset \"$preset\":"
 	for i in $components; do
@@ -173,16 +178,16 @@ preset_apply () {
 }
 
 list_configs () {
-	targets=$(find target/linux/ -maxdepth 1 -type d ! -name generic ! -name linux|awk -F/ '{print $3}' | sort)
+	targets=$(find target/linux/ -maxdepth 1 -type d ! -name generic ! -name linux | cut -d / -f 3 | sort)
 
 	for t in $targets; do
-		devices=$(find target/linux/$t -maxdepth 1 -type d ! -name image | awk -F/ '{print $4}' | sort)
+		devices=$(find target/linux/$t -maxdepth 1 -type d ! -name image | cut -d / -f 4 | sort)
 
 		echo $t:
 
 		for d in $devices; do
 			if [ -f target/linux/$t/$d/ndwrt.config ]; then
-				DESCRIPTION=$(grep DESCRIPTION target/linux/$t/$d/target.mk |awk -F= '{print $2}')
+				DESCRIPTION=$(grep DESCRIPTION target/linux/$t/$d/target.mk | cut -d = -f 2)
 
 				if [ $d == "generic" ]; then
 					printf "\t%-10s\t%-25s\r\n" "${t}" "${DESCRIPTION}"
@@ -195,10 +200,10 @@ list_configs () {
 					! -name profiles \
 					! -name 'base-files*' \
 					! -name 'corewireless-files' | \
-					awk -F/ '{print $5}')
+					cut -d / -f 5)
 				if [ -n "$profiles" ]; then
 					for p in $profiles; do
-						profile_name=$(grep NAME target/linux/$t/$d/profiles/${p}.mk | awk -F= '{print $2}')
+						profile_name=$(grep NAME target/linux/$t/$d/profiles/${p}.mk | cut -d = -f 2)
 						printf "\t%-10s\t%-25s\t%s\r\n" "${d}_${p}" "${DESCRIPTION}" "${profile_name}"
 					done
 				fi
@@ -238,6 +243,7 @@ cfg_copy () {
 # $1 - config
 cfg_info () {
 	local cfg=$1
+	local first
 	local name
 	local subtarget
 	local target
@@ -267,6 +273,17 @@ cfg_info () {
 	echo -e "Subtarget:\t$subtarget"
 	[ $profile != Default ] && echo -e "Profile:\t$profile"
 	echo "=================================================="
+	echo -ne "Components:"
+	first=true
+	for i in $(config_components_get $cfg); do
+		if [ "$first" = true ]; then
+			echo -ne "\t$i"
+			first=false
+		else
+			echo -ne ",\n\t\t$i"
+		fi
+	done
+	echo
 	echo -e "Path:\t\t$path"
 	echo "=================================================="
 
@@ -410,9 +427,9 @@ if [ -f ${board_path}/ndwrt.config ]; then
 	exit $?
 fi
 
-targets=$(find target/linux/ -maxdepth 1 -type d ! -name generic ! -name linux|awk -F/ '{print $3}')
+targets=$(find target/linux/ -maxdepth 1 -type d ! -name generic ! -name linux | cut -d / -f 3)
 for t in $targets; do
-	devices=$(find target/linux/$t -maxdepth 1 -type d ! -name image | awk -F/ '{print $4}')
+	devices=$(find target/linux/$t -maxdepth 1 -type d ! -name image | cut -d / -f 4)
 
 	for d in $devices; do
 		if [ "${t}" == "$1" ]; then
@@ -420,7 +437,7 @@ for t in $targets; do
 			exit $?
 		fi
 
-		profiles=$(find target/linux/$t/$d -maxdepth 1 -type d ! -name profiles ! -name base-files | awk -F/ '{print $5}')
+		profiles=$(find target/linux/$t/$d -maxdepth 1 -type d ! -name profiles ! -name base-files | cut -d / -f 5)
 		if [ -n "$profiles" ]; then
 			for p in $profiles; do
 				if [ "${d}_${p}" == "$1" -a -f target/linux/$t/$d/$p/ndwrt.config ]; then

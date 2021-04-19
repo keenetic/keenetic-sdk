@@ -22,6 +22,6 @@ endef
 # include the profiles
 include $(INCLUDE_DIR)/target.mk
 
-DEFAULT_PACKAGES+=kmod-ensoc_eth
+DEFAULT_PACKAGES+=kmod-ensoc_eth kmod-mips-wdt
 
 $(eval $(call BuildTarget))

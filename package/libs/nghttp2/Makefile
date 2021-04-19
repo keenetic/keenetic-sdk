@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nghttp2
-PKG_VERSION:=1.42.0
+PKG_VERSION:=1.43.0
 PKG_RELEASE:=1
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 
 PKG_SOURCE_URL:=https://github.com/nghttp2/nghttp2/releases/download/v$(PKG_VERSION)
-PKG_HASH:=c5a7f09020f31247d0d1609078a75efadeccb7e5b86fc2e4389189b1b431fe63
+PKG_HASH:=f7d54fa6f8aed29f695ca44612136fa2359013547394d5dffeffca9e01a26b0f
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
@@ -19,6 +19,7 @@ define Package/libnghttp2
   SECTION:=libs
   CATEGORY:=Libraries
   TITLE:=Library implementing the framing layer of HTTP/2
+  DEPENDS:=+libopenssl +libev +c-ares +zlib
   MAINTAINER:=Hans Dedecker <dedeckeh@gmail.com>
   URL:=https://nghttp2.org/
 endef

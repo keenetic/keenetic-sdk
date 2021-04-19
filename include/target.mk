@@ -12,7 +12,7 @@ __target_inc=1
 DEVICE_TYPE?=router
 
 # Default packages - the really basic set
-DEFAULT_PACKAGES:=base-files libc libgcc kmod-bridge kmod-mips-wdt ndm-mod-base ndm-mod-lang-en
+DEFAULT_PACKAGES:=base-files libc libgcc kmod-bridge ndm-mod-base ndm-mod-lang-en
 # For router targets
 DEFAULT_PACKAGES.router:=
 DEFAULT_PACKAGES.extender:=ndm-mod-config-extender ndm-mod-ndw3

@@ -55,7 +55,7 @@ EXTRA_CFLAGS   := $(FPIC) \
                   -Wshadow \
                   -Wpointer-arith
 
-EXTRA_LDFLAGS  := $(FPIC) -pthread
+EXTRA_LDFLAGS  := $(FPIC) -pthread -Wl,--gc-section
 
 define Build/Compile
 	$(call Build/Compile/Default)

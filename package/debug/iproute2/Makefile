@@ -102,7 +102,8 @@ MAKE_FLAGS += \
 	HAVE_CAP=n \
 	IPT_LIB_DIR=/usr/lib/iptables \
 	XT_LIB_DIR=/usr/lib/iptables \
-	FPIC="$(FPIC)"
+	FPIC="$(FPIC)" \
+	$(if $(findstring c,$(OPENWRT_VERBOSE)),V=1,V='')
 
 define Build/Compile
 	+$(MAKE_VARS) $(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) $(MAKE_FLAGS)

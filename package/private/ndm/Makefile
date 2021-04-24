@@ -402,22 +402,6 @@ endef
 
 $(eval $(call BuildPackage,ndm-mod-dot1x))
 
-define Package/ndm-mod-dpi
-  SUBMENU:=Applications
-  CATEGORY:=NDM
-  TITLE:=NDM DPI module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ntce +kmod-nnfm +ndm-mod-trafficcontrol +ndm-mod-ntced +iperf3
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/ndm-mod-dpi/install
-	if [ -d ./files-ndm-mod-dpi ]; then \
-		$(CP) ./files-ndm-mod-dpi/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,ndm-mod-dpi))
-
 define Package/ndm-mod-dsl
   SUBMENU:=Base system
   CATEGORY:=NDM
@@ -1138,37 +1122,21 @@ endef
 
 $(eval $(call BuildPackage,ndm-mod-netflow))
 
-define Package/ndm-mod-ntce-tools
+define Package/ndm-mod-ntce
   SUBMENU:=Applications
   CATEGORY:=NDM
-  TITLE:=NDM NTCE Tools module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-ntced
+  TITLE:=NDM NTCE module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ntce-pace2 +kmod-nnfm +kmod-dummy
   DISABLE_RSTRIP:=y
 endef
 
-define Package/ndm-mod-ntce-tools/install
-	if [ -d ./files-ndm-mod-ntce-tools ]; then \
-		$(CP) ./files-ndm-mod-ntce-tools/* $(1); \
+define Package/ndm-mod-ntce/install
+	if [ -d ./files-ndm-mod-ntce ]; then \
+		$(CP) ./files-ndm-mod-ntce/* $(1); \
 	fi
 endef
 
-$(eval $(call BuildPackage,ndm-mod-ntce-tools))
-
-define Package/ndm-mod-ntced
-  SUBMENU:=Applications
-  CATEGORY:=NDM
-  TITLE:=NDM ntced manager module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-dhcpd +ntce
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/ndm-mod-ntced/install
-	if [ -d ./files-ndm-mod-ntced ]; then \
-		$(CP) ./files-ndm-mod-ntced/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,ndm-mod-ntced))
+$(eval $(call BuildPackage,ndm-mod-ntce))
 
 define Package/ndm-mod-ntfs
   SUBMENU:=USB storage
@@ -1222,7 +1190,7 @@ define Package/ndm-mod-opkg
   SUBMENU:=Opkg
   CATEGORY:=NDM
   TITLE:=NDM Opkg module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +kmod-loop +npkg +nsh-static +opkg_led_ctl
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +kmod-loop +npkg +nsh-static +opkg_led_ctl +iperf3
   DISABLE_RSTRIP:=y
 endef
 

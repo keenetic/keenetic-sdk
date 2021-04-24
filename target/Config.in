@@ -120,6 +120,12 @@ config HAS_MT7915_RADIO
 config HAS_WHNAT
 	bool
 
+config HAS_HWNAT
+	bool
+
+config HAS_HWNAT_MIB
+	bool
+
 config ARCH_64BIT
 	bool
 

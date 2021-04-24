@@ -38,7 +38,7 @@ EXTRA_CFLAGS   := -Wall \
                   -fno-strict-aliasing \
                   -ftabstop=4
 
-EXTRA_LDFLAGS  := -lndm
+EXTRA_LDFLAGS  := -Wl,--gc-section -lndm
 
 define Package/mini_snmpd
   SECTION:=net

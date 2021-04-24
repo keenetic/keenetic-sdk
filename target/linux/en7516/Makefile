@@ -10,7 +10,7 @@ include $(TOPDIR)/rules.mk
 ARCH:=mips
 BOARD:=en7516
 DESCRIPTION:=EcoNet EN7516
-FEATURES:=squashfs usb usbstorage extended_storage
+FEATURES:=squashfs usb usbstorage extended_storage hwnat
 CFLAGS:=-O2 -pipe -mips32r2 -mtune=1004kc
 BOARD_CPPFLAGS:=-D__EN7516__
 KERNEL_PATCHVER:=4.9

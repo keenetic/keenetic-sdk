@@ -10,7 +10,7 @@ include $(TOPDIR)/rules.mk
 ARCH:=mipsel
 BOARD:=mt7621
 DESCRIPTION:=MediaTek MT7621
-FEATURES:=squashfs
+FEATURES:=squashfs hwnat
 CFLAGS:=-O2 -pipe -mips32r2 -mtune=1004kc
 KERNEL_PATCHVER:=4.9
 BOARD_CPPFLAGS:=-D__MT7621__

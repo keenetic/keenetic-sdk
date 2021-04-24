@@ -47,7 +47,7 @@ HOST_CFLAGS   := -pipe \
                  -Wpointer-arith \
                  -Wredundant-decls
 
-HOST_LDFLAGS  := -L$(STAGING_DIR_HOST)/usr/lib
+HOST_LDFLAGS  := -L$(STAGING_DIR_HOST)/usr/lib -Wl,--gc-section
 
 HOST_MAKE_FLAGS = \
 	CC="$(HOSTCC)" \

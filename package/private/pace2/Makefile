@@ -7,7 +7,7 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=ntce
+PKG_NAME:=pace2
 PKG_VERSION:=1
 
 include $(INCLUDE_DIR)/package.mk
@@ -15,17 +15,17 @@ include $(INCLUDE_DIR)/package.mk
 define Build/Compile
 endef
 
-define Package/ntce
+define Package/pace2
   CATEGORY:=Network
-  TITLE:=Traffic identification engine
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +libndm +libpcap +kmod-ntce-nf +kmod-dummy
+  TITLE:=Ipoque PACE2 R&S traffic classification engine
+  DEPENDS:=+libc +SSP_SUPPORT:libssp
   DISABLE_RSTRIP:=y
 endef
 
-define Package/ntce/install
-	if [ -d ./files-ntce ]; then \
-		$(CP) ./files-ntce/* $(1); \
+define Package/pace2/install
+	if [ -d ./files-pace2 ]; then \
+		$(CP) ./files-pace2/* $(1); \
 	fi
 endef
 
-$(eval $(call BuildPackage,ntce))
+$(eval $(call BuildPackage,pace2))

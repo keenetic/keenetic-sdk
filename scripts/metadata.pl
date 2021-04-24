@@ -150,6 +150,8 @@ sub target_config_features(@) {
 		/^whnat$/ and $ret .= "\tselect HAS_WHNAT\n";
 		/^extender$/ and $ret .= "\tselect IS_EXTENDER\n";
 		/^extended_storage$/ and $ret .= "\tselect USES_EXTENDED_STORAGE\n";
+		/^hwnat$/ and $ret .= "\tselect HAS_HWNAT\n";
+		/^hwnat_mib$/ and $ret .= "\tselect HAS_HWNAT_MIB\n";
 	}
 	return $ret;
 }

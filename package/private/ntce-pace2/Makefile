@@ -1,0 +1,41 @@
+#
+# Copyright (C) 2021 Keenetic Limited
+#
+# This is free software, licensed under the GNU General Public License v2.
+# See /LICENSE for more information.
+#
+
+include $(TOPDIR)/rules.mk
+
+PKG_NAME:=ntce-pace2
+PKG_VERSION:=1
+
+include $(INCLUDE_DIR)/package.mk
+
+define Build/Compile
+endef
+
+define Package/ntce-pace2
+  CATEGORY:=Network
+  TITLE:=NDM PACE2 traffic classification engine daemon
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +libndm +pace2 +PACKAGE_ntce-pace2-backtrace:libfatalsig
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ntce-pace2/config
+if PACKAGE_ntce-pace2
+
+config NTCE_PACE2_BACKTRACE
+	bool "Log a backtrace on crash"
+	default n
+
+endif
+endef
+
+define Package/ntce-pace2/install
+	if [ -d ./files-ntce-pace2 ]; then \
+		$(CP) ./files-ntce-pace2/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ntce-pace2))

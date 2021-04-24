@@ -36,7 +36,7 @@ HOST_CFLAGS   := -pipe -std=c99 -O2 \
                  -Wredundant-decls -Wvla -Wstack-protector -Wshadow \
                  -Wpointer-arith -Wtype-limits -Werror
 
-HOST_LDFLAGS  := -pthread
+HOST_LDFLAGS  := -pthread -Wl,--gc-section
 
 HOST_MAKE_FLAGS = \
 	CC="$(HOSTCC)" \

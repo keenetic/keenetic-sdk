@@ -34,7 +34,7 @@ EXTRA_CFLAGS   := -Wall \
                   -ftabstop=4 \
                   -std=c99
 
-EXTRA_LDFLAGS  := -lndm
+EXTRA_LDFLAGS  := -Wl,--gc-section -lndm
 
 define Package/$(PKG_NAME)
   NAME:=$(PKG_NAME)

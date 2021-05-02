@@ -963,31 +963,48 @@ sub gen_version_filtered_list() {
 	}
 }
 
+sub gen_components() {
+	parse_package_metadata($ARGV[0]) or exit 1;
+	foreach my $name (sort {uc($a) cmp uc($b)} keys %package) {
+		my $pkg = $package{$name};
+		my $n = $pkg->{name};
+
+		next unless $n;
+		next if $pkg->{hidden};
+		next if $n !~ /^ndm-mod-/;
+
+		$n =~ s/^ndm-mod-//;
+		print "$n\n";
+	}
+}
+
 sub parse_command() {
 	my $cmd = shift @ARGV;
 	for ($cmd) {
-		/^target_config$/ and return gen_target_config();
-		/^package_mk$/ and return gen_package_mk();
-		/^package_config$/ and return gen_package_config();
+		/^components$/ and return gen_components();
 		/^kconfig/ and return gen_kconfig_overrides();
+		/^legalcsv$/ and return gen_package_legalcsv();
 		/^license$/ and return gen_package_license(0);
 		/^licensefull$/ and return gen_package_license(1);
+		/^package_config$/ and return gen_package_config();
 		/^package_makefile$/ and return gen_package_makefile();
+		/^package_mk$/ and return gen_package_mk();
 		/^package_source$/ and return gen_package_source();
-		/^legalcsv$/ and return gen_package_legalcsv();
+		/^target_config$/ and return gen_target_config();
 		/^version_filter$/ and return gen_version_filtered_list();
 	}
 	print <<EOF
 Available Commands:
-	$0 target_config [file]			Target metadata in Kconfig format
-	$0 package_mk [file]			Package metadata in makefile format
-	$0 package_config [file]		Package metadata in Kconfig format
+	$0 components [file]			List of components
 	$0 kconfig [file] [config] [patchver]	Kernel config overrides
+	$0 legalcsv [file]			Package license, version and description CSV
 	$0 license [file]			Package license information
 	$0 licensefull [file]			Package license information (full list)
+	$0 package_config [file]		Package metadata in Kconfig format
 	$0 package_makefile [file]		Package makefile information
+	$0 package_mk [file]			Package metadata in makefile format
 	$0 package_source [file]		Package source file information
-	$0 legalcsv [file]			Package license, version and description CSV
+	$0 target_config [file]			Target metadata in Kconfig format
 	$0 version_filter [patchver] [list...]	Filter list of version tagged strings
 
 Example:

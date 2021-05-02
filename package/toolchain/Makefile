@@ -124,6 +124,26 @@ define Package/libasan/config
 endef
 
 
+define Package/libtsan
+$(call Package/gcc/Default)
+  DEPENDS:=+libstdcpp
+  TITLE:=GCC thread sanitizer library
+endef
+
+define Package/libtsan/config
+	menu "Configuration"
+		depends on aarch64 && EXTERNAL_TOOLCHAIN_LIBC_USE_GLIBC && PACKAGE_libtsan
+
+	config LIBTSAN_FILE_SPEC
+		string
+		prompt "libtsan shared library files (use wildcards)"
+		depends on aarch64 && EXTERNAL_TOOLCHAIN_LIBC_USE_GLIBC && PACKAGE_libtsan
+		default "./lib/libtsan.so.*"
+
+	endmenu
+endef
+
+
 define Package/libubsan
 $(call Package/gcc/Default)
   DEPENDS:=+libstdcpp
@@ -618,16 +638,16 @@ else
 
   define Package/libc/install
 	$(if $(USE_NSSWITCH),$(CP) ./glibc-files/* $(1)/)
+	sysroot_dir=$(call qstrip,$(TOOLCHAIN_SYSROOT_DIR)) ; \
 	for spec in $(call qstrip,$(CONFIG_LIBC_FILE_SPEC)); do \
-		for file in $$$$spec; do \
-			sysroot_dir=$(call qstrip,$(TOOLCHAIN_SYSROOT_DIR)) ; \
-			if [ -f $$$$sysroot_dir/$$$$file ]; then \
-				dir=`dirname $$$$file` ; \
-				name=`basename $$$$file` ; \
-				$(INSTALL_DIR) $(1)/$$$$dir ; \
-				$(CP) $$$$sysroot_dir/$$$$file $(1)/$$$$dir/ ; \
-				$(TARGET_STRIP) --strip-debug --keep-section=.debug_frame $(1)/$$$$dir/$$$$name ; \
-			fi ; \
+		files=`ls $$$$sysroot_dir$$$$spec 2>/dev/null` ; \
+		for file in $$$$files; do \
+			rootfs_file=$$$${file#"$$$$sysroot_dir"} ; \
+			dir=`dirname $$$$rootfs_file` ; \
+			name=`basename $$$$rootfs_file` ; \
+			$(INSTALL_DIR) $(1)/$$$$dir ; \
+			$(CP) $$$$file $(1)/$$$$dir/ ; \
+			$(TARGET_STRIP) --strip-debug --keep-section=.debug_frame $(1)/$$$$dir/$$$$name ; \
 		done ; \
 	done ; \
 	exit 0
@@ -674,6 +694,15 @@ else
 
   define Package/libasan/install
 	for file in $(call qstrip,$(CONFIG_LIBASAN_FILE_SPEC)); do \
+		dir=`dirname $$$$file` ; \
+		$(INSTALL_DIR) $(1)/$$$$dir ; \
+		$(CP) $(call qstrip,$(TOOLCHAIN_SYSROOT_DIR))/$$$$file $(1)/$$$$dir/ ; \
+	done ; \
+	exit 0
+  endef
+
+  define Package/libtsan/install
+	for file in $(call qstrip,$(CONFIG_LIBTSAN_FILE_SPEC)); do \
 		dir=`dirname $$$$file` ; \
 		$(INSTALL_DIR) $(1)/$$$$dir ; \
 		$(CP) $(call qstrip,$(TOOLCHAIN_SYSROOT_DIR))/$$$$file $(1)/$$$$dir/ ; \
@@ -779,6 +808,7 @@ $(eval $(call BuildPackage,libatomic))
 $(eval $(call BuildPackage,libssp))
 $(eval $(call BuildPackage,libstdcpp))
 $(eval $(call BuildPackage,libasan))
+$(eval $(call BuildPackage,libtsan))
 $(eval $(call BuildPackage,libubsan))
 $(eval $(call BuildPackage,libpthread))
 $(eval $(call BuildPackage,libthread-db))

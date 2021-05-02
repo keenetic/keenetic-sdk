@@ -42,6 +42,10 @@ config NDM_ASAN_DEBUG
 	bool "Enable address sanitizer"
 	select NDM_BACKTRACE
 
+config NDM_TSAN_DEBUG
+	bool "Enable thread sanitizer"
+	select NDM_BACKTRACE
+
 config NDM_UBSAN_DEBUG
 	bool "Enable undefined behaviour sanitizer"
 	select NDM_BACKTRACE

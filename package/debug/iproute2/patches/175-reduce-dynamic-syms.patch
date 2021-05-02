@@ -5,7 +5,7 @@
  ifeq ($(SHARED_LIBS),y)
  LDLIBS += -ldl
 -LDFLAGS += -Wl,-export-dynamic
-+LDFLAGS += -Wl,--dynamic-list=dynsyms.list
++TCLDFLAGS += -Wl,--dynamic-list=dynsyms.list
  endif
  
  TCLIB := tc_core.o
@@ -14,7 +14,7 @@
  
  tc: $(TCOBJ) $(LIBNETLINK) libtc.a
 -	$(QUIET_LINK)$(CC) $^ $(LDFLAGS) $(LDLIBS) -o $@
-+	$(QUIET_LINK)$(CC) $(filter-out dynsyms.list, $^) $(LDFLAGS) $(LDLIBS) -o $@
++	$(QUIET_LINK)$(CC) $(filter-out dynsyms.list, $^) $(TCLDFLAGS) $(LDLIBS) -o $@
  
  libtc.a: $(TCLIB)
  	$(QUIET_AR)$(AR) rcs $@ $^

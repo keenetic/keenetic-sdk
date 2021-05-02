@@ -20,7 +20,7 @@ define KernelPackage/nnfm
   SUBMENU:=Other modules
   CATEGORY:=Kernel modules
   TITLE:=NTCE netfilter flow marker
-  KCONFIG:=CONFIG_NTCE_MODULE=y
+  KCONFIG:=CONFIG_NTCE_MODULE=y CONFIG_NF_CONNTRACK_EVENTS=y
   DISABLE_RSTRIP:=y
 endef
 

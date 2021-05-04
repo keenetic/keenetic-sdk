@@ -2,6 +2,13 @@
 
 This is the build system for the KeeneticOS.
 
+The build process is as follows:
+1. unpacking proprietary parts of your KeeneticOS firmware to packages;
+2. building open source packages;
+3. installing the packages to root filesystem (rootfs);
+4. building Linux kernel;
+5. building KeeneticOS firmware image from the rootfs and the kernel.
+
 Keenetic SDK is based on the OpenWrt project (https://openwrt.org/).
 We recommend to read the OpenWrt build system manual (https://openwrt.org/docs/guide-developer/build-system/use-buildsystem) before following the next steps.
 

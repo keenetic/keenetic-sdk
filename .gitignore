@@ -1,0 +1,13 @@
+#build system created files 
+/tmp/**
+/staging_dir/**
+/build_dir/**
+/logs/**
+/dl/**
+
+#keenetic firmware files
+/*.zip
+/*.bin
+
+#make config
+/.config*

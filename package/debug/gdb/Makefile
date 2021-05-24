@@ -89,6 +89,8 @@ define Package/gdb/install
 	$(INSTALL_DIR) $(1)$(dir $(GDBINIT))
 	echo "set auto-load safe-path /"           > $(1)$(GDBINIT)
 	echo "set auto-solib-add off"             >> $(1)$(GDBINIT)
+	echo "set print thread-events off"        >> $(1)$(GDBINIT)
+	echo "set print inferior-events off"      >> $(1)$(GDBINIT)
 	echo "handle SIGILL nostop noprint pass"  >> $(1)$(GDBINIT)
 	echo "handle SIGPIPE nostop noprint pass" >> $(1)$(GDBINIT)
 endef

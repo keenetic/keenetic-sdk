@@ -9,7 +9,7 @@ SUBTARGET:=KN-2111
 DESCRIPTION:=Extra DSL / Carrier DSL
 BOARD_CPPFLAGS += -D__KN_2111__
 DEFAULT_PACKAGES += ndm-mod-interface-extras kmod-ensoc_dsl
-FEATURES += old_modes
+FEATURES += old_modes extended_storage
 
 define Target/Description
 	Build firmware images for KN-2111

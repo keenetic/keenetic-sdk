@@ -15,7 +15,7 @@ PKG_BUILD_DIR ?= $(BUILD_DIR)/$(PKG_NAME)$(if $(PKG_VERSION),-$(PKG_VERSION))
 PKG_INSTALL_DIR ?= $(PKG_BUILD_DIR)/ipkg-install
 PKG_BUILD_NON_PARALLEL ?=
 
-MAKE_J   := $(if $(MAKE_JOBSERVER),$(MAKE_JOBSERVER) -j)
+MAKE_J   := $(if $(MAKE_JOBSERVER),$(MAKE_JOBSERVER) $(if $(filter 3.% 4.0 4.1,$(MAKE_VERSION)),-j))
 PKG_JOBS ?= $(if $(PKG_BUILD_NON_PARALLEL),-j1,$(MAKE_J))
 
 include $(INCLUDE_DIR)/hardening.mk

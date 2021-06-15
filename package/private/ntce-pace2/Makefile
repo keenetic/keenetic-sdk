@@ -18,7 +18,7 @@ endef
 define Package/ntce-pace2
   CATEGORY:=Network
   TITLE:=NDM PACE2 traffic classification engine daemon
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +libndm +pace2 +PACKAGE_ntce-pace2-backtrace:libfatalsig
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +libndm +pace2 +NTCE_PACE2_BACKTRACE:libfatalsig +NTCE_PACE2_MIMALLOC:mimalloc +NTCE_PACE2_MIMALLOC:libatomic
   DISABLE_RSTRIP:=y
 endef
 
@@ -27,6 +27,10 @@ if PACKAGE_ntce-pace2
 
 config NTCE_PACE2_BACKTRACE
 	bool "Log a backtrace on crash"
+	default n
+
+config NTCE_PACE2_MIMALLOC
+	bool "Use mimalloc memory allocator"
 	default n
 
 endif

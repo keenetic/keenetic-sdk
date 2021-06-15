@@ -107,6 +107,10 @@ menu "Global build settings"
 	config KERNEL_MTD_NDM_DUAL_IMAGE
 		bool "Compile the kernel with dual image support"
 
+	config KERNEL_MTD_NDM_EXTENDED_STORAGE
+		bool
+		default y if USES_EXTENDED_STORAGE
+
 	config KERNEL_IMAGE_CMDLINE_HACK
 		bool "Compile the kernel with OpenWrt specific image command line hack"
 

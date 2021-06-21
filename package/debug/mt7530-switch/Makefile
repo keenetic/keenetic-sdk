@@ -18,7 +18,7 @@ endef
 define Package/mt7530-switch
   CATEGORY:=Debug suite
   TITLE:=MT7530 switch configuration utility
-  DEPENDS:=+libc +SSP_SUPPORT:libssp @TARGET_en7516||TARGET_en7512||TARGET_en7528||TARGET_mt7621
+  DEPENDS:=+libc +SSP_SUPPORT:libssp @TARGET_en7516||TARGET_en7512||TARGET_en7528||TARGET_mt7621||TARGET_mt7622_KN_1811
   DISABLE_RSTRIP:=y
 endef
 

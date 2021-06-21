@@ -1,50 +1,31 @@
 #
-# Copyright (C) 2021 NDM Systems, Inc. http://www.ndmsystems.com/
+# Copyright (C) 2021 Keenetic Limited
+#
+# This is free software, licensed under the GNU General Public License v2.
+# See /LICENSE for more information.
 #
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mimalloc
-PKG_VERSION:=1.7.1-0
-PKG_LICENSE:=MIT
-
-PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)
-PKG_SOURCE_VERSION:=$(PKG_VERSION)
-PKG_SOURCE_PROTO:=git
-PKG_DEBUG:=false
-
-CMAKE_BINARY_SUBDIR:=out
-
-ifeq ($(PKG_DEBUG),true)
-  CMAKE_OPTIONS+=-DCMAKE_BUILD_TYPE=Debug
-  RSTRIP:=true
-  STRIP:=true
-endif
-
-CMAKE_OPTIONS+=\
- -DMI_OVERRIDE=OFF \
- -DMI_BUILD_TESTS=OFF \
- -DMI_BUILD_OBJECT=OFF \
- -DMI_BUILD_SHARED=OFF \
- -DMI_INSTALL_TOPLEVEL=ON
+PKG_VERSION:=1
 
 include $(INCLUDE_DIR)/package.mk
-include $(INCLUDE_DIR)/cmake.mk
 
-define Package/$(PKG_NAME)
-  SECTION:=libs
+define Build/Compile
+endef
+
+define Package/mimalloc
   CATEGORY:=Libraries
   TITLE:=mimalloc general purpose allocator
-  URL:=https://github.com/microsoft/mimalloc
-  DEPENDS:=+librt +libatomic
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +librt +libatomic
+  DISABLE_RSTRIP:=y
 endef
 
-define Build/InstallDev
-	$(INSTALL_DIR) $(1)/usr/include/mimalloc/
-	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/include/mimalloc.h $(1)/usr/include/mimalloc/mimalloc.h
-
-	$(INSTALL_DIR) $(1)/usr/lib/
-	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/libmimalloc.a $(1)/usr/lib/
+define Package/mimalloc/install
+	if [ -d ./files-mimalloc ]; then \
+		$(CP) ./files-mimalloc/* $(1); \
+	fi
 endef
 
-$(eval $(call BuildPackage,$(PKG_NAME)))
+$(eval $(call BuildPackage,mimalloc))

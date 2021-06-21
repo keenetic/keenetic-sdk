@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=exfat-linux
-PKG_VERSION:=5.9.6-1
+PKG_VERSION:=5.11.16-1
 PKG_LICENSE:=GPL-2.0+
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)

@@ -17,7 +17,7 @@ Write down the version of KeeneticOS (e.g. `3.07.A.14.0-0`).
 You need the 64-bit Debian-based Linux distribution.
 We recommend to use the latest long-term support (LTS) version of Ubuntu (https://ubuntu.com/download).
 
-	# apt install attr bc build-essential curl gawk git libhtml-parser-perl libjson-perl libncurses-dev libssl-dev libxml-libxml-perl python python3 subversion unzip zlib1g-dev
+	 apt automake install attr bc build-essential curl gawk git libhtml-parser-perl libjson-perl libncurses-dev libssl-dev libxml-libxml-perl python python3 subversion unzip zlib1g-dev
 
 ## Step 3. Prepare source
 

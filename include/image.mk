@@ -40,7 +40,7 @@ NDM_FIRMWARE_SIZE_FNAME = $(NDM_FIRMWARE_FNAME:bin=siz)
 NDM_KMOD_ONDEMAND ?= drxvi314 u200 igmpsn hw_nat whnat pppoe_pt ipv6_pt
 NDM_KMOD_ONDEMAND += mt7603_ap mt7610_ap mt76x2_ap mt7613_ap mt7628_ap mt7615_ap mt7915_ap
 NDM_KMOD_ONDEMAND += osal_kernel ve_vtsp_hw ve_vtsp_rt pcmdriver_slic cc
-NDM_KMOD_ONDEMAND += ntc ntce nnfm rtsoc_eth ensoc_eth fastvpn vdsl zram
+NDM_KMOD_ONDEMAND += ntc ntce nnfm rtsoc_eth ensoc_eth fastvpn vdsl zram nacct
 NDM_KMOD_ONDEMAND += crypto_aes_engine eip93_cryptoapi tcrypt mt7621_eth mt7622_eth
 NDM_KMOD_ONDEMAND += ensoc_flt ensoc_dmt ensoc_dsl
 NDM_KMOD_ONDEMAND += ipt_NETFLOW iptable_raw

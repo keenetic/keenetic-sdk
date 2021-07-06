@@ -111,6 +111,24 @@ endef
 
 $(eval $(call KernelPackage,lib-lzo))
 
+define KernelPackage/lib-zstd
+  SUBMENU:=$(LIB_MENU)
+  TITLE:=ZSTD support
+  KCONFIG:= \
+	CONFIG_ZSTD_COMPRESS=y \
+	CONFIG_ZSTD_DECOMPRESS=y \
+	CONFIG_XXHASH=y
+  FILES:= \
+	$(LINUX_DIR)/lib/xxhash.ko \
+	$(LINUX_DIR)/lib/zstd/zstd_compress.ko \
+	$(LINUX_DIR)/lib/zstd/zstd_decompress.ko
+endef
+
+define KernelPackage/lib-zstd/description
+ Kernel module for ZSTD compression/decompression support
+endef
+
+$(eval $(call KernelPackage,lib-zstd))
 
 define KernelPackage/lib-lz4
   SUBMENU:=$(LIB_MENU)

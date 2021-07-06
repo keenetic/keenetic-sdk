@@ -632,6 +632,16 @@ endef
 
 $(eval $(call KernelPackage,crypto-lzo))
 
+define KernelPackage/crypto-zstd
+  TITLE:=ZSTD CryptoAPI module
+  DEPENDS:=+kmod-lib-zstd +kmod-crypto-manager
+  KCONFIG:=CONFIG_CRYPTO_ZSTD
+  FILES:=$(LINUX_DIR)/crypto/zstd.ko
+  $(call AddDepends/crypto)
+endef
+
+$(eval $(call KernelPackage,crypto-zstd))
+
 define KernelPackage/crypto-zlib
   TITLE:=ZLIB CryptoAPI module
   DEPENDS:=+kmod-lib-zlib +kmod-crypto-manager

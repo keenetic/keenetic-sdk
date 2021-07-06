@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libunwind
-PKG_VERSION:=v1.4-rc1-ndm-4
+PKG_VERSION:=v1.5-rc1-ndm-1
 PKG_LICENSE:=FREE
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)
@@ -22,6 +22,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/libunwind
   SECTION:=libs
   CATEGORY:=Libraries
+  DEPENDS:=+zlib
   TITLE:=The libunwind project
   URL:=http://www.nongnu.org/libunwind/
 endef
@@ -65,12 +66,19 @@ CONFIGURE_ARGS += \
 	--enable-debug-frame \
 	--enable-conservative-checks \
 	--enable-block-signals \
+	--enable-zlibdebuginfo \
 	--disable-static \
+	--disable-debug \
+	--disable-dependency-tracking \
 	--disable-documentation \
+	--disable-coredump \
+	--disable-ptrace \
+	--disable-setjmp \
 	--disable-tests \
 	--disable-cxx-exceptions \
 	--disable-msabi-support \
-	--disable-minidebuginfo
+	--disable-minidebuginfo \
+	--disable-weak-backtrace
 
 TARGET_CFLAGS += \
 	-fcommon

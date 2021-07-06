@@ -4,6 +4,10 @@ menu "Configuration"
 config NDM_BACKTRACE
 	bool "Log a backtrace on a daemon crash"
 
+	config NDM_BACKTRACE_MINIMAL
+		bool "Keep minimal backtrace information" if NDM_BACKTRACE
+		default n
+
 config NDM_GENERIC_DEBUG
 	bool "Generic debug"
 

@@ -6,7 +6,7 @@
 #
 
 SUBTARGET:=KN-1011
-DESCRIPTION:=Giga6 / Hero6
+DESCRIPTION:=Giga / Hero
 BOARD_CPPFLAGS += -D__KN_1011__
 DEFAULT_PACKAGES += ndm-mod-interface-extras
 FEATURES += btmtk usb usbstorage extended_storage

@@ -6,7 +6,7 @@
 #
 
 SUBTARGET:=KN-1311
-DESCRIPTION:=Lite / Sprinter
+DESCRIPTION:=Lite
 BOARD_CPPFLAGS += -D__KN_1311__
 DEFAULT_PACKAGES += ndm-mod-interface-extras
 CFLAGS:=-Os -pipe -mips32r2 -mtune=mips32r2

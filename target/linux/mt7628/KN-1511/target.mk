@@ -6,7 +6,7 @@
 #
 
 SUBTARGET:=KN-1511
-DESCRIPTION:=City / Glider
+DESCRIPTION:=City
 BOARD_CPPFLAGS += -D__KN_1511__
 DEFAULT_PACKAGES += ndm-mod-interface-extras
 CFLAGS:=-Os -pipe -mips32r2 -mtune=mips32r2

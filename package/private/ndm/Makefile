@@ -1734,7 +1734,7 @@ define Package/ndm-mod-usbqmi
   SUBMENU:=USB modems
   CATEGORY:=NDM
   TITLE:=NDM UsbQmi module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-usb +kmod-usb-storage +kmod-usb-serial-option +kmod-usb-serial-qualcomm +kmod-usb-net-qmi-wwan +kmod-ubridge +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):adb +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):ltefw
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-usb +ndm-mod-dhcpd +kmod-usb-storage +kmod-usb-serial-option +kmod-usb-serial-qualcomm +kmod-usb-net-qmi-wwan +kmod-ubridge +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):adb +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):ltefw
   DISABLE_RSTRIP:=y
 endef
 

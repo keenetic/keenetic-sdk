@@ -18,7 +18,7 @@ endef
 define Package/dropbear
   CATEGORY:=Network
   TITLE:=Small SSH2 client/server
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +libndm
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +libndm +libopenssl
   DISABLE_RSTRIP:=y
 endef
 

@@ -12,4 +12,8 @@ config LIBCURL_CA
 	bool "Enable CA bundle support"
 	default n
 
+config LIBCURL_BACKTRACE
+	bool "Log a backtrace on a process crash"
+	default n
+
 endif

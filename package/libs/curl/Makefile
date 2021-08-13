@@ -8,16 +8,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=curl
-PKG_VERSION:=7.77.0
+PKG_VERSION:=7.78.0
 PKG_RELEASE:=1
 PKG_LICENSE:=MIT
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://dl.uxnr.de/mirror/curl/ \
-	https://curl.mirror.anstey.ca/ \
-	https://curl.askapache.com/download/ \
-	https://curl.haxx.se/download/
-PKG_HASH:=0f64582c54282f31c0de9f0a1a596b182776bd4df9a4c4a2a41bbeb54f62594b
+	https://curl.se/download/
+PKG_HASH:=be42766d5664a739c3974ee3dfbbcbe978a4ccb1fe628bb1d9b59ac79e445fb5
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
@@ -42,15 +40,16 @@ define Package/libcurl
   $(call Package/curl/Default)
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS:=+zlib +libopenssl +LIBCURL_NGHTTP2:libnghttp2 +LIBCURL_CA:ca-certificates
+  DEPENDS:=+zlib +libopenssl \
+    +LIBCURL_NGHTTP2:libnghttp2 \
+    +LIBCURL_CA:ca-certificates \
+    +LIBCURL_BACKTRACE:libfatalsig
   TITLE:=A client-side URL transfer library
 endef
 
 define Package/libcurl/config
 source "$(SOURCE)/Config.in"
 endef
-
-EXTRA_CFLAGS   := $(FPIC)
 
 CONFIGURE_ARGS += \
 	--enable-shared \
@@ -94,11 +93,24 @@ CONFIGURE_ARGS += \
 	--without-nss \
 	--without-libssh2 \
 	--without-axtls \
-	--without-libmetalink \
 	--without-librtmp \
 	--without-zstd \
 	--with-zlib="$(STAGING_DIR)/usr" \
 	$(call autoconf_bool,CONFIG_IPV6,ipv6) \
+
+ifeq ($(CONFIG_LIBCURL_BACKTRACE),y)
+EXTRA_CFLAGS   := $(filter-out \
+                     -fno-asynchronous-unwind-tables \
+                     -fomit-frame-pointer \
+                     -fno-caller-saves \
+                   , $(TARGET_CFLAGS)) \
+                  -fasynchronous-unwind-tables \
+                  -fno-omit-frame-pointer \
+                  -fcaller-saves \
+                  $(FPIC)
+RSTRIP         := :
+STRIP          := :
+endif
 
 CONFIGURE_VARS += \
 	LIBS="-lz" \

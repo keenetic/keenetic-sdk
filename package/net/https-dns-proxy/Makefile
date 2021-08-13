@@ -7,7 +7,7 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=http-dns-proxy
+PKG_NAME:=https-dns-proxy
 PKG_VERSION:=1
 
 include $(INCLUDE_DIR)/package.mk
@@ -18,8 +18,12 @@ endef
 define Package/https-dns-proxy
   CATEGORY:=Network
   TITLE:=DNS over HTTPS proxy server
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +libcares +libcurl +libev +ca-certificates
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +libcares +libcurl +libev +ca-certificates +HTTPS_DNS_PROXY_BACKTRACE:libfatalsig
   DISABLE_RSTRIP:=y
+endef
+
+define Package/https-dns-proxy/config
+	source "package/net/https-dns-proxy/https-dns-proxy.in"
 endef
 
 define Package/https-dns-proxy/install

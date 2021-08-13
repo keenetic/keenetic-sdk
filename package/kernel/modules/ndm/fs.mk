@@ -80,13 +80,14 @@ $(eval $(call KernelPackage,fs-ubi))
 define KernelPackage/fs-ubifs
   SUBMENU:=$(FS_MENU)
   TITLE:=UBI filesystem support
-  DEPENDS:=+kmod-crypto-deflate +kmod-lib-crc16 +kmod-fs-ubi
+  DEPENDS:=+kmod-crypto-deflate +kmod-crypto-zstd +kmod-lib-crc16 +kmod-fs-ubi
   KCONFIG:= \
 	CONFIG_UBIFS_FS \
 	CONFIG_UBIFS_FS_ADVANCED_COMPR=y \
 	CONFIG_UBIFS_ATIME_SUPPORT=n \
 	CONFIG_UBIFS_FS_LZO=n \
-	CONFIG_UBIFS_FS_ZLIB=y
+	CONFIG_UBIFS_FS_ZLIB=y \
+	CONFIG_UBIFS_FS_ZSTD=y
   FILES:=$(LINUX_DIR)/fs/ubifs/ubifs.ko
 endef
 

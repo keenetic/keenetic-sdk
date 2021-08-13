@@ -1,0 +1,168 @@
+/*
+ * Copyright (c) 2017 MediaTek Inc.
+ * Author: Ming Huang <ming.huang@mediatek.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/dts-v1/;
+#include <dt-bindings/gpio/gpio.h>
+#include <mediatek/mt7622.dtsi>
+#include <mediatek/mt6380.dtsi>
+
+/ {
+	model = "Keenetic KN-2710 board";
+	compatible = "mediatek,mt7622-kn2710", "mediatek,mt7622";
+
+	chosen {
+		bootargs = "console=ttyS0,115200n1 loglevel=8 swiotlb=512 rootfstype=squashfs";
+	};
+
+	memory@40000000 {
+		device_type = "memory";
+		reg = <0 0x40000000 0 0x3F000000>;
+	};
+};
+
+&bch {
+	status = "disabled";
+};
+
+&cpu0 {
+	proc-supply = <&mt6380_vcpu_reg>;
+	sram-supply = <&mt6380_vm_reg>;
+};
+
+&cpu1 {
+	proc-supply = <&mt6380_vcpu_reg>;
+	sram-supply = <&mt6380_vm_reg>;
+};
+
+&efuse {
+	status = "okay";
+};
+
+&raeth {
+	dma-coherent;
+	mediatek,i2c = <&i2c1>;
+	status = "okay";
+};
+
+&wed2 {
+	status = "disabled";
+};
+
+&i2c0 {
+	status = "disabled";
+};
+
+&i2c1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c1_pins>;
+	status = "okay";
+};
+
+&i2c2 {
+	status = "disabled";
+};
+
+&pio {
+	pinctrl-names = "default";
+	pinctrl-0 = <&state_default>;
+
+	state_default:pinconf_default {
+	};
+
+	i2c1_pins: i2c1-pins {
+		pins_bus {
+			pinmux = <MT7622_PIN_55_MDI_TP_P1__FUNC_I2C1_SCL>,
+				 <MT7622_PIN_56_MDI_TN_P1__FUNC_I2C1_SDA>;
+			bias-disable;
+		};
+	};
+
+	snand_pins_default: snand-pins-default {
+		pins_cmd_dat {
+			pinmux = <MT7622_PIN_8_SPI_WP__FUNC_SNFI_WP>,
+				 <MT7622_PIN_9_SPI_HOLD__FUNC_SNFI_HOLD>,
+				 <MT7622_PIN_11_SPI_MOSI__FUNC_SNFI_MOSI>,
+				 <MT7622_PIN_12_SPI_MISO__FUNC_SNFI_MISO>,
+				 <MT7622_PIN_13_SPI_CS__FUNC_SNFI_CS>;
+			input-enable;
+			drive-strength = <MTK_DRIVE_16mA>;
+			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
+		};
+		pins_clk {
+			pinmux = <MT7622_PIN_10_SPI_CLK__FUNC_SNFI_CLK>;
+			drive-strength = <MTK_DRIVE_16mA>;
+			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
+		};
+	};
+
+	wbsys_pins_default: wbsysdefault {
+	};
+
+	wbsys_pins_epa: wbsysepa {
+		pins_cmd_dat {
+			pinmux = <MT7622_PIN_91_TXD4__FUNC_ANTSEL0>,
+				 <MT7622_PIN_92_RXD4__FUNC_ANTSEL1>,
+				 <MT7622_PIN_93_RTS4_N__FUNC_ANTSEL2>,
+				 <MT7622_PIN_94_CTS4_N__FUNC_ANTSEL3>,
+				 <MT7622_PIN_95_PWM1__FUNC_ANTSEL4>,
+				 <MT7622_PIN_96_PWM2__FUNC_ANTSEL5>,
+				 <MT7622_PIN_97_PWM3__FUNC_ANTSEL6>,
+				 <MT7622_PIN_98_PWM4__FUNC_ANTSEL7>,
+				 <MT7622_PIN_99_PWM5__FUNC_ANTSEL8>,
+				 <MT7622_PIN_100_PWM6__FUNC_ANTSEL9>,
+				 <MT7622_PIN_73_SPIC1_CLK__FUNC_ANTSEL12>,
+				 <MT7622_PIN_74_SPIC1_MOSI__FUNC_ANTSEL13>,
+				 <MT7622_PIN_75_SPIC1_MISO__FUNC_ANTSEL14>,
+				 <MT7622_PIN_76_SPIC1_CS__FUNC_ANTSEL15>,
+				 <MT7622_PIN_77_GPIO_D__FUNC_ANTSEL16>,
+				 <MT7622_PIN_22_GPIO_B__FUNC_ANTSEL17>;
+		};
+	};
+};
+
+&pwm {
+	status = "okay";
+};
+
+&snand {
+	pinctrl-0 = <&snand_pins_default>;
+	status = "okay";
+};
+
+&svs {
+	vproc-supply = <&mt6380_vcpu_reg>;
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&usb1 {
+	status = "okay";
+};
+
+&u3phy1 {
+	status = "okay";
+};
+
+&sata {
+	status = "disabled";
+};
+
+&wbsys {
+	pinctrl-names = "default", "state_epa";
+	pinctrl-0 = <&wbsys_pins_default>;
+	pinctrl-1 = <&wbsys_pins_epa>;
+	status = "okay";
+};

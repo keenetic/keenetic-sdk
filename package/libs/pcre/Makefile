@@ -12,7 +12,7 @@ PKG_VERSION:=8.44
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_SOURCE_URL:=https://ftp.pcre.org/pub/pcre/ ftp://ftp.pcre.org/pub/pcre/
+PKG_SOURCE_URL:=@SF/pcre
 PKG_HASH:=19108658b23b3ec5058edc9f66ac545ea19f9537234be1ec62b714c84399366d
 
 PKG_LICENSE:=BSD

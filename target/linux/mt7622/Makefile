@@ -22,6 +22,6 @@ endef
 # include the profiles
 include $(INCLUDE_DIR)/target.mk
 
-DEFAULT_PACKAGES+=kmod-mt7622_eth
+DEFAULT_PACKAGES+=kmod-mt7622_eth kmod-mt-wdt
 
 $(eval $(call BuildTarget))

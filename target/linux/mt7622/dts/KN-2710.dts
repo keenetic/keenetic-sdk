@@ -49,6 +49,12 @@
 	status = "okay";
 };
 
+&gsw {
+	interrupt-parent = <&pio>;
+	interrupts = <53 IRQ_TYPE_LEVEL_HIGH>;
+	status = "okay";
+};
+
 &raeth {
 	dma-coherent;
 	mediatek,i2c = <&i2c1>;

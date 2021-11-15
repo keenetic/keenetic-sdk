@@ -505,6 +505,20 @@ endef
 $(eval $(call KernelPackage,mips-wdt))
 
 
+define KernelPackage/mt-wdt
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=MediaTek MT7622 softirq watchdog
+  DEPENDS:=@aarch64
+  KCONFIG:=CONFIG_MT_WDT=y
+endef
+
+define KernelPackage/mt-wdt/description
+  Kernel module for a MediaTek MT7622 softirq watchdog.
+endef
+
+$(eval $(call KernelPackage,mt-wdt))
+
+
 define KernelPackage/booke-wdt
   SUBMENU:=$(OTHER_MENU)
   TITLE:=PowerPC Book-E Watchdog Timer

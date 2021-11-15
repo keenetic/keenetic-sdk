@@ -13,7 +13,7 @@ PKG_RELEASE:=1
 PKG_LICENSE:=BSD
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://www.tcpdump.org/release/ \
+PKG_SOURCE_URL:=https://www.tcpdump.org/release/ \
 				http://www.us.tcpdump.org/release/
 PKG_HASH:=635237637c5b619bcceba91900666b64d56ecb7be63f298f601ec786ce087094
 

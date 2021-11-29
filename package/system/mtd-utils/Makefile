@@ -66,8 +66,7 @@ TARGET_LDFLAGS += -Wl,--gc-sections
 
 define Package/ubi-utils/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) \
-	$(PKG_INSTALL_DIR)/usr/sbin/{ubimkvol,ubirmvol} $(1)/usr/sbin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/ubi* $(1)/usr/sbin/
 endef
 
 define Package/nand-utils/install

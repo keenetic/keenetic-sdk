@@ -18,8 +18,15 @@ endef
 define Package/pjproject
   CATEGORY:=Libraries
   TITLE:=PJSIP
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +libopenssl
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +libopenssl +PJPROJECT_MIMALLOC:mimalloc +PJPROJECT_MIMALLOC:libatomic
   DISABLE_RSTRIP:=y
+endef
+
+define Package/pjproject/config
+	config PJPROJECT_MIMALLOC
+		bool "Use mimalloc for in heap memory allocation"
+		depends on PACKAGE_pjproject
+		default y
 endef
 
 define Package/pjproject/install

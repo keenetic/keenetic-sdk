@@ -1542,7 +1542,7 @@ define Package/ndm-mod-storage
   SUBMENU:=USB storage
   CATEGORY:=NDM
   TITLE:=NDM storage module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +kmod-fs-jffs2 +kmod-lbdaf +kmod-nls-cp1251 +kmod-nls-cp437 +kmod-nls-cp866 +kmod-nls-utf8 +kmod-usb-storage +ndm-mod-usb +USES_EXTENDED_STORAGE:ubi-utils +USES_EXTENDED_STORAGE:kmod-fs-ubifs +USES_EXTENDED_STORAGE:kmod-ndm-storage
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +kmod-fs-jffs2 +kmod-lbdaf +kmod-nls-cp1251 +kmod-nls-cp437 +kmod-nls-cp866 +kmod-nls-utf8 +kmod-usb-storage +ndm-mod-usb +USES_EXTENDED_STORAGE:kmod-fs-ubifs +USES_EXTENDED_STORAGE:kmod-ndm-storage
   DISABLE_RSTRIP:=y
 endef
 

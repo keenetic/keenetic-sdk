@@ -191,12 +191,19 @@ foreach my $mirror (@ARGV) {
 	if ($mirror =~ /^\@SF\/(.+)$/) {
 		# give sourceforge a few more tries, because it redirects to different mirrors
 		for (1 .. 5) {
-			push @mirrors, "http://downloads.sourceforge.net/$1";
+			push @mirrors, "https://downloads.sourceforge.net/$1";
 		}
+	} elsif ($mirror =~ /^\@OPENWRT$/) {
+		# use OpenWrt source server directly
+	} elsif ($mirror =~ /^\@DEBIAN\/(.+)$/) {
+		push @mirrors, "https://ftp.debian.org/debian/$1";
+		push @mirrors, "https://mirror.leaseweb.com/debian/$1";
+		push @mirrors, "https://mirror.netcologne.de/debian/$1";
 	} elsif ($mirror =~ /^\@APACHE\/(.+)$/) {
 		push @mirrors, "https://mirror.netcologne.de/apache.org/$1";
 		push @mirrors, "https://mirror.aarnet.edu.au/pub/apache/$1";
 		push @mirrors, "https://mirror.csclub.uwaterloo.ca/apache/$1";
+		push @mirrors, "https://archive.apache.org/dist/$1";
 		push @mirrors, "http://mirror.cogentco.com/pub/apache/$1";
 		push @mirrors, "http://mirror.navercorp.com/apache/$1";
 		push @mirrors, "http://ftp.jaist.ac.jp/pub/apache/$1";
@@ -222,7 +229,6 @@ foreach my $mirror (@ARGV) {
 		push @mirrors, "http://ftp.acc.umu.se/mirror/gnu.org/savannah/$1";
 		push @mirrors, "http://nongnu.uib.no/$1";
 		push @mirrors, "http://ftp.igh.cnrs.fr/pub/nongnu/$1";
-		push @mirrors, "http://public.p-knowledge.co.jp/Savannah-nongnu-mirror/$1";
 		push @mirrors, "ftp://cdimage.debian.org/mirror/gnu.org/savannah/$1";
 		push @mirrors, "ftp://ftp.acc.umu.se/mirror/gnu.org/savannah/$1";
 	} elsif ($mirror =~ /^\@KERNEL\/(.+)$/) {
@@ -231,18 +237,18 @@ foreach my $mirror (@ARGV) {
 			push @extra, "$extra[0]/testing";
 		} elsif ($filename =~ /linux-(\d+\.\d+(?:\.\d+)?)/) {
 			push @extra, "$extra[0]/longterm/v$1";
-		}		
+		}
 		foreach my $dir (@extra) {
 			push @mirrors, "https://cdn.kernel.org/pub/$dir";
-			push @mirrors, "https://mirror.rackspace.com/kernel.org/$dir";
-			push @mirrors, "http://download.xs4all.nl/ftp.kernel.org/pub/$dir";
-			push @mirrors, "http://mirrors.mit.edu/kernel/$dir";
+			push @mirrors, "https://download.xs4all.nl/ftp.kernel.org/pub/$dir";
+			push @mirrors, "https://mirrors.mit.edu/kernel/$dir";
 			push @mirrors, "http://ftp.nara.wide.ad.jp/pub/kernel.org/$dir";
 			push @mirrors, "http://www.ring.gr.jp/archives/linux/kernel.org/$dir";
 			push @mirrors, "ftp://ftp.riken.jp/Linux/kernel.org/$dir";
 			push @mirrors, "ftp://www.mirrorservice.org/sites/ftp.kernel.org/pub/$dir";
 		}
-    } elsif ($mirror =~ /^\@GNOME\/(.+)$/) {
+	} elsif ($mirror =~ /^\@GNOME\/(.+)$/) {
+		push @mirrors, "https://download.gnome.org/sources/$1";
 		push @mirrors, "https://mirror.csclub.uwaterloo.ca/gnome/sources/$1";
 		push @mirrors, "http://ftp.acc.umu.se/pub/GNOME/sources/$1";
 		push @mirrors, "http://ftp.kaist.ac.kr/gnome/sources/$1";
@@ -251,16 +257,14 @@ foreach my $mirror (@ARGV) {
 		push @mirrors, "http://ftp.belnet.be/ftp.gnome.org/sources/$1";
 		push @mirrors, "ftp://ftp.cse.buffalo.edu/pub/Gnome/sources/$1";
 		push @mirrors, "ftp://ftp.nara.wide.ad.jp/pub/X11/GNOME/sources/$1";
-    }
-    else {
+	} else {
 		push @mirrors, $mirror;
 	}
 }
 
-#push @mirrors, 'http://mirror1.openwrt.org';
-#push @mirrors, 'http://sources.lede-project.org';
-#push @mirrors, 'http://mirror2.openwrt.org/sources';
-#push @mirrors, 'http://downloads.openwrt.org/sources';
+push @mirrors, 'https://sources.cdn.openwrt.org';
+push @mirrors, 'https://sources.openwrt.org';
+push @mirrors, 'https://mirror2.openwrt.org/sources';
 
 while (!-f "$target/$filename") {
 	my $mirror = shift @mirrors;

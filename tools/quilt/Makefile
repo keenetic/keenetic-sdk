@@ -10,7 +10,7 @@ PKG_NAME:=quilt
 PKG_VERSION:=0.48
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://download.savannah.gnu.org/releases/$(PKG_NAME)
+PKG_SOURCE_URL:=@SAVANNAH/quilt
 PKG_HASH:=73fd760d3b5cbf06417576591dc37d67380d189392db9000c21b7cbebee49ffc
 
 include $(INCLUDE_DIR)/host-build.mk

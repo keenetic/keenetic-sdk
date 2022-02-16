@@ -11,7 +11,7 @@ PKG_VERSION:=20210119
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)_$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=http://ftp.debian.org/debian/pool/main/c/ca-certificates
+PKG_SOURCE_URL:=@DEBIAN/pool/main/c/ca-certificates
 PKG_HASH:=daa3afae563711c30a0586ddae4336e8e3974c2b627faaca404c4e0141b64665
 PKG_BUILD_DIR:=$(BUILD_DIR)/work
 PKG_INSTALL:=1

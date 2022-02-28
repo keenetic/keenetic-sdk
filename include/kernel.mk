@@ -12,6 +12,12 @@ CHECK:=1
 DUMP:=1
 endif
 
+ifneq ($(SOURCE_DATE_EPOCH),)
+  ifndef DUMP
+    KBUILD_BUILD_TIMESTAMP:=$(shell perl -e 'print scalar gmtime($(SOURCE_DATE_EPOCH))')
+  endif
+endif
+
 ifeq ($(__target_inc),)
   ifndef CHECK
     include $(INCLUDE_DIR)/target.mk
@@ -90,6 +96,8 @@ KERNEL_MAKE_FLAGS := \
 	KBUILD_HAVE_NLS=no \
 	KBUILD_BUILD_USER="$(call qstrip,$(CONFIG_KERNEL_BUILD_USER))" \
 	KBUILD_BUILD_HOST="$(call qstrip,$(CONFIG_KERNEL_BUILD_DOMAIN))" \
+	KBUILD_BUILD_TIMESTAMP="$(KBUILD_BUILD_TIMESTAMP)" \
+	KBUILD_BUILD_VERSION="0" \
 	CONFIG_SHELL="$(BASH)" \
 	$(if $(findstring c,$(OPENWRT_VERBOSE)),V=1,V='')
 

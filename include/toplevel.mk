@@ -28,6 +28,7 @@ export LD_LIBRARY_PATH:=$(subst ::,:,$(if $(LD_LIBRARY_PATH),$(LD_LIBRARY_PATH):
 export DYLD_LIBRARY_PATH:=$(subst ::,:,$(if $(DYLD_LIBRARY_PATH),$(DYLD_LIBRARY_PATH):)$(TOPDIR)/staging_dir/host/lib)
 export GIT_CONFIG_PARAMETERS='core.autocrlf=false'
 export MAKE_JOBSERVER=$(filter --jobserver%,$(MAKEFLAGS))
+export SOURCE_DATE_EPOCH:=$(shell $(TOPDIR)/scripts/get_source_date_epoch.sh)
 
 # prevent perforce from messing with the patch utility
 unexport P4PORT P4USER P4CONFIG P4CLIENT

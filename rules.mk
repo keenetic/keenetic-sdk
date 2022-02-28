@@ -228,6 +228,7 @@ TARGET_AR:=$(TARGET_CROSS)ar
 TARGET_RANLIB:=$(TARGET_CROSS)ranlib
 TARGET_CXX:=$(TARGET_CROSS)g++
 TARGET_OBJCOPY:=$(TARGET_CROSS)objcopy
+TARGET_OBJDUMP:=$(TARGET_CROSS)objdump
 TARGET_STRIP:=$(TARGET_CROSS)strip
 KPATCH:=$(SCRIPT_DIR)/patch-kernel.sh
 SED:=$(STAGING_DIR_HOST)/bin/sed -i -e
@@ -285,7 +286,7 @@ TARGET_CONFIGURE_OPTS = \
   RANLIB=$(TARGET_CROSS)ranlib \
   STRIP=$(TARGET_CROSS)strip \
   OBJCOPY="$(TARGET_OBJCOPY)" \
-  OBJDUMP=$(TARGET_CROSS)objdump \
+  OBJDUMP=$(TARGET_OBJDUMP) \
   SIZE=$(TARGET_CROSS)size
 
 # strip an entire directory
@@ -306,7 +307,7 @@ else
 		$(if $(CONFIG_KERNEL_PROFILING),KEEP_SYMBOLS=1); \
     NM="$(TARGET_CROSS)nm" \
     STRIP="$(STRIP)" \
-    STRIP_KMOD="$(SCRIPT_DIR)/strip-kmod.sh" \
+    STRIP_KMOD=$(if $(CONFIG_STRIP_KERNEL_MODULES),"$(SCRIPT_DIR)/strip-kmod.sh",true) \
     PATCHELF="$(STAGING_DIR_HOST)/bin/patchelf" \
     $(SCRIPT_DIR)/rstrip.sh
 endif

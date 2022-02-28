@@ -61,7 +61,7 @@ config NDM_DEBUG_SYMBOLS
 	config NDM_DEBUG_OPTS
 		depends on NDM_DEBUG_SYMBOLS
 		string "Additional debug options"
-		default "-ggdb -O0"
+		default "-ggdb -gdwarf-4 -O0"
 
 	config NDM_DEBUG_NO_LTO
 		depends on NDM_DEBUG_SYMBOLS

@@ -306,6 +306,11 @@ menu "Global build settings"
 		help
 		  Specifies arguments passed to the strip command when stripping binaries
 
+	config STRIP_KERNEL_MODULES
+		bool "Strip kernel modules"
+		depends on USE_STRIP || USE_SSTRIP
+		default y
+
 	config STRIP_KERNEL_EXPORTS
 		bool "Strip unnecessary exports from the kernel image"
 		help

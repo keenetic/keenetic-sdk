@@ -26,7 +26,7 @@ define KernelPackage/$(PKG_NAME)
 endef
 
 define Build/Compile
-	$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" \
+	+$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" \
 		CROSS_COMPILE="$(TARGET_CROSS)" \
 		ARCH="$(LINUX_KARCH)" \
 		M="$(PKG_BUILD_DIR)" \

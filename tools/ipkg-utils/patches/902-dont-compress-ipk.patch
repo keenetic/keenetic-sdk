@@ -1,0 +1,12 @@
+diff --git a/ipkg-build b/ipkg-build
+--- a/ipkg-build
++++ b/ipkg-build
+@@ -266,7 +266,7 @@ rm -f $pkg_file
+ if [ "$outer" = "ar" ] ; then
+   ( cd $tmp_dir && ar -crf $pkg_file ./debian-binary ./data.tar.zst ./control.tar.gz )
+ else
+-  ( cd $tmp_dir && $TAR -zcf $pkg_file ./debian-binary ./data.tar.zst ./control.tar.gz )
++  ( cd $tmp_dir && $TAR -cf $pkg_file ./debian-binary ./data.tar.zst ./control.tar.gz )
+ fi
+ 
+ rm $tmp_dir/debian-binary $tmp_dir/data.tar.zst $tmp_dir/control.tar.gz

@@ -10,7 +10,7 @@ ifeq ($(strip $(CONFIG_KERNEL_GIT_CLONE_CUSTOM_URI)),y)
   KERNEL_GIT_REVISION:=$(or $(strip $(patsubst "%",%,$(CONFIG_KERNEL_GIT_REVISION))),"master")
 else ifeq ($(strip $(KERNEL_PATCHVER)),4.9)
   KERNEL_49_SOURCE_URL:=$(NDM_STORAGE)/kernel-49
-  KERNEL_49_SOURCE_VERSION:=4.9.286-5-1
+  KERNEL_49_SOURCE_VERSION:=4.9.309-1
   KERNEL_GIT_CLONE_URI:=$(KERNEL_49_SOURCE_URL)
   KERNEL_GIT_REVISION:=$(KERNEL_49_SOURCE_VERSION)
 else ifeq ($(DUMP),)
@@ -48,7 +48,7 @@ Kernel/Patch:=$(Kernel/Patch/Default)
 define Kernel/Prepare/Default
 	$(call target/linux/prepare)
 	mkdir -p $(LINUX_DIR)
-	zcat $(DL_DIR)/linux-$(KERNEL_GIT_REVISION).tar.gz | $(TAR) -C $(LINUX_DIR) $(TAR_OPTIONS) --strip-components=1
+	zstdcat $(DL_DIR)/linux-$(KERNEL_GIT_REVISION).tar.zst | $(TAR) -C $(LINUX_DIR) $(TAR_OPTIONS) --strip-components=1
 	$(Kernel/Patch)
 	touch $(LINUX_DIR)/.quilt_used
 endef

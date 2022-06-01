@@ -27,6 +27,11 @@ endif
 config NDM_EVENT_DEBUG
 	bool "Event debug"
 
+	config NDM_EVENT_DBKEY_DEBUG
+		depends on NDM_EVENT_DEBUG
+		bool "Event::DbKey debug"
+		default n
+
 	config NDM_EVENT_DEVICE_DEBUG
 		depends on NDM_EVENT_DEBUG
 		bool "Event::Device debug"

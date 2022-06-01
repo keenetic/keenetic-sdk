@@ -50,6 +50,7 @@ Type: $(if $(Package/$(1)/targets),$(Package/$(1)/targets),$(if $(PKG_TARGETS),$
 $(if $(KCONFIG),Kernel-Config: $(KCONFIG)
 )$(if $(BUILDONLY),Build-Only: $(BUILDONLY)
 )$(if $(HIDDEN),Hidden: $(HIDDEN)
+)$(if $(IMPLICIT),Implicit: $(IMPLICIT)
 )$(if $(OBSOLETE),Obsolete: $(OBSOLETE)
 )$(if $(STAGE),Stage: $(STAGE)
 )$(if $(filter private,$(PKGFLAGS)),Private: 1

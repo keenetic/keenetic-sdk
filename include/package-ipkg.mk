@@ -204,6 +204,7 @@ ifeq ($(DUMP),)
 		done; \
 		echo "Regions: $$$$REGIONS"; \
 		echo "Hidden: $(HIDDEN)"; \
+		echo "Implicit: $(IMPLICIT)"; \
 		echo "Obsolete: $(OBSOLETE)"; \
 		echo "Stage: $(STAGE)"; \
 		echo "Sort-Order: $(SORT_ORDER)"; \
@@ -212,7 +213,9 @@ ifeq ($(DUMP),)
 		echo "Architecture: $(PKGARCH)"; \
 		echo "Installed-Size: 0"; \
 		echo -n "Description: "; $(SH_FUNC) getvar $(call shvar,Package/$(1)/description) | sed -e 's,^[[:space:]]*, ,g'; \
-		echo -n "Script: "; $(SH_FUNC) getvar $(call shvar,Package/$(1)/script) | sed -e 's,^[[:space:]]*, ,g'; \
+		echo -n "Script: "; $(SH_FUNC) getvar $(call shvar,Package/$(1)/script) | \
+			($(SCRIPT_DIR)/ndm_include.pl $$(IDIR_$(1))/flash || exit 1) | \
+			sed -e 's,^[[:space:]]*, ,g'; \
 		echo "@@" \
  	) > $$(IDIR_$(1))/CONTROL/control
 	if [ ! -f $$(LDIR_$(1))/TITLE ]; then \

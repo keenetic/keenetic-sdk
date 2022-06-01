@@ -3,7 +3,7 @@
 sourcename="$1"; shift
 
 for pkg in "$@"; do
-	tar -Ozxf "$pkg" ./control.tar.gz 2>/dev/null | tar -Ozxf - ./control 2>/dev/null | \
+	tar -Oxf "$pkg" ./control.tar.gz 2>/dev/null | tar -Ozxf - ./control 2>/dev/null | \
 	while read field value; do
 		if [ "$field" = "SourceName:" ] && [ "$value" = "$sourcename" ]; then
 			rm -vf "$pkg"

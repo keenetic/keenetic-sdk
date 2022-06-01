@@ -76,6 +76,7 @@ $(eval $(if $(NF_KMOD),$(call nf_add,NF_CONNTRACK,CONFIG_NF_CT_PROTO_UDPLITE=y, 
 $(eval $(call nf_add,IPT_CONNTRACK,CONFIG_NETFILTER_XT_MATCH_STATE=y, $(P_XT)xt_state))
 #$(eval $(call nf_add,IPT_CONNTRACK,CONFIG_NETFILTER_XT_TARGET_CT, $(P_XT)xt_CT))
 $(eval $(call nf_add,IPT_CONNTRACK,CONFIG_NETFILTER_XT_MATCH_CONNTRACK=y, $(P_XT)xt_conntrack))
+$(eval $(call nf_add,IPT_CONNTRACK,CONFIG_NETFILTER_XT_MATCH_CONNLIMIT=y, $(P_XT)xt_connlimit))
 $(eval $(call nf_add,IPT_CONNTRACK,CONFIG_NETFILTER_XT_CONNMARK=y, $(P_XT)xt_connmark))
 $(eval $(call nf_add,IPT_CONNTRACK,CONFIG_NETFILTER_XT_CONNNDMMARK=y, $(P_XT)xt_connndmmark))
 $(eval $(call nf_add,IPT_CONNTRACK,CONFIG_NETFILTER_XT_MATCH_HELPER=y, $(P_XT)xt_helper))
@@ -84,7 +85,6 @@ $(eval $(if $(NF_KMOD),,$(call nf_add,IPT_CONNTRACK,CONFIG_NETFILTER_XT_CONNMARK
 # conntrack-extra
 
 $(eval $(call nf_add,IPT_CONNTRACK_EXTRA,CONFIG_NETFILTER_XT_MATCH_CONNBYTES, $(P_XT)xt_connbytes))
-$(eval $(call nf_add,IPT_CONNTRACK_EXTRA,CONFIG_NETFILTER_XT_MATCH_CONNLIMIT, $(P_XT)xt_connlimit))
 $(eval $(call nf_add,IPT_CONNTRACK_EXTRA,CONFIG_NETFILTER_XT_MATCH_RECENT, $(P_XT)xt_recent))
 
 #conntrack-label
@@ -109,6 +109,7 @@ $(eval $(call nf_add,IPT_IPOPT,CONFIG_NETFILTER_XT_NDMMARK=y, $(P_XT)xt_ndmmark)
 $(eval $(call nf_add,IPT_IPOPT,CONFIG_NETFILTER_XT_MATCH_TCPMSS=y, $(P_XT)xt_tcpmss))
 $(eval $(call nf_add,IPT_IPOPT,CONFIG_NETFILTER_XT_TARGET_DSCP=y, $(P_XT)xt_DSCP))
 $(eval $(call nf_add,IPT_IPOPT,CONFIG_NETFILTER_XT_MATCH_LENGTH=y, $(P_XT)xt_length))
+$(eval $(call nf_add,IPT_IPOPT,CONFIG_NETFILTER_XT_MATCH_NDM_SECURITY_LEVEL=y, $(P_XT)xt_ndm_security_level))
 
 # ipopt-extended
 

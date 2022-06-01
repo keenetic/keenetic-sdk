@@ -52,6 +52,7 @@ define Package/Default
   KCONFIG:=
   BUILDONLY:=
   HIDDEN:=
+  IMPLICIT:=
   OBSOLETE:=
   URL:=
   VARIANT:=

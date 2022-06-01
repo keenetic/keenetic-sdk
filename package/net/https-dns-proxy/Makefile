@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2021 Keenetic Limited
+# Copyright (C) 2022 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -18,7 +18,7 @@ endef
 define Package/https-dns-proxy
   CATEGORY:=Network
   TITLE:=DNS over HTTPS proxy server
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +libcares +libcurl +libev +ca-certificates +HTTPS_DNS_PROXY_BACKTRACE:libfatalsig
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +libcares +libcurl +libev +ca-certificates +libndm +HTTPS_DNS_PROXY_BACKTRACE:libfatalsig
   DISABLE_RSTRIP:=y
 endef
 

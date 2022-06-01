@@ -9,7 +9,7 @@ include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/version.mk
 
 PKG_NAME:=opkg
-PKG_VERSION:=v0.4.4-1
+PKG_VERSION:=v0.4.4-3
 PKG_LICENSE:=GPL-2.0+
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)
@@ -84,6 +84,8 @@ endef
 HOST_CONFIGURE_ARGS+= \
 	--disable-curl \
 	--disable-gpg \
+	--disable-xz \
+	--enable-zstd \
 	--with-opkgetcdir=/etc \
 	--with-opkglockfile=/tmp/opkg.lock \
 	--with-static-libopkg \

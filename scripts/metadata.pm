@@ -203,6 +203,7 @@ sub parse_package_metadata($) {
 		/^Depends: \s*(.+)\s*$/ and $pkg->{depends} = [ split /\s+/, $1 ];
 		/^Conflicts: \s*(.+)\s*$/ and $pkg->{conflicts} = [ split /\s+/, $1 ];
 		/^Hidden: \s*(.+)\s*$/ and $pkg->{hidden} = $1;
+		/^Implicit: \s*(.+)\s*$/ and $pkg->{implicit} = $1;
 		/^Stage: \s*(.+)\s*$/ and $pkg->{stage} = $1;
 		/^Build-Variant: \s*([\w\-]+)\s*/ and $pkg->{variant} = $1;
 		/^Build-Only: \s*(.+)\s*$/ and $pkg->{buildonly} = 1;

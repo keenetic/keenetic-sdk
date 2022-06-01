@@ -34,7 +34,8 @@ define Package/openvpn
 endef
 
 EXTRA_CFLAGS   := -ffunction-sections \
-                  -fdata-sections
+                  -fdata-sections \
+                  -Werror
 
 EXTRA_LDFLAGS  := -Wl,--gc-sections
 

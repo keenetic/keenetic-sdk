@@ -41,14 +41,14 @@ endef
 
 KERNEL_SOURCE_PROTO:=git
 KERNEL_SOURCE_URL:=$(KERNEL_GIT_CLONE_URI)
-KERNEL_SOURCE_FILE:=linux-$(KERNEL_GIT_REVISION).tar.gz
+KERNEL_SOURCE_FILE:=linux-$(KERNEL_GIT_REVISION).tar.zst
 
 define Download/kernel
   PROTO:=$(KERNEL_SOURCE_PROTO)
   URL:=$(KERNEL_SOURCE_URL)
   VERSION:=$(KERNEL_GIT_REVISION)
   SUBDIR:=linux-$(LINUX_VERSION)
-  FILE:=linux-$(KERNEL_GIT_REVISION).tar.gz
+  FILE:=linux-$(KERNEL_GIT_REVISION).tar.zst
   DL_FILE:=$(KERNEL_SOURCE_FILE)
   MD5SUM:=$(LINUX_KERNEL_MD5SUM)
 endef
@@ -70,7 +70,7 @@ define BuildKernel
   $(if $(QUILT),$(Build/Quilt))
   $(call Download,kernel)
 
-  $(STAMP_PREPARED): $(DL_DIR)/linux-$(KERNEL_GIT_REVISION).tar.gz
+  $(STAMP_PREPARED): $(DL_DIR)/linux-$(KERNEL_GIT_REVISION).tar.zst
 	-rm -rf $(KERNEL_BUILD_DIR)
 	-mkdir -p $(KERNEL_BUILD_DIR)
 	$(Kernel/Prepare)
@@ -128,7 +128,7 @@ define BuildKernel
   define BuildKernel
   endef
 
-  download: $(DL_DIR)/linux-$(KERNEL_GIT_REVISION).tar.gz
+  download: $(DL_DIR)/linux-$(KERNEL_GIT_REVISION).tar.zst
   prepare: $(STAMP_CONFIGURED)
   compile: $(LINUX_DIR)/.modules
 	$(MAKE) -C image compile TARGET_BUILD=

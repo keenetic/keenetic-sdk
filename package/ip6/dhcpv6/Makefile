@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2021 Keenetic Limited
+# Copyright (C) 2022 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -17,7 +17,7 @@ endef
 
 define Package/dhcpv6
   CATEGORY:=IPv6
-  TITLE:=DHCPv6 client + server
+  TITLE:=DHCPv6 server
   DEPENDS:=+libc +SSP_SUPPORT:libssp +libndm
   DISABLE_RSTRIP:=y
 endef

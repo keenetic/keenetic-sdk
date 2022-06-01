@@ -34,8 +34,8 @@ define Build/Configure
 endef
 
 define Build/Compile
-	$(MAKE) -C $(PKG_BUILD_DIR) \
-		$(KERNEL_MAKE_FLAGS) \
+	+$(KERNEL_MAKE) $(PKG_JOBS) \
+		-C $(PKG_BUILD_DIR) \
 		KERNEL_DIR="$(LINUX_DIR)"
 endef
 

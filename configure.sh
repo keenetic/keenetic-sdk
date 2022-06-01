@@ -199,7 +199,7 @@ list_configs () {
 					-maxdepth 1 -type d \
 					! -name profiles \
 					! -name 'base-files*' \
-					! -name 'corewireless-files' | \
+					! -name 'ndm-mod-files' | \
 					cut -d / -f 5)
 				if [ -n "$profiles" ]; then
 					for p in $profiles; do

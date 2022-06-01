@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=sch_cake
-PKG_VERSION:=0.5
+PKG_VERSION:=0.6
 PKG_LICENSE:=BSD-3c
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -28,7 +28,7 @@ define KernelPackage/$(PKG_NAME)
 endef
 
 define Build/Compile
-	$(KERNEL_MAKE) $(PKG_JOBS) \
+	+$(KERNEL_MAKE) $(PKG_JOBS) \
 		M="$(PKG_BUILD_DIR)" \
 		modules
 endef

@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=wireguard
-PKG_VERSION:=1.0.20200623-4
+PKG_VERSION:=1.0.20200623-5
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)
 PKG_SOURCE_VERSION:=$(PKG_VERSION)
@@ -49,7 +49,7 @@ MAKE_PATH:=src/tools
 MAKE_VARS += PLATFORM=linux
 
 define Build/Compile
-	$(MAKE) $(KERNEL_MAKEOPTS) M="$(PKG_BUILD_DIR)/src" modules
+	+$(MAKE) $(KERNEL_MAKEOPTS) M="$(PKG_BUILD_DIR)/src" modules
 endef
 
 define Package/wireguard/install

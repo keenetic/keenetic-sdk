@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=strongswan
-PKG_VERSION:=5.8.0-5-3
+PKG_VERSION:=5.8.0-5-4
 PKG_LICENSE:=GPL-2.0+
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)
@@ -60,7 +60,6 @@ CONFIGURE_ARGS += \
 	--disable-revocation \
 	--disable-scepclient \
 	--disable-sshkey \
-	--disable-swanctl \
 	--disable-aes \
 	--disable-des \
 	--disable-md5 \
@@ -70,7 +69,6 @@ CONFIGURE_ARGS += \
 	--disable-static \
 	--disable-fast \
 	--disable-scepclient \
-	--disable-vici \
 	--disable-tpm \
 	--disable-tss-trousers \
 	--disable-tss-tss2 \
@@ -78,6 +76,9 @@ CONFIGURE_ARGS += \
 	--enable-shared \
 	--enable-monolithic \
 	--enable-resolve \
+	--enable-counters \
+	--enable-vici \
+	--enable-swanctl \
 	--enable-xauth-generic \
 	--enable-xauth-eap \
 	--enable-eap-md5 \

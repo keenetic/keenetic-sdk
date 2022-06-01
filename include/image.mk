@@ -56,7 +56,7 @@ NDM_KMOD_ONDEMAND += xt_TEE ah4 xt_geoip xt_iprange ip6t_rt xt_addrtype
 NDM_KMOD_ONDEMAND += ip6t_mh xt_IPMARK xt_ACCOUNT xt_iface xfrm4_mode_beet
 NDM_KMOD_ONDEMAND += xt_time xt_DNETMAP xt_socket xt_length2 xt_fuzzy xt_ipv4options
 NDM_KMOD_ONDEMAND += xt_DELUDE xt_CHAOS nf_nat_masquerade_ipv6 ip6t_NPT xt_NFQUEUE xt_NFLOG
-NDM_KMOD_ONDEMAND += ip6t_ipv6header xt_hashlimit xt_connlimit xt_LOGMARK
+NDM_KMOD_ONDEMAND += ip6t_ipv6header xt_hashlimit xt_LOGMARK
 NDM_KMOD_ONDEMAND += ip_set_hash_ipportnet ip_set_bitmap_port xt_multiport
 NDM_KMOD_ONDEMAND += ip6t_eui64 xt_DHCPMAC xt_psd xt_owner ip6t_frag
 NDM_KMOD_ONDEMAND += xt_quota2 xt_pkttype xt_lscan xt_TPROXY xt_SYSRQ xt_quota
@@ -115,7 +115,7 @@ NDM_KMOD_ONDEMAND += rc-dntv-live-dvb-t rc-technisat-usb2 zl10039 si21xx stb6100
 NDM_KMOD_ONDEMAND += stv0900 stv090x m88ds3103 stb6000 m88rs2000 cx24116 tda10023
 NDM_KMOD_ONDEMAND += sch_ingress sch_codel sch_fq_codel sch_hfsc cls_fw cls_route cls_flow cls_tcindex cls_u32 em_u32
 NDM_KMOD_ONDEMAND += act_mirred act_skbedit act_connmark act_ipt act_police cls_basic em_cmp em_meta em_nbyte
-NDM_KMOD_ONDEMAND += em_text sch_dsmark sch_gred sch_htb sch_prio sch_red sch_sfq sch_tbf sch_teql
+NDM_KMOD_ONDEMAND += em_text sch_dsmark sch_gred sch_htb sch_prio sch_red sch_sfq sch_tbf sch_teql sch_drr
 
 # Filesystems for opkg
 
@@ -369,6 +369,10 @@ ifneq ($(CONFIG_PACKAGE_ndm),)
 	    fi; \
 	  fi; \
 	  rm -f $(TARGET_DIR)/flash/default-config_gen_$$$${mode}; \
+	done; \
+	for i in $(TARGET_DIR)/flash/default-config*; do \
+		$(SCRIPT_DIR)/ndm_include.pl $(TARGET_DIR)/flash < $$$$i > $$$${i}_inc || { rm -f $$$${i}_inc; exit 1; }; \
+		mv $$$${i}_inc $$$$i; \
 	done; \
 	if $$$$CONFIG_GENERATED; then \
 		sed -i -e 's/$$$$'"/`echo \\\r`/" -e 's/\t/    /g' $(TARGET_DIR)/flash/default-config*; \

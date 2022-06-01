@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=coova-chilli
-PKG_VERSION:=1.3.1.4-13
+PKG_VERSION:=1.3.1.4-14
 PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)

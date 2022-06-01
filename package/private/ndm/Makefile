@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2021 Keenetic Limited
+# Copyright (C) 2022 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -18,7 +18,7 @@ endef
 define Package/ndm
   CATEGORY:=NDM
   TITLE:=Network device manager
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +libsupcxx +tzdata +wmond +libopenssl +ping +arping +traceroute +reboot +nlldp +nginx +telnetd +init +ndnproxy +libndmacl_stub +libndm +libndmfw +zlib +kmod-ipt-core +kmod-ipt-filter +kmod-ipt-conntrack +kmod-ip6tables +kmod-ipt-ipopt +kmod-ipt-nat +kmod-ipt-nat6 +kmod-phr +kmod-tun +kmod-nacct +kmod-zram +kmod-ipt-ndm-extra +kmod-nf-nat-cone +!IS_EXTENDER:kmod-fast-nat +nsh +kmod-mtdoops_proc +kmod-nf-conntrack-netlink +kmod-sched-base +kmod-sch_cake +kmod-ipt-ipset-base +NDM_BACKTRACE:libunwind +NDM_ASAN_DEBUG:busybox +NDM_ASAN_DEBUG:libasan +NDM_ASAN_DEBUG:libssp +NDM_TSAN_DEBUG:busybox +NDM_TSAN_DEBUG:libtsan +NDM_UBSAN_DEBUG:busybox +NDM_UBSAN_DEBUG:libubsan +angular-ndw +HAS_BTMTK:uart_launcher
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +libsupcxx +tzdata +libopenssl +ping +arping +traceroute +reboot +nlldp +nginx +telnetd +init +ndnproxy +libndmacl_stub +libndm +libndmfw +zlib +kmod-ipt-core +kmod-ipt-filter +kmod-ipt-conntrack +kmod-ip6tables +kmod-ipt-ipopt +kmod-ipt-nat +kmod-ipt-nat6 +kmod-phr +kmod-tun +kmod-nacct +kmod-zram +kmod-ipt-ndm-extra +kmod-nf-nat-cone +!IS_EXTENDER:kmod-fast-nat +nsh +kmod-mtdoops_proc +kmod-nf-conntrack-netlink +kmod-sched-base +kmod-sch_cake +kmod-ipt-ipset-base +NDM_BACKTRACE:libunwind +NDM_ASAN_DEBUG:busybox +NDM_ASAN_DEBUG:libasan +NDM_ASAN_DEBUG:libssp +NDM_TSAN_DEBUG:busybox +NDM_TSAN_DEBUG:libtsan +NDM_UBSAN_DEBUG:busybox +NDM_UBSAN_DEBUG:libubsan +angular-ndw +HAS_BTMTK:uart_launcher
   DISABLE_RSTRIP:=y
 endef
 
@@ -49,22 +49,6 @@ define Package/ndm-mod-acl/install
 endef
 
 $(eval $(call BuildPackage,ndm-mod-acl))
-
-define Package/ndm-mod-adguard-dns
-  SUBMENU:=Internet filters
-  CATEGORY:=NDM
-  TITLE:=NDM AdGuard DNS module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-dns-filter
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/ndm-mod-adguard-dns/install
-	if [ -d ./files-ndm-mod-adguard-dns ]; then \
-		$(CP) ./files-ndm-mod-adguard-dns/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,ndm-mod-adguard-dns))
 
 define Package/ndm-mod-afp
   SUBMENU:=USB storage
@@ -162,22 +146,6 @@ endef
 
 $(eval $(call BuildPackage,ndm-mod-cloudcontrol))
 
-define Package/ndm-mod-cloudflare-dns
-  SUBMENU:=Internet filters
-  CATEGORY:=NDM
-  TITLE:=NDM Cloudflare DNS module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-dns-filter
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/ndm-mod-cloudflare-dns/install
-	if [ -d ./files-ndm-mod-cloudflare-dns ]; then \
-		$(CP) ./files-ndm-mod-cloudflare-dns/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,ndm-mod-cloudflare-dns))
-
 define Package/ndm-mod-components
   SUBMENU:=Base system
   CATEGORY:=NDM
@@ -262,7 +230,7 @@ define Package/ndm-mod-corewireless
   SUBMENU:=Base system
   CATEGORY:=NDM
   TITLE:=NDM WiFi module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +!USES_OLD_MODES:ndm-mod-config-extender +ndm-mod-dhcpd +HAS_BAND_STEERING:bndstrg +HAS_MT7603_RADIO:kmod-mt7603 +HAS_MT7610_RADIO:kmod-mt7610 +HAS_MT7613_RADIO:kmod-mt7613 +HAS_MT7615_RADIO:kmod-mt7615 +HAS_MT7628_RADIO:kmod-mt7628 +HAS_MT76X2_RADIO:kmod-mt76x2 +HAS_MT7915_RADIO:kmod-mt7915 +mtkiappd
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +!USES_OLD_MODES:ndm-mod-config-extender +ndm-mod-dhcpd +HAS_BAND_STEERING:bndstrg +HAS_MT7603_RADIO:kmod-mt7603 +HAS_MT7610_RADIO:kmod-mt7610 +HAS_MT7613_RADIO:kmod-mt7613 +HAS_MT7615_RADIO:kmod-mt7615 +HAS_MT7628_RADIO:kmod-mt7628 +HAS_MT76X2_RADIO:kmod-mt76x2 +HAS_MT7915_RADIO:kmod-mt7915 +mtkiappd +wind
   DISABLE_RSTRIP:=y
 endef
 
@@ -341,7 +309,7 @@ $(eval $(call BuildPackage,ndm-mod-dlna))
 define Package/ndm-mod-dns-filter
   SUBMENU:=Internet filters
   CATEGORY:=NDM
-  TITLE:=NDM DNS Filter core module
+  TITLE:=NDM DNS Filter module
   DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER
   DISABLE_RSTRIP:=y
 endef
@@ -374,7 +342,7 @@ define Package/ndm-mod-dns-tls
   SUBMENU:=Applications
   CATEGORY:=NDM
   TITLE:=NDM DNS over TLS module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +nginx +nginx-stream-module +nutdns +ca-certificates
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +stubby +ca-certificates
   DISABLE_RSTRIP:=y
 endef
 
@@ -514,6 +482,22 @@ endef
 
 $(eval $(call BuildPackage,ndm-mod-fat))
 
+define Package/ndm-mod-fstools
+  SUBMENU:=Debug
+  CATEGORY:=NDM
+  TITLE:=NDM filesystems tools module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +ndm-mod-storage +tntfs-utils +exfat-mkfs +exfat-fsck +e2fsprogs +dosfstools
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-fstools/install
+	if [ -d ./files-ndm-mod-fstools ]; then \
+		$(CP) ./files-ndm-mod-fstools/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-fstools))
+
 define Package/ndm-mod-ftp
   SUBMENU:=USB storage
   CATEGORY:=NDM
@@ -614,7 +598,7 @@ define Package/ndm-mod-ip6
   SUBMENU:=Networking
   CATEGORY:=NDM
   TITLE:=NDM IPv6 support module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +radvd +dhcpv6 +rdisc6d +kmod-ipv6 +kmod-sit +kmod-ipv6_pt
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +radvd +dhcpv6 +odhcp6c +rdisc6d +kmod-ipv6 +kmod-sit +kmod-ipv6_pt +kmod-nat46
   DISABLE_RSTRIP:=y
 endef
 
@@ -657,6 +641,22 @@ define Package/ndm-mod-ipsec/install
 endef
 
 $(eval $(call BuildPackage,ndm-mod-ipsec))
+
+define Package/ndm-mod-isp-lock
+  SUBMENU:=Extras
+  CATEGORY:=NDM
+  TITLE:=NDM ISP lock
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-isp-lock/install
+	if [ -d ./files-ndm-mod-isp-lock ]; then \
+		$(CP) ./files-ndm-mod-isp-lock/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-isp-lock))
 
 define Package/ndm-mod-kabinet
   SUBMENU:=Networking
@@ -914,6 +914,22 @@ endef
 
 $(eval $(call BuildPackage,ndm-mod-miniupnpd))
 
+define Package/ndm-mod-mobile
+  SUBMENU:=Base system
+  CATEGORY:=NDM
+  TITLE:=NDM Mobile module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-mobile/install
+	if [ -d ./files-ndm-mod-mobile ]; then \
+		$(CP) ./files-ndm-mod-mobile/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-mobile))
+
 define Package/ndm-mod-monitor
   SUBMENU:=Applications
   CATEGORY:=NDM
@@ -1121,6 +1137,22 @@ define Package/ndm-mod-netflow/install
 endef
 
 $(eval $(call BuildPackage,ndm-mod-netflow))
+
+define Package/ndm-mod-nextdns
+  SUBMENU:=Internet filters
+  CATEGORY:=NDM
+  TITLE:=NDM NextDNS module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-dns-filter +ndm-mod-dns-https +ndm-mod-dns-tls
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-nextdns/install
+	if [ -d ./files-ndm-mod-nextdns ]; then \
+		$(CP) ./files-ndm-mod-nextdns/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-nextdns))
 
 define Package/ndm-mod-ntce
   SUBMENU:=Applications
@@ -1670,7 +1702,7 @@ define Package/ndm-mod-usblte
   SUBMENU:=USB modems
   CATEGORY:=NDM
   TITLE:=NDM UsbLte module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-usb +ndm-mod-dhcpd +kmod-usb-storage +kmod-usb-serial-option +kmod-usb-acm +kmod-usb-net-huawei-cdc-ncm +kmod-usb-net-kalmia +kmod-usb-net-rndis +kmod-usb-net-cdc-ether +kmod-ubridge
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-usb +ndm-mod-mobile +ndm-mod-dhcpd +kmod-usb-storage +kmod-usb-serial-option +kmod-usb-acm +kmod-usb-net-huawei-cdc-ncm +kmod-usb-net-kalmia +kmod-usb-net-rndis +kmod-usb-net-cdc-ether +kmod-ubridge
   DISABLE_RSTRIP:=y
 endef
 
@@ -1686,7 +1718,7 @@ define Package/ndm-mod-usbmodem
   SUBMENU:=USB modems
   CATEGORY:=NDM
   TITLE:=NDM USB modems support module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-ppp +ndm-mod-usb +kmod-usb-storage +kmod-usb-serial-option +kmod-usb-acm +kmod-usb-serial-sierrawireless +kmod-ubridge +zted
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-ppp +ndm-mod-usb +ndm-mod-mobile +kmod-usb-storage +kmod-usb-serial-option +kmod-usb-acm +kmod-usb-serial-sierrawireless +kmod-ubridge +zted
   DISABLE_RSTRIP:=y
 endef
 
@@ -1702,7 +1734,7 @@ define Package/ndm-mod-usbnet
   SUBMENU:=USB modems
   CATEGORY:=NDM
   TITLE:=NDM USB Ethernet support module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-dhcpd +ndm-mod-usb +kmod-usb-net-rndis +kmod-usb-net-cdc-ether +kmod-ubridge
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-dhcpd +ndm-mod-usb +ndm-mod-mobile +kmod-usb-net-rndis +kmod-usb-net-cdc-ether +kmod-ubridge
   DISABLE_RSTRIP:=y
 endef
 
@@ -1734,7 +1766,7 @@ define Package/ndm-mod-usbqmi
   SUBMENU:=USB modems
   CATEGORY:=NDM
   TITLE:=NDM UsbQmi module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-usb +ndm-mod-dhcpd +kmod-usb-storage +kmod-usb-serial-option +kmod-usb-serial-qualcomm +kmod-usb-net-qmi-wwan +kmod-ubridge +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):adb +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):ltefw
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-usb +ndm-mod-mobile +ndm-mod-dhcpd +kmod-usb-storage +kmod-usb-serial-option +kmod-usb-serial-qualcomm +kmod-usb-net-qmi-wwan +kmod-ubridge +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):adb +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):ltefw
   DISABLE_RSTRIP:=y
 endef
 
@@ -1841,22 +1873,6 @@ define Package/ndm-mod-wpa-eap/install
 endef
 
 $(eval $(call BuildPackage,ndm-mod-wpa-eap))
-
-define Package/ndm-mod-ydns
-  SUBMENU:=Internet filters
-  CATEGORY:=NDM
-  TITLE:=NDM Yandex.DNS module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-dns-filter
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/ndm-mod-ydns/install
-	if [ -d ./files-ndm-mod-ydns ]; then \
-		$(CP) ./files-ndm-mod-ydns/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,ndm-mod-ydns))
 
 define Package/ndmc
   CATEGORY:=NDM

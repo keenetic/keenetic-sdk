@@ -60,14 +60,16 @@ tools-y += ccache
 endif
 
 # make any tool depend on tar and xz to ensure that archives can be unpacked properly
-tools-core := tar xz
+tools-core := tar xz zstd
 
 $(foreach tool, $(tools-y), $(eval $(curdir)/$(tool)/compile += $(patsubst %,$(curdir)/%/install,$(tools-core))))
 tools-y += $(tools-core)
 
 # make core tools depend on sed and flock
 $(foreach tool, $(filter-out xz,$(tools-core)), $(eval $(curdir)/$(tool)/compile += $(curdir)/sed/install))
+$(curdir)/tar/compile += $(curdir)/zstd/install	# SYS-408
 $(curdir)/xz/compile += $(curdir)/flock/install
+$(curdir)/zstd/compile += $(curdir)/flock/install
 
 $(curdir)/sed/compile := $(curdir)/flock/install $(curdir)/xz/install
 tools-y += flock sed

@@ -739,7 +739,7 @@ ipkg_install_file_dest() {
 	local ext="`echo $filename | sed 's/.*\.//'`"
 	local pkg_extract_stdout
 	if [ "$ext" = "ipk" ]; then
-		pkg_extract_stdout="tar -xzOf"
+		pkg_extract_stdout="tar -xOf"
 	elif [ "$ext" = "deb" ]; then
 		pkg_extract_stdout="ar p"
 	else
@@ -803,8 +803,8 @@ Status: install ok pending" | ipkg_status_update_sd $sd $pkg
 	set -o noglob
 	rm -r $IPKG_TMP/$pkg/control
 
-	if ! $pkg_extract_stdout $filename ./data.tar.gz | (cd $IPKG_TMP/$pkg/data; zcat | tar -xf - ) ; then
-		echo "ipkg_install_file: ERROR unpacking data.tar.gz from $filename" >&2
+	if ! $pkg_extract_stdout $filename ./data.tar.zst | (cd $IPKG_TMP/$pkg/data; zstdcat | tar -xf - ) ; then
+		echo "ipkg_install_file: ERROR unpacking data.tar.zst from $filename" >&2
 		return 1
 	fi
 	echo "Done."
@@ -875,7 +875,7 @@ diff -u $dest/$conffile $IPKG_TMP/$pkg/data/$conffile"
 	rm -rf $IPKG_TMP/$pkg/data
 	rmdir $IPKG_TMP/$pkg
 	rm -f $info_dir/$pkg.list
-	$pkg_extract_stdout $filename ./data.tar.gz | zcat | tar tf - | sed -e '/\/$/d; s/^\.//' > $info_dir/$pkg.list
+	$pkg_extract_stdout $filename ./data.tar.zst | zstdcat | tar tf - | sed -e '/\/$/d; s/^\.//' > $info_dir/$pkg.list
 
 	if [ -x "$info_dir/$pkg.postinst" ]; then
 		$info_dir/$pkg.postinst configure

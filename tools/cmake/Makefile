@@ -1,33 +1,37 @@
 #
-# Copyright (C) 2006-2016 OpenWrt.org
+# Copyright (C) 2022 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cmake
-PKG_VERSION:=3.8.1
+PKG_VERSION:=3.23.1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://cmake.org/files/v3.8/ \
-		https://fossies.org/linux/misc/
-PKG_HASH:=ce5d9161396e06501b00e52933783150a87c33080d4bdcef461b5b7fd24ac228
+PKG_ARCH:=linux-x86_64
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_ARCH).tar.gz
+PKG_SOURCE_URL:=https://github.com/Kitware/CMake/releases/download/v$(PKG_VERSION)
+PKG_HASH:=f3c654b2e226b9d43369e0bd8487c51618d4dbe5a1af929dd32af7e6ca432d60
 
-HOST_CONFIGURE_PARALLEL:=1
+HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/$(PKG_NAME)-$(PKG_VERSION)-$(PKG_ARCH)
 
 include $(INCLUDE_DIR)/host-build.mk
 
-HOST_CONFIGURE_VARS += \
-	MAKEFLAGS="$(HOST_JOBS)" \
-	CXXFLAGS="$(HOST_CFLAGS)"
+define Host/Compile
+endef
 
-HOST_CONFIGURE_ARGS := \
-	$(if $(MAKE_JOBSERVER),--parallel="$(MAKE_JOBSERVER)") \
-	--prefix=$(STAGING_DIR_HOST)
+define Host/Install
+	$(INSTALL_DIR) $(STAGING_DIR_HOST)/{bin,share}
+	$(CP) $(HOST_BUILD_DIR)/bin/{cmake,cpack,ctest} $(STAGING_DIR_HOST)/bin/
+	$(CP) $(HOST_BUILD_DIR)/share/cmake-* $(STAGING_DIR_HOST)/share/
+endef
 
-ifneq ($(findstring c,$(OPENWRT_VERBOSE)),)
-  HOST_MAKE_FLAGS += VERBOSE=1
-endif
+define Host/Clean
+	$(Host/Clean/Default)
+	rm -f $(STAGING_DIR_HOST)/bin/{cmake,cpack,ctest}
+	rm -rf $(STAGING_DIR_HOST)/share/cmake-*
+endef
 
 $(eval $(call HostBuild))

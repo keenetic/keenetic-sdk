@@ -598,7 +598,7 @@ define Package/ndm-mod-ip6
   SUBMENU:=Networking
   CATEGORY:=NDM
   TITLE:=NDM IPv6 support module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +radvd +dhcpv6 +odhcp6c +rdisc6d +kmod-ipv6 +kmod-sit +kmod-ipv6_pt +kmod-nat46
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +radvd +dhcpv6 +odhcp6c +kmod-ipv6 +kmod-sit +kmod-ipv6_pt +kmod-nat46
   DISABLE_RSTRIP:=y
 endef
 

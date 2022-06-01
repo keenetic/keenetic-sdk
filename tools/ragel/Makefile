@@ -7,11 +7,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ragel
-PKG_VERSION:=6.9
+PKG_VERSION:=6.10
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://www.colm.net/files/$(PKG_NAME)
-PKG_HASH:=6e07be0fab5ca1d9c2d9e177718a018fc666141f594a5d6e7025658620cf660a
+PKG_HASH:=5f156edb65d20b856d638dd9ee2dfb43285914d9aa2b6ec779dac0270cd56c3f
 PKG_CAT:=zcat
 
 include $(INCLUDE_DIR)/host-build.mk

@@ -33,7 +33,7 @@ define Package/stubby
   CATEGORY:=Network
   SUBMENU:=IP Addresses and Names
   TITLE+= - (daemon that uses getdns)
-  DEPENDS:= +libyaml +getdns +ca-certificates +libopenssl
+  DEPENDS:= +libyaml +getdns +ca-certificates +libopenssl +libndm
 endef
 
 define Package/stubby/description

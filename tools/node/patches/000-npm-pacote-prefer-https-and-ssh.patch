@@ -1,0 +1,30 @@
+diff --git a/lib/node_modules/npm/node_modules/pacote/lib/fetchers/git.js b/lib/node_modules/npm/node_modules/pacote/lib/fetchers/git.js
+--- a/lib/node_modules/npm/node_modules/pacote/lib/fetchers/git.js
++++ b/lib/node_modules/npm/node_modules/pacote/lib/fetchers/git.js
+@@ -85,13 +85,8 @@ Fetcher.impl(fetchGit, {
+ 
+ function hostedManifest (spec, opts) {
+   return BB.resolve(null).then(() => {
+-    if (!spec.hosted.git()) {
+-      throw new Error(`No git url for ${spec}`)
+-    }
+-    return plainManifest(spec.hosted.git(), spec, opts)
+-  }).catch(err => {
+     if (!spec.hosted.https()) {
+-      throw err
++      throw new Error(`No https url for ${spec}`)
+     }
+     return plainManifest(spec.hosted.https(), spec, opts)
+   }).catch(err => {
+@@ -99,6 +94,11 @@ function hostedManifest (spec, opts) {
+       throw err
+     }
+     return plainManifest(spec.hosted.sshurl(), spec, opts)
++  }).catch(err => {
++    if (!spec.hosted.git()) {
++      throw err
++    }
++    return plainManifest(spec.hosted.git(), spec, opts)
+   })
+ }
+ 

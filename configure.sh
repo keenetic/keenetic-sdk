@@ -143,7 +143,7 @@ preset_apply () {
 		t+=$'\ncomponents' # hidden and always needed
 	else
 		t=$(grep '^CONFIG' tmp/presets.config)
-		[ $preset != all ] && t=$(echo "$t" | grep -w $preset)
+		[ $preset != all ] && t=$(echo "$t" | grep "[\" ]$preset[\" ]")
 		t=$(echo "$t" | cut -d = -f 1 | sed 's/CONFIG_//')
 	fi
 

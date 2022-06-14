@@ -296,3 +296,131 @@ index 56f43cd..026f11b 100644
  			   "(NOTE a Strict Profile only applies when TLS is the ONLY transport!!)");
  		stubby_log(NULL,GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_DEBUG,
  			   "Starting DAEMON....");
+diff -Naur a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2021-06-04 21:50:11.000000000 +0300
++++ b/CMakeLists.txt	2022-06-02 11:09:36.626395000 +0300
+@@ -183,6 +183,8 @@
+ endif ()
+ set_property(TARGET stubby PROPERTY C_STANDARD 11)
+ 
++target_link_libraries(stubby PRIVATE ndm)
++
+ install(TARGETS stubby RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
+ if (ENABLE_WINDOWS_SERVICE)
+   install(TARGETS stubres LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+diff -Naur a/src/server.c b/src/server.c
+--- a/src/server.c	2022-06-02 11:40:19.706983000 +0300
++++ b/src/server.c	2022-06-02 11:30:56.391844000 +0300
+@@ -31,6 +31,8 @@
+ #include <errno.h>
+ #include <string.h>
+ 
++#include <signal.h>
++
+ #include <getdns/getdns.h>
+ #include <getdns/getdns_extra.h>
+ 
+@@ -41,7 +43,12 @@
+ 
+ #include <arpa/inet.h>
+ 
++#include <ndm/time.h>
++
+ static int dnssec_validation = 0;
++static struct timespec last_succ;
++static size_t errors = 0;
++static const char *ups = NULL;
+ 
+ #if defined(STUBBY_ON_WINDOWS)
+ #define DEBUG_ON(...) do { \
+@@ -190,6 +197,24 @@
+ #endif
+         assert(msg);
+ 
++        if (callback_type == GETDNS_CALLBACK_COMPLETE) {
++                errors = 0;
++                ndm_time_get_monotonic(&last_succ);
++        } else {
++                struct timespec now;
++
++                ndm_time_get_monotonic(&now);
++                ndm_time_sub_sec(&now, 150);
++                errors++;
++
++                if (ndm_time_greater(&now, &last_succ) && errors > 30) {
++                        stubby_error("\"%s\": too many failed requests, try to reload process", ups);
++                        raise(SIGINT);
++                        errors = 0;
++                        ndm_time_get_monotonic(&last_succ);
++                }
++        }
++
+         if (callback_type != GETDNS_CALLBACK_COMPLETE)
+                 SERVFAIL("Callback type not complete",
+                     (int)callback_type, msg, &response);
+@@ -491,10 +516,14 @@
+                 getdns_dict_destroy(response);
+ }
+ 
+-int server_listen(getdns_context *context, int validate_dnssec)
++int server_listen(getdns_context *context, int validate_dnssec, const char *upstream)
+ {
+         const getdns_list *listen_list;
+ 
++        ndm_time_get_monotonic(&last_succ);
++        errors = 0;
++        ups = upstream;
++
+         dnssec_validation = validate_dnssec;
+ 
+         listen_list = get_config_listen_list();
+diff -Naur a/src/server.h b/src/server.h
+--- a/src/server.h	2021-06-04 21:50:11.000000000 +0300
++++ b/src/server.h	2022-06-02 11:21:48.538505000 +0300
+@@ -30,6 +30,6 @@
+ 
+ #include <getdns/getdns.h>
+ 
+-int server_listen(getdns_context *context, int validate_dnssec);
++int server_listen(getdns_context *context, int validate_dnssec, const char *upstream);
+ 
+ #endif
+diff -Naur a/src/stubby.c b/src/stubby.c
+--- a/src/stubby.c	2022-06-02 11:40:19.706983000 +0300
++++ b/src/stubby.c	2022-06-02 11:21:33.685290000 +0300
+@@ -126,6 +126,7 @@
+ 	int windows_service = 0;
+ 	const char *windows_service_arg = NULL;
+ #endif
++	const char *upstream = NULL;
+ 	getdns_context  *context = NULL;
+ 	getdns_return_t r;
+ 	int opt;
+@@ -136,7 +137,7 @@
+ 	struct passwd *p = NULL;
+ 	struct group *g = NULL;
+ 
+-	while ((opt = getopt(argc, argv, "C:ighlv:w:VU:G:")) != -1) {
++	while ((opt = getopt(argc, argv, "C:ighlv:w:VU:G:u:")) != -1) {
+ 		switch (opt) {
+ 		case 'C':
+ 			custom_config_fn = optarg;
+@@ -164,6 +165,9 @@
+ 				exit(EXIT_FAILURE);
+ 			}
+ 			break;
++		case 'u':
++			upstream = optarg;
++			break;
+ #if defined(ENABLE_WINDOWS_SERVICE)
+ 		case 'w':
+ 			windows_service = 1;
+@@ -263,7 +267,7 @@
+ 		goto tidy_and_exit;
+ 	}
+ 
+-	if ( !server_listen(context, dnssec_validation) ) {
++	if ( !server_listen(context, dnssec_validation, upstream) ) {
+ 		r = EXIT_FAILURE;
+ 		goto tidy_and_exit;
+ 	}

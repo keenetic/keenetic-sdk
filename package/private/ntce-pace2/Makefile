@@ -18,7 +18,7 @@ endef
 define Package/ntce-pace2
   CATEGORY:=Network
   TITLE:=NDM PACE2 traffic classification engine daemon
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +libndm +pace2 +NTCE_PACE2_BACKTRACE:libfatalsig +NTCE_PACE2_MIMALLOC:mimalloc +NTCE_PACE2_MIMALLOC:libatomic
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +libndm +pace2 +zlib +NTCE_PACE2_BACKTRACE:libfatalsig +NTCE_PACE2_MIMALLOC:mimalloc +NTCE_PACE2_MIMALLOC:libatomic
   DISABLE_RSTRIP:=y
 endef
 

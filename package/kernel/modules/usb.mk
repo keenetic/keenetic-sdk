@@ -165,7 +165,6 @@ define KernelPackage/usb3/config
 		default y if TARGET_en7516_KN_2112
 		default y if TARGET_mt7621_KN_1910
 		default y if TARGET_mt7621_KN_2310
-		default y if TARGET_mt7621_KN_2311
 		default y if TARGET_mt7621_KN_2910
 		default n
   endif

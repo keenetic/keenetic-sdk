@@ -101,6 +101,16 @@ menu "Global build settings"
 
 	endchoice
 
+	config KERNEL_MTD_NDM_PRELOADER_UPDATE
+		bool "Compile the kernel with preloader updater"
+		default n
+		depends on (arm || aarch64)
+
+	config KERNEL_MTD_NDM_ATF_UPDATE
+		bool "Compile the kernel with ATF updater"
+		default n
+		depends on (arm || aarch64)
+
 	config KERNEL_MTD_NDM_BOOT_UPDATE
 		bool "Compile the kernel with bootloader updater"
 

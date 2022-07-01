@@ -12,6 +12,8 @@ ifneq ($(DUMP),1)
 endif
 
 export QUILT=1
+NDM_PRELOADER_HEADER:=$(LINUX_DIR)/drivers/mtd/ndm_preloader.h
+NDM_ATF_HEADER:=$(LINUX_DIR)/drivers/mtd/ndm_atf.h
 NDM_BOOT_HEADER:=$(LINUX_DIR)/drivers/mtd/ndm_boot.h
 STAMP_PREPARED:=$(LINUX_DIR)/.prepared
 STAMP_CONFIGURED:=$(LINUX_DIR)/.configured
@@ -76,7 +78,7 @@ define BuildKernel
 	$(Kernel/Prepare)
 	touch $$@
 
-  $(KERNEL_BUILD_DIR)/symtab.h: $(if $(CONFIG_KERNEL_MTD_NDM_BOOT_UPDATE),$(NDM_BOOT_HEADER)) FORCE
+  $(KERNEL_BUILD_DIR)/symtab.h: $(if $(CONFIG_KERNEL_MTD_NDM_PRELOADER_UPDATE),$(NDM_PRELOADER_HEADER)) $(if $(CONFIG_KERNEL_MTD_NDM_ATF_UPDATE),$(NDM_ATF_HEADER)) $(if $(CONFIG_KERNEL_MTD_NDM_BOOT_UPDATE),$(NDM_BOOT_HEADER)) FORCE
 	rm -f $(KERNEL_BUILD_DIR)/symtab.h
 	touch $(KERNEL_BUILD_DIR)/symtab.h
 	+$(KERNEL_MAKE) vmlinux
@@ -106,8 +108,14 @@ define BuildKernel
 		echo; \
 	) > $$@
 
+  $(NDM_PRELOADER_HEADER): $(PLATFORM_SUBDIR)/preloader.bin
+	$(SCRIPT_DIR)/ndm_bin_gen_header.sh $$< $$@
+
+  $(NDM_ATF_HEADER): $(PLATFORM_SUBDIR)/atf.bin
+	$(SCRIPT_DIR)/ndm_bin_gen_header.sh $$< $$@
+
   $(NDM_BOOT_HEADER): $(PLATFORM_SUBDIR)/boot.bin
-	$(SCRIPT_DIR)/ndm_boot_gen_header.sh $$< $$@
+	$(SCRIPT_DIR)/ndm_bin_gen_header.sh $$< $$@
 
   $(STAMP_CONFIGURED): $(STAMP_PREPARED) $(LINUX_KCONFIG_LIST) $(TOPDIR)/.config
 	$(Kernel/Configure)
@@ -117,7 +125,7 @@ define BuildKernel
 	$(Kernel/CompileModules)
 	touch $$@
 
-  $(LINUX_DIR)/.image: $(STAMP_CONFIGURED) $(if $(CONFIG_STRIP_KERNEL_EXPORTS),$(KERNEL_BUILD_DIR)/symtab.h) $(if $(CONFIG_KERNEL_MTD_NDM_BOOT_UPDATE),$(NDM_BOOT_HEADER)) FORCE
+  $(LINUX_DIR)/.image: $(STAMP_CONFIGURED) $(if $(CONFIG_STRIP_KERNEL_EXPORTS),$(KERNEL_BUILD_DIR)/symtab.h) $(if $(CONFIG_KERNEL_MTD_NDM_PRELOADER_UPDATE),$(NDM_PRELOADER_HEADER)) $(if $(CONFIG_KERNEL_MTD_NDM_ATF_UPDATE),$(NDM_ATF_HEADER)) $(if $(CONFIG_KERNEL_MTD_NDM_BOOT_UPDATE),$(NDM_BOOT_HEADER)) FORCE
 	$(Kernel/CompileImage)
 	$(Kernel/CollectDebug)
 	touch $$@

@@ -18,7 +18,7 @@ endef
 define Package/nvox
   CATEGORY:=Multimedia
   TITLE:=NDM telephony
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +USE_GLIBC:libc-locales
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +ca-certificates +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +USE_GLIBC:libc-locales
   DISABLE_RSTRIP:=y
 endef
 
@@ -52,7 +52,7 @@ $(eval $(call BuildPackage,nvox))
 define Package/nvox-fxs-prod-flash
   CATEGORY:=Multimedia
   TITLE:=NDM telephony (FXS flasher)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +USE_GLIBC:libc-locales
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +ca-certificates +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +USE_GLIBC:libc-locales
   DISABLE_RSTRIP:=y
 endef
 
@@ -67,7 +67,7 @@ $(eval $(call BuildPackage,nvox-fxs-prod-flash))
 define Package/nvox-fxs-prod-int
   CATEGORY:=Multimedia
   TITLE:=NDM telephony (FXS inward tests)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +USE_GLIBC:libc-locales
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +ca-certificates +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +USE_GLIBC:libc-locales
   DISABLE_RSTRIP:=y
 endef
 
@@ -82,7 +82,7 @@ $(eval $(call BuildPackage,nvox-fxs-prod-int))
 define Package/nvox-fxs-prod-test
   CATEGORY:=Multimedia
   TITLE:=NDM telephony (FXS tester)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +USE_GLIBC:libc-locales
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +ca-certificates +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +USE_GLIBC:libc-locales
   DISABLE_RSTRIP:=y
 endef
 

@@ -81,9 +81,11 @@ define Profile
 	fi; \
 	echo "Target-Profile-Config: "; \
 	$(SH_FUNC) getvar "$(call shvar,Profile/$(1)/Config)"; \
+	echo; \
 	echo "@@"; \
 	echo "Target-Profile-Description:"; \
 	$(SH_FUNC) getvar "$(call shvar,Profile/$(1)/Description)"; \
+	echo; \
 	echo "@@"; \
 	echo;
 endef
@@ -270,6 +272,7 @@ define BuildTargets/DumpCurrent
 	$(if $(SUBTARGET),,$(if $(DEFAULT_SUBTARGET), echo 'Default-Subtarget: $(DEFAULT_SUBTARGET)'; ))
 	 echo 'Target-Description:'; \
 	 $(SH_FUNC) getvar $(call shvar,Target/Description); \
+	 echo; \
 	 echo '@@'; \
 	 echo 'Default-Packages: $(DEFAULT_PACKAGES)'; \
 	 $(DUMPINFO)

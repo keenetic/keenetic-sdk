@@ -1,5 +1,5 @@
 getvar() {
-	eval "echo \"\${$1}\""
+	eval "echo -n \"\${$1}\""
 }
 
 var2file() {

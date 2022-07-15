@@ -214,11 +214,7 @@ define Package/$(1)/description
 	$(TITLE)
 endef
 endif
-#ifndef Package/$(1)/script
-#define Package/$(1)/script
-#	$(TITLE)
-#endef
-#endif
+
   $(foreach FIELD, TITLE CATEGORY PRIORITY SECTION VERSION,
     ifeq ($($(FIELD)),)
       $$(error Package/$(1) is missing the $(FIELD) field)
@@ -227,9 +223,9 @@ endif
 
   $(call shexport,Package/$(1)/description)
   $(call shexport,Package/$(1)/config)
-  $(call shexport,Package/$(1)/script)
   $(call shexport,Package/$(1)/modules)
-  
+  $(foreach m,$(call qstrip,$(CONFIG_SYSTEM_MODES)),$(eval $(call shexport,Package/$(1)/script/$(m))))
+
   $(if $(DUMP), \
     $(if $(CHECK),,$(Dumpinfo/Package)), \
     $(foreach target, \

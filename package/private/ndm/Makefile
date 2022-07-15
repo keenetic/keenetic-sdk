@@ -1382,7 +1382,7 @@ define Package/ndm-mod-ppe
   SUBMENU:=Base system
   CATEGORY:=NDM
   TITLE:=NDM PPE module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +kmod-fastvpn +(TARGET_en7512||TARGET_en7516||TARGET_en7528||TARGET_mt7621||TARGET_mt7622):hw_nat_ctl
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +kmod-fastvpn +HAS_HWNAT:hw_nat_ctl
   DISABLE_RSTRIP:=y
 endef
 

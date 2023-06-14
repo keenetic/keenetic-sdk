@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=netatalk
-PKG_VERSION:=3.1.12-1
+PKG_VERSION:=3.1.13-1
 PKG_LICENSE:=GPL-2.0
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)
@@ -54,8 +54,6 @@ CONFIGURE_ARGS += \
 	--with-cnid-default-backend=dbd \
 	--with-bdb="$(STAGING_DIR)/usr/" \
 	--with-libgcrypt-dir="$(STAGING_DIR)/usr" \
-	--with-libevent=no \
-	--with-libevent-lib="$(STAGING_DIR)/usr" \
 	--with-ssl-dir=no \
 	--with-uams-path="/usr/lib/uams" \
 	--with-pkgconfdir="/tmp" \

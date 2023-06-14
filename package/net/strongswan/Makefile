@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=strongswan
-PKG_VERSION:=5.8.0-5-4
+PKG_VERSION:=5.8.0-5-5
 PKG_LICENSE:=GPL-2.0+
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)

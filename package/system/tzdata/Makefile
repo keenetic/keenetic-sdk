@@ -8,8 +8,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tzdata
-PKG_VERSION:=2022b
-PKG_HASH:=f590eaf04a395245426c2be4fae71c143aea5cebc11088b7a0a5704461df397d
+PKG_VERSION:=2022c
+PKG_HASH:=6974f4e348bf2323274b56dff9e7500247e3159eaa4b485dfa0cd66e75c14bfe
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)$(PKG_VERSION).tar.gz
@@ -52,13 +52,27 @@ define Build/Prepare
 endef
 
 define Build/Compile
+	# Create soft symlinks first to absent files.
+	$(HOST_ZIC) -d $(PKG_BUILD_DIR)/$(ZONES) \
+		$(PKG_BUILD_DIR)/backward 2> /dev/null
+	# Generate timezone files for selected regions.
 	$(HOST_ZIC) -d $(PKG_BUILD_DIR)/$(ZONES) \
 		$(PKG_BUILD_DIR)/asia \
 		$(PKG_BUILD_DIR)/europe \
 		$(PKG_BUILD_DIR)/northamerica \
 		$(PKG_BUILD_DIR)/southamerica \
 		$(PKG_BUILD_DIR)/etcetera
-	rm -rf $(addprefix $(PKG_BUILD_DIR)/$(ZONES)/,$(TZ_EXCLUDE))
+	# Remove timezone files from excluded regions and related symlinks.
+	(cd $(PKG_BUILD_DIR)/$(ZONES); \
+		rm -rf $(TZ_EXCLUDE); \
+		for link in $$$$(find -type l); \
+		do \
+			if [ ! -e $$$$link ]; \
+			then \
+				rm $$$$link; \
+			fi \
+		done \
+	)
 endef
 
 define Package/$(PKG_NAME)/install
@@ -73,6 +87,21 @@ define Package/$(PKG_NAME)/install
 	$(CP) $(PKG_BUILD_DIR)/$(ZONES)/Indian $(TZ_DIR)
 	$(CP) $(PKG_BUILD_DIR)/$(ZONES)/Pacific $(TZ_DIR)
 	$(CP) $(PKG_BUILD_DIR)/$(ZONES)/{CET,EET,GMT,MET,MST,WET} $(TZ_DIR)
+	(cd $(PKG_BUILD_DIR)/$(ZONES); \
+		for link in $$$$(find -type l); \
+		do \
+			$(CP) $$$$link $(TZ_DIR); \
+		done; \
+	); \
+	(cd $(TZ_DIR); \
+		for link in $$$$(find -type l); \
+		do \
+			if [ ! -e $$$$link ]; \
+			then \
+				rm $$$$link; \
+			fi \
+		done \
+	)
 ifneq ($(CONFIG_USE_MUSL)$(CONFIG_USE_UCLIBC),)
 	tze -d $(TZ_DIR) > $(PKG_BUILD_DIR)/rules.txt
 	rm -rf $(TZ_DIR)

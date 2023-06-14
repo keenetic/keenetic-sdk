@@ -18,7 +18,7 @@ endef
 define Package/bluedroid
   CATEGORY:=Libraries
   TITLE:=MTK bluedroid library
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +zlib +libstdcpp
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +zlib +libstdcpp +librt +libpthread
   DISABLE_RSTRIP:=y
 endef
 

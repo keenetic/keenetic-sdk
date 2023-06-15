@@ -8,8 +8,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tzdata
-PKG_VERSION:=2022d
-PKG_HASH:=6ecdbee27fa43dcfa49f3d4fd8bb1dfef54c90da1abcd82c9abcf2dc4f321de0
+PKG_VERSION:=2022e
+PKG_HASH:=8de4c2686dce3d1aae9030719e6814931c216a2d5e891ec3d332e6f6516aeccd
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)$(PKG_VERSION).tar.gz

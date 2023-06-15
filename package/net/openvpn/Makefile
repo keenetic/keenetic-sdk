@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openvpn
-PKG_VERSION:=2.6.0-pre-4
+PKG_VERSION:=2.6.0-pre-5
 PKG_LICENSE:=GPL-2.0
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/openvpn

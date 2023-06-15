@@ -10,7 +10,7 @@ We recommend to read the OpenWrt build system manual (https://openwrt.org/docs/g
 Connect to the Keenetic web interface and go to the 'System settings' page.
 In the 'System files' section, select the firmware file and click the 'Save to computer' button to download the copy of this file.
 
-Write down the version of KeeneticOS (e.g. `3.09.C.6.0-1`).
+Write down the version of KeeneticOS (e.g. `3.09.C.6.0-2`).
 
 ## Step 2. Set up your environment
 
@@ -34,7 +34,7 @@ We recommend to use the latest long-term support (LTS) version of Ubuntu (https:
 
 	$ make
 
-You can find the firmware file in the 'bin' directory (e.g. `bin/mt7621/20230615_1826_KN-1010-3.09.C.6.0-1.bin`)
+You can find the firmware file in the 'bin' directory (e.g. `bin/mt7621/20230615_1828_KN-1010-3.09.C.6.0-2.bin`)
 
 ## Step 6. Customization
 

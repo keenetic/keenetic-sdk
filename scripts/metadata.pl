@@ -141,7 +141,6 @@ sub target_config_features(@) {
 		/^no_mmu$/ and $ret .= "\tselect NO_MMU\n";
 		/^band_steering$/ and $ret .= "\tselect HAS_BAND_STEERING\n";
 		/^btmtk$/ and $ret .= "\tselect HAS_BTMTK\n";
-		/^buddy_factory$/ and $ret .= "\tselect BUDDY_FACTORY\n";
 		/^old_model_1$/ and $ret .= "\tselect OLD_MODEL_1\n";
 		/^old_model_2$/ and $ret .= "\tselect OLD_MODEL_2\n";
 		/^radio_(\w+)$/ and $ret .= "\tselect HAS_" . uc $1 . "_RADIO\n";

@@ -9,7 +9,6 @@ SUBTARGET:=KN-3410
 DESCRIPTION:=Buddy 5S
 BOARD_CPPFLAGS += -D__KN_3410__
 DEFAULT_PACKAGES += ndm-mod-interface-extras
-FEATURES += buddy_factory
 DEVICE_TYPE:=extender
 
 define Target/Description

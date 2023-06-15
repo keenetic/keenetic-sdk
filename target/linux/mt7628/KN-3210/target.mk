@@ -9,7 +9,6 @@ SUBTARGET:=KN-3210
 DESCRIPTION:=Buddy 4
 BOARD_CPPFLAGS += -D__KN_3210__
 DEFAULT_PACKAGES += ndm-mod-interface-extras
-FEATURES += buddy_factory
 CFLAGS:=-Os -pipe -mips32r2 -mtune=mips32r2
 DEVICE_TYPE:=extender
 

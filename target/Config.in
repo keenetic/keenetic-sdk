@@ -75,9 +75,6 @@ config USES_NDW2_WIZARD
 config USES_OLD_MODES
 	bool
 
-config BUDDY_FACTORY
-	bool
-
 config IS_EXTENDER
 	bool
 

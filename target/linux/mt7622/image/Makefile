@@ -43,4 +43,8 @@ ifeq ($(SUBTARGET),KN-2701)
   TARGET_DEVICES += KN-2701
 endif
 
+ifeq ($(SUBTARGET),ZN-1811)
+  TARGET_DEVICES += ZN-1811
+endif
+
 $(eval $(call BuildImage))

@@ -253,3 +253,7 @@ $(eval $(call RequireCommand,file, \
 $(eval $(call RequireCommand,openssl, \
 	Please install OpenSSL commandline utility. \
 ))
+
+$(eval $(call RequireCommand,gperf, \
+	Please install gperf. \
+))

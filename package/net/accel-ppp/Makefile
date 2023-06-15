@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=accel-ppp
-PKG_VERSION:=1.12-8
+PKG_VERSION:=1.12-9
 PKG_LICENSE:=GPL-2.0
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)
@@ -29,7 +29,7 @@ CMAKE_OPTIONS+= \
 	-DNETSNMP=FALSE \
 	-DVLANMON=FALSE \
 	-DPPTPCTRL=TRUE \
-	-DPPPOECTRL=FALSE \
+	-DPPPOECTRL=TRUE \
 	-DIPOECTRL=FALSE \
 	-DL2TPCTRL=TRUE \
 	-DSSTPCTRL=TRUE \
@@ -74,6 +74,15 @@ define Package/accel-ppp-pptp
   CATEGORY:=Network
   DEPENDS:=+kmod-pptp +kmod-mppe +accel-ppp
   TITLE:=PPTP plugin for accel-ppp
+  URL:=https://accel-ppp.org/
+  SUBMENU:=VPN
+endef
+
+define Package/accel-ppp-pppoe
+  SECTION:=net
+  CATEGORY:=Network
+  DEPENDS:=+kmod-pppoe +accel-ppp
+  TITLE:=PPPoE plugin for accel-ppp
   URL:=https://accel-ppp.org/
   SUBMENU:=VPN
 endef
@@ -136,7 +145,14 @@ define Package/accel-ppp-pptp/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/accel-ppp/libpptp.so $(1)/usr/lib/accel-ppp
 endef
 
+define Package/accel-ppp-pppoe/install
+	$(INSTALL_DIR) $(1)/usr/lib/accel-ppp
+
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/accel-ppp/libpppoe.so $(1)/usr/lib/accel-ppp
+endef
+
 $(eval $(call BuildPackage,accel-ppp))
 $(eval $(call BuildPackage,accel-ppp-l2tp))
 $(eval $(call BuildPackage,accel-ppp-sstp))
 $(eval $(call BuildPackage,accel-ppp-pptp))
+$(eval $(call BuildPackage,accel-ppp-pppoe))

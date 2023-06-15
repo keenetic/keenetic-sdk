@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libav
-PKG_VERSION:=11.7
+PKG_VERSION:=v11.7
 PKG_RELEASE:=2
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://libav.org/releases
-PKG_HASH:=fe43edcb6e6ea61806d1deb6a01699926db11cf47d911349da291b1ee0b4498a
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_VERSION:=$(PKG_VERSION)
+PKG_SOURCE_URL:=https://github.com/libav/libav.git
 
 PKG_LICENSE:=LGPL-2.0+ GPL-2.0+
 

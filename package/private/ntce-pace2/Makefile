@@ -18,7 +18,7 @@ endef
 define Package/ntce-pace2
   CATEGORY:=Network
   TITLE:=NDM PACE2 traffic classification engine daemon
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +libndm +pace2 +zlib +libpcap +NTCE_PACE2_BACKTRACE:libfatalsig +NTCE_PACE2_MIMALLOC:mimalloc +NTCE_PACE2_MIMALLOC:libatomic
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +libndm +pace2 +pace2-csc +zlib +libpcap +NTCE_PACE2_BACKTRACE:libfatalsig +NTCE_PACE2_MIMALLOC:mimalloc +NTCE_PACE2_MIMALLOC:libatomic
   DISABLE_RSTRIP:=y
 endef
 
@@ -43,3 +43,18 @@ define Package/ntce-pace2/install
 endef
 
 $(eval $(call BuildPackage,ntce-pace2))
+
+define Package/ntce-pace2-flowstat
+  CATEGORY:=Network
+  TITLE:=PACE2 traffic classification engine flowstat utility
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +libndm +pace2 +zlib +libpcap +NTCE_PACE2_BACKTRACE:libfatalsig
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ntce-pace2-flowstat/install
+	if [ -d ./files-ntce-pace2-flowstat ]; then \
+		$(CP) ./files-ntce-pace2-flowstat/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ntce-pace2-flowstat))

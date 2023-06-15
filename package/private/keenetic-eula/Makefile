@@ -15,10 +15,25 @@ include $(INCLUDE_DIR)/package.mk
 define Build/Compile
 endef
 
+define Package/keenetic-eula-common
+  CATEGORY:=Base system
+  TITLE:=Keenetic EULA document files (common)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/keenetic-eula-common/install
+	if [ -d ./files-keenetic-eula-common ]; then \
+		$(CP) ./files-keenetic-eula-common/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,keenetic-eula-common))
+
 define Package/keenetic-eula-de
   CATEGORY:=Base system
   TITLE:=Keenetic EULA document files (DE)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files
+  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files +keenetic-eula-common
   DISABLE_RSTRIP:=y
 endef
 
@@ -33,7 +48,7 @@ $(eval $(call BuildPackage,keenetic-eula-de))
 define Package/keenetic-eula-en
   CATEGORY:=Base system
   TITLE:=Keenetic EULA document files (EN)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files
+  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files +keenetic-eula-common
   DISABLE_RSTRIP:=y
 endef
 
@@ -48,7 +63,7 @@ $(eval $(call BuildPackage,keenetic-eula-en))
 define Package/keenetic-eula-es
   CATEGORY:=Base system
   TITLE:=Keenetic EULA document files (ES)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files
+  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files +keenetic-eula-common
   DISABLE_RSTRIP:=y
 endef
 
@@ -63,7 +78,7 @@ $(eval $(call BuildPackage,keenetic-eula-es))
 define Package/keenetic-eula-fr
   CATEGORY:=Base system
   TITLE:=Keenetic EULA document files (FR)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files
+  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files +keenetic-eula-common
   DISABLE_RSTRIP:=y
 endef
 
@@ -78,7 +93,7 @@ $(eval $(call BuildPackage,keenetic-eula-fr))
 define Package/keenetic-eula-it
   CATEGORY:=Base system
   TITLE:=Keenetic EULA document files (IT)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files
+  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files +keenetic-eula-common
   DISABLE_RSTRIP:=y
 endef
 
@@ -93,7 +108,7 @@ $(eval $(call BuildPackage,keenetic-eula-it))
 define Package/keenetic-eula-pl
   CATEGORY:=Base system
   TITLE:=Keenetic EULA document files (PL)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files
+  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files +keenetic-eula-common
   DISABLE_RSTRIP:=y
 endef
 
@@ -108,7 +123,7 @@ $(eval $(call BuildPackage,keenetic-eula-pl))
 define Package/keenetic-eula-pt
   CATEGORY:=Base system
   TITLE:=Keenetic EULA document files (PT)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files
+  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files +keenetic-eula-common
   DISABLE_RSTRIP:=y
 endef
 
@@ -123,7 +138,7 @@ $(eval $(call BuildPackage,keenetic-eula-pt))
 define Package/keenetic-eula-ru
   CATEGORY:=Base system
   TITLE:=Keenetic EULA document files (RU)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files
+  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files +keenetic-eula-common
   DISABLE_RSTRIP:=y
 endef
 
@@ -138,7 +153,7 @@ $(eval $(call BuildPackage,keenetic-eula-ru))
 define Package/keenetic-eula-sv
   CATEGORY:=Base system
   TITLE:=Keenetic EULA document files (SV)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files
+  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files +keenetic-eula-common
   DISABLE_RSTRIP:=y
 endef
 
@@ -153,7 +168,7 @@ $(eval $(call BuildPackage,keenetic-eula-sv))
 define Package/keenetic-eula-tr
   CATEGORY:=Base system
   TITLE:=Keenetic EULA document files (TR)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files
+  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files +keenetic-eula-common
   DISABLE_RSTRIP:=y
 endef
 
@@ -168,7 +183,7 @@ $(eval $(call BuildPackage,keenetic-eula-tr))
 define Package/keenetic-eula-uk
   CATEGORY:=Base system
   TITLE:=Keenetic EULA document files (UK)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files
+  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files +keenetic-eula-common
   DISABLE_RSTRIP:=y
 endef
 

@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openssl
-PKG_VERSION:=1.1.1o
+PKG_VERSION:=3.0.5
 PKG_RELEASE:=1
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://mirror.switch.ch/ftp/mirror/openssl/source/ \
@@ -18,11 +18,11 @@ PKG_SOURCE_URL:=http://mirror.switch.ch/ftp/mirror/openssl/source/ \
 	ftp://ftp.pca.dfn.de/pub/tools/net/openssl/source/ \
 	ftp://guest.kuria.katowice.pl/pub/openssl/source/ \
 	https://www.openssl.org/source/old/1.1.1/
-PKG_HASH:=9384a2b0570dd80358841464677115df785edb941c71211f75076d72fe6b438f
+PKG_HASH:=aa7d8d9bef71ad6525c55ba11e5f4397889ce49c2c9349dcea6d3e4f0b024a7a
 
 PKG_DEBUG:=false
-PKG_LICENSE:=SSLEAY OPENSSL
-PKG_LICENSE_FILES:=LICENSE
+PKG_LICENSE:=Apache-2.0
+PKG_LICENSE_FILES:=LICENSE.txt
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_OPENSSL_ENGINE_CRYPTO \
 	CONFIG_OPENSSL_ENGINE_DIGEST \
@@ -54,7 +54,7 @@ define Package/libopenssl
 $(call Package/openssl/Default)
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS:=+zlib +libpthread \
+  DEPENDS:=+zlib +libpthread +libatomic \
     +OPENSSL_ENGINE_BUILTIN_DEVCRYPTO:kmod-cryptodev-linux
   TITLE+= (libraries (libcrypto.so, libssl.so))
   MENU:=1
@@ -88,8 +88,13 @@ OPENSSL_NO_CIPHERS:= no-idea no-mdc2 no-rc5 no-rmd160 \
 
 OPENSSL_OPTIONS:= shared threads no-err zlib-dynamic no-sse2 no-tests \
 	no-afalgeng no-cms no-comp no-ct no-ubsan no-ssl-trace no-sctp no-msan \
-	no-unit-test no-hw-padlock no-nextprotoneg no-rfc3779 no-ts \
-	no-filenames no-multiblock no-rdrand no-autoload-config no-capieng
+	no-unit-test no-nextprotoneg no-rfc3779 no-ts \
+	no-filenames no-multiblock no-rdrand no-autoload-config no-capieng \
+	no-acvp-tests no-afalgeng no-buildtest-c++ no-asan \
+	no-crypto-mdebug no-external-tests \
+	no-fips no-fips-securitychecks no-fuzz-afl no-fuzz-libfuzzer \
+	no-ktls no-padlockeng no-ssl-trace no-static-engine no-unit-test \
+	no-ssl3-method
 
 ifneq ($(CONFIG_OPENSSL_TLS13),y)
 	OPENSSL_OPTIONS += no-tls1_3
@@ -109,9 +114,9 @@ endif
 
 ifdef CONFIG_OPENSSL_ENGINE
   ifdef CONFIG_OPENSSL_ENGINE_BUILTIN
-    OPENSSL_OPTIONS += disable-dynamic-engine
+    OPENSSL_OPTIONS += no-dynamic-engine
     ifdef CONFIG_OPENSSL_ENGINE_BUILTIN_DEVCRYPTO
-      OPENSSL_OPTIONS += enable-devcryptoeng
+      OPENSSL_OPTIONS += no-devcryptoeng
     endif
   else
     ifdef CONFIG_PACKAGE_libopenssl-devcrypto
@@ -119,7 +124,7 @@ ifdef CONFIG_OPENSSL_ENGINE
     endif
   endif
 else
-  OPENSSL_OPTIONS += no-engine no-hw no-dynamic-engine disable-dynamic-engine
+  OPENSSL_OPTIONS += no-engine no-dynamic-engine no-devcryptoeng
 endif
 
 ifndef CONFIG_OPENSSL_WITH_ASYNC
@@ -166,7 +171,7 @@ define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \
 		OPENWRT_OPTIMIZATION_FLAGS="$(TARGET_CFLAGS)" \
 		$(OPENSSL_MAKEFLAGS) \
-		all
+		build_sw
 	+$(MAKE) -C $(PKG_BUILD_DIR) \
 		DESTDIR="$(PKG_INSTALL_DIR)" \
 		$(OPENSSL_MAKEFLAGS) \
@@ -189,12 +194,13 @@ endef
 
 define Package/libopenssl/install
 	$(INSTALL_DIR) $(1)/usr/lib
+	$(INSTALL_DIR) $(1)/usr/lib/ossl-modules
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/libcrypto.so.* $(1)/usr/lib/
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/libssl.so.* $(1)/usr/lib/
-	$(LN) libcrypto.so.1.1 $(1)/usr/lib/libcrypto.so
-	$(LN) libcrypto.so.1.1 $(1)/usr/lib/libcrypto.so.1
-	$(LN) libssl.so.1.1 $(1)/usr/lib/libssl.so
-	$(LN) libssl.so.1.1 $(1)/usr/lib/libssl.so.1
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/ossl-modules/* $(1)/usr/lib/ossl-modules
+	$(LN) libcrypto.so.3 $(1)/usr/lib/libcrypto.so
+	$(LN) libcrypto.so.3 $(1)/usr/lib/libcrypto.so.1
+	$(LN) libcrypto.so.3 $(1)/usr/lib/libcrypto.so.1.1
 endef
 
 define Package/libopenssl/install_lib

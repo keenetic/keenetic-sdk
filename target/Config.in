@@ -75,11 +75,23 @@ config USES_NDW2_WIZARD
 config USES_OLD_MODES
 	bool
 
+config BUDDY_FACTORY
+	bool
+
+config IS_EXTENDER
+	bool
+
 config OLD_MODEL_1
 	bool
 
 config OLD_MODEL_2
 	bool
+
+config SYSTEM_MODES
+	string
+	default "extender" if IS_EXTENDER
+	default "ap client repeater router" if USES_OLD_MODES
+	default "extender router"
 
 config PROFILE_KCONFIG
 	bool
@@ -128,18 +140,6 @@ config HAS_HWNAT_MIB
 
 config ARCH_64BIT
 	bool
-
-config BUDDY_FACTORY
-	bool
-
-config IS_EXTENDER
-	bool
-
-config SYSTEM_MODES
-	string
-	default "extender" if IS_EXTENDER
-	default "ap client repeater router" if USES_OLD_MODES
-	default "extender router"
 
 # Architecture selection
 

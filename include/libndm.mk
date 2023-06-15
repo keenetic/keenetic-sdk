@@ -5,4 +5,4 @@
 # See /LICENSE for more information.
 #
 
-LIBNDM_VERSION:=1.1.16
+LIBNDM_VERSION:=1.1.17

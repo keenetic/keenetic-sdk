@@ -1,4 +1,4 @@
-#
+# 
 # Copyright (C) 2008-2015 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
@@ -7,11 +7,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libtool
-PKG_VERSION:=2.4
+PKG_VERSION:=2.4.2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNU/$(PKG_NAME)
-PKG_HASH:=afcce660d3dc54c63a0a5ba3cf05272239dc3c54bbeba20f6bad250f9dc007ae
+PKG_HASH:=1d7b6862c1ed162e327f083a6f78f40eae29218f0db8c38393d61dab764c4407
 
 include $(INCLUDE_DIR)/host-build.mk
 

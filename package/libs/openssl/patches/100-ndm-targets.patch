@@ -1,12 +1,12 @@
 diff -Naur ./Configurations/10-main.conf ./Configurations/10-main.conf
 --- ./Configurations/10-main.conf	2018-09-11 15:48:19.000000000 +0300
 +++ ./Configurations/10-main.conf	2018-09-11 22:38:40.483127000 +0300
-@@ -680,6 +680,40 @@
+@@ -732,6 +732,40 @@
          perlasm_scheme   => "linux64le",
      },
  
 +    "linux-mips-ndm32" => {
-+        inherit_from     => [ "BASE_unix", asm("mips32_asm") ],
++        inherit_from     => [ "linux-latomic" ],
 +        CC               => "gcc",
 +        CXX              => "g++",
 +        CFLAGS           => picker(default => "-Wall -mabi=32",
@@ -25,8 +25,8 @@ diff -Naur ./Configurations/10-main.conf ./Configurations/10-main.conf
 +        shared_target    => "linux-shared",
 +        shared_cflag     => "-fPIC",
 +        shared_ldflag    => "-Wl,-znodelete -mabi=32",
-+        shared_extension => ".so.\$(SHLIB_VERSION_NUMBER)",
 +        perlasm_scheme   => "o32",
++        asm_arch         => 'mips32',
 +    },
 +
 +    "linux-mips-ndm32le" => {

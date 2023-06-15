@@ -542,8 +542,10 @@ $(eval $(call KernelPackage,gre))
 define KernelPackage/tun
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
   TITLE:=Universal TUN/TAP driver
-  KCONFIG:=CONFIG_TUN
-  FILES:=$(LINUX_DIR)/drivers/net/tun.ko
+  KCONFIG:=CONFIG_TUN \
+	CONFIG_VETH
+  FILES:=$(LINUX_DIR)/drivers/net/tun.ko \
+	$(LINUX_DIR)/drivers/net/veth.ko
   AUTOLOAD:=$(call AutoLoad,30,tun)
 endef
 

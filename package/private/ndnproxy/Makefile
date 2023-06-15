@@ -18,8 +18,18 @@ endef
 define Package/ndnproxy
   CATEGORY:=Network
   TITLE:=Lightweight DNS proxy
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +librt +libndm
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +librt +libndm +NDNPROXY_BACKTRACE:libfatalsig
   DISABLE_RSTRIP:=y
+endef
+
+define Package/ndnproxy/config
+if PACKAGE_ndnproxy
+
+config NDNPROXY_BACKTRACE
+	bool "Log a backtrace on a server crash"
+	default n
+
+endif
 endef
 
 define Package/ndnproxy/install

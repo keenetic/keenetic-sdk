@@ -1,0 +1,157 @@
+/*
+ * Copyright (c) 2017 MediaTek Inc.
+ * Author: Ming Huang <ming.huang@mediatek.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/dts-v1/;
+#include <dt-bindings/gpio/gpio.h>
+#include <mediatek/mt7622.dtsi>
+#include <mediatek/mt6380.dtsi>
+
+/ {
+	model = "Keenetic KN-1811 board";
+	compatible = "mediatek,mt7622-kn1811", "mediatek,mt7622";
+
+	chosen {
+		bootargs = "console=ttyS0,115200n1 loglevel=8 swiotlb=512 rootfstype=squashfs";
+	};
+
+	memory@40000000 {
+		device_type = "memory";
+		reg = <0 0x40000000 0 0x3F000000>;
+	};
+};
+
+&bch {
+	status = "disabled";
+};
+
+&cpu0 {
+	proc-supply = <&mt6380_vcpu_reg>;
+	sram-supply = <&mt6380_vm_reg>;
+};
+
+&cpu1 {
+	proc-supply = <&mt6380_vcpu_reg>;
+	sram-supply = <&mt6380_vm_reg>;
+};
+
+&efuse {
+	status = "okay";
+};
+
+&gsw {
+	interrupt-parent = <&pio>;
+	interrupts = <53 IRQ_TYPE_LEVEL_HIGH>,
+		     <19 IRQ_TYPE_LEVEL_LOW>;
+	status = "okay";
+};
+
+&raeth {
+	dma-coherent;
+	status = "okay";
+};
+
+&wed2 {
+	status = "disabled";
+};
+
+&i2c0 {
+	status = "disabled";
+};
+
+&i2c1 {
+	status = "disabled";
+};
+
+&i2c2 {
+	status = "disabled";
+};
+
+&pio {
+	pinctrl-names = "default";
+	pinctrl-0 = <&state_default>;
+
+	state_default:pinconf_default {
+	};
+
+	uart3_pins: uart3_pins {
+		pins_bus {
+			pinmux = <MT7622_PIN_79_RTS3_N__FUNC_RTS3_N>,
+				 <MT7622_PIN_80_CTS3_N__FUNC_CTS3_N>,
+				 <MT7622_PIN_81_TXD3__FUNC_TXD3>,
+				 <MT7622_PIN_82_RXD3__FUNC_RXD3>;
+		};
+	};
+
+	snand_pins_default: snand-pins-default {
+		pins_cmd_dat {
+			pinmux = <MT7622_PIN_8_SPI_WP__FUNC_SNFI_WP>,
+				 <MT7622_PIN_9_SPI_HOLD__FUNC_SNFI_HOLD>,
+				 <MT7622_PIN_11_SPI_MOSI__FUNC_SNFI_MOSI>,
+				 <MT7622_PIN_12_SPI_MISO__FUNC_SNFI_MISO>,
+				 <MT7622_PIN_13_SPI_CS__FUNC_SNFI_CS>;
+			input-enable;
+			drive-strength = <MTK_DRIVE_16mA>;
+			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
+		};
+		pins_clk {
+			pinmux = <MT7622_PIN_10_SPI_CLK__FUNC_SNFI_CLK>;
+			drive-strength = <MTK_DRIVE_16mA>;
+			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
+		};
+	};
+
+	wbsys_pins_default: wbsysdefault {
+	};
+};
+
+&pwm {
+	status = "okay";
+};
+
+&snand {
+	pinctrl-0 = <&snand_pins_default>;
+	status = "okay";
+};
+
+&svs {
+	vproc-supply = <&mt6380_vcpu_reg>;
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart3_pins>;
+	status = "okay";
+};
+
+&usb1 {
+	status = "okay";
+};
+
+&u3phy1 {
+	status = "okay";
+};
+
+&sata {
+	status = "disabled";
+};
+
+&wbsys {
+	pinctrl-names = "default";
+	pinctrl-0 = <&wbsys_pins_default>;
+	status = "okay";
+};

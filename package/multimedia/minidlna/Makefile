@@ -24,7 +24,7 @@ define Package/minidlna
   CATEGORY:=Multimedia
   TITLE:=UPnP A/V & DLNA Media Server
   URL:=http://minidlna.sourceforge.net/
-  DEPENDS:=+libpthread +libexif +libjpeg +libsqlite3 +libav +libid3tag +libndm
+  DEPENDS:=+libpthread +libexif +libjpeg-turbo +libsqlite3 +libav +libid3tag +libndm
 endef
 
 define Package/minidlna/description

@@ -5,4 +5,4 @@
 # See /LICENSE for more information.
 #
 
-LIBNDMFW_VERSION:=1.2.6
+LIBNDMFW_VERSION:=1.2.9

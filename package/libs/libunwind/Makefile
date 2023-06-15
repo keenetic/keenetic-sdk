@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libunwind
-PKG_VERSION:=v1.5-rc1-ndm-3
+PKG_VERSION:=v1.5-rc1-ndm-4
 PKG_LICENSE:=FREE
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)

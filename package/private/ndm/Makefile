@@ -390,7 +390,7 @@ define Package/ndm-mod-easyconfig
   SUBMENU:=Base system
   CATEGORY:=NDM
   TITLE:=NDM NetFriend module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +!USES_NDW2_WIZARD:ndm-mod-ndw3
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +!USES_NDW2_WIZARD:ndm-mod-ndw3 +accel-ppp-pppoe
   DISABLE_RSTRIP:=y
 endef
 
@@ -598,7 +598,7 @@ define Package/ndm-mod-ip6
   SUBMENU:=Networking
   CATEGORY:=NDM
   TITLE:=NDM IPv6 support module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +radvd +dhcpv6 +odhcp6c +kmod-ipv6 +kmod-sit +kmod-ipv6_pt +kmod-nat46
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +radvd +dhcpv6 +odhcp6c +kmod-ipv6 +kmod-sit +kmod-ip6-tunnel +kmod-ipv6_pt +kmod-nat46 +ndm-mod-tunnel
   DISABLE_RSTRIP:=y
 endef
 
@@ -883,7 +883,7 @@ endef
 $(eval $(call BuildPackage,ndm-mod-lang-uk))
 
 define Package/ndm-mod-mdns
-  SUBMENU:=Networking
+  SUBMENU:=Applications
   CATEGORY:=NDM
   TITLE:=NDM MDNS module
   DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +avahi-daemon
@@ -918,7 +918,7 @@ define Package/ndm-mod-mobile
   SUBMENU:=Base system
   CATEGORY:=NDM
   TITLE:=NDM Mobile module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +ndm-mod-usb
   DISABLE_RSTRIP:=y
 endef
 
@@ -1442,6 +1442,22 @@ endef
 
 $(eval $(call BuildPackage,ndm-mod-pptp))
 
+define Package/ndm-mod-proxy
+  SUBMENU:=Networking
+  CATEGORY:=NDM
+  TITLE:=NDM Proxy module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +badvpn
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-proxy/install
+	if [ -d ./files-ndm-mod-proxy ]; then \
+		$(CP) ./files-ndm-mod-proxy/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-proxy))
+
 define Package/ndm-mod-safedns
   SUBMENU:=Internet filters
   CATEGORY:=NDM
@@ -1478,7 +1494,7 @@ define Package/ndm-mod-shell
   SUBMENU:=Debug
   CATEGORY:=NDM
   TITLE:=NDM shell module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +busybox +iptables +iptables-mod-conntrack-extra +iptables-mod-ipopt +iptables-mod-ipsec +iptables-mod-ndm-extra +ip +ip6tables +iperf3 +ipset +rt_reg +tcpdump +wireless-tools +(TARGET_en7516||TARGET_en7512):br2684ctl +TARGET_mt7628:mt7628-switch +TARGET_en7528:mt7530-switch +TARGET_en7516:mt7530-switch +TARGET_en7512:mt7530-switch +TARGET_mt7621:mt7530-switch +TARGET_mt7622_KN_1811:mt7530-switch +TARGET_mt7621_ku_rd:rtl8370m-switch
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +busybox +iptables +iptables-mod-conntrack-extra +iptables-mod-ipopt +iptables-mod-ipsec +iptables-mod-ndm-extra +ip +ip6tables +iperf3 +ipset +rt_reg +tcpdump +wireless-tools +(TARGET_en7516||TARGET_en7512):br2684ctl +TARGET_mt7628:mt7628-switch +TARGET_en7528:mt7530-switch +TARGET_en7516:mt7530-switch +TARGET_en7512:mt7530-switch +TARGET_mt7621:mt7530-switch +TARGET_mt7622_KN_1811:mt7530-switch +TARGET_mt7621_ku_rd:rtl8370m-switch +TARGET_mt7622_ZN_1811:mt7530-switch
   DISABLE_RSTRIP:=y
 endef
 
@@ -1638,7 +1654,7 @@ define Package/ndm-mod-tunnel
   SUBMENU:=Networking
   CATEGORY:=NDM
   TITLE:=NDM Tunnel module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind
   DISABLE_RSTRIP:=y
 endef
 
@@ -1702,7 +1718,7 @@ define Package/ndm-mod-usblte
   SUBMENU:=USB modems
   CATEGORY:=NDM
   TITLE:=NDM UsbLte module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-usb +ndm-mod-mobile +ndm-mod-dhcpd +kmod-usb-storage +kmod-usb-serial-option +kmod-usb-acm +kmod-usb-net-huawei-cdc-ncm +kmod-usb-net-kalmia +kmod-usb-net-rndis +kmod-usb-net-cdc-ether +kmod-ubridge
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-usb +ndm-mod-mobile +ndm-mod-dhcpd +kmod-usb-storage +kmod-usb-serial-option +kmod-usb-acm +kmod-usb-net-huawei-cdc-ncm +kmod-usb-net-kalmia +kmod-usb-net-rndis +kmod-usb-net-cdc-ether +kmod-ubridge +(TARGET_mt7621_KN_2311||TARGET_mt7621_KN_2910||TARGET_mt7628_KN_2211):ltefw +(TARGET_mt7621_KN_2311||TARGET_mt7621_KN_2910||TARGET_mt7628_KN_2211):qdloader
   DISABLE_RSTRIP:=y
 endef
 

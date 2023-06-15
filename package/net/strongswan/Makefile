@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=strongswan
-PKG_VERSION:=5.8.0-5-5
+PKG_VERSION:=5.9.7-2
 PKG_LICENSE:=GPL-2.0+
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)
@@ -37,10 +37,34 @@ define Package/$(PKG_NAME)
 	+kmod-crypto-md5 \
 	+kmod-crypto-sha1 \
 	+kmod-crypto-sha256 \
-	+kmod-arouting4
+	+kmod-arouting4 \
+	+STRONGSWAN_BACKTRACE:libfatalsig
   TITLE:=Strongswan IKEv1/IKEv2 ISAKMP and IPSec suite
   URL:=https://www.strongswan.org/
 endef
+
+define Package/$(PKG_NAME)/config
+if PACKAGE_strongswan
+
+config STRONGSWAN_BACKTRACE
+	bool "Log a backtrace on crash"
+	default n
+
+endif
+endef
+
+ifeq ($(CONFIG_STRONGSWAN_BACKTRACE),y)
+TARGET_CFLAGS   := $(filter-out \
+					 -fno-asynchronous-unwind-tables \
+					 -fomit-frame-pointer \
+					 -fno-caller-saves \
+				   , $(TARGET_CFLAGS)) \
+				  -fasynchronous-unwind-tables \
+				  -fno-omit-frame-pointer \
+				  -fcaller-saves
+RSTRIP         := :
+STRIP          := :
+endif
 
 IPSEC_WORK_PATH:=/tmp/ipsec
 
@@ -51,8 +75,8 @@ CONFIGURE_ARGS += \
 	--disable-gmp \
 	--disable-pgp \
 	--disable-pkcs1 \
-	--disable-pkcs7 \
-	--disable-pkcs8 \
+	--enable-pkcs7 \
+	--enable-pkcs8 \
 	--disable-pkcs12 \
 	--disable-pki \
 	--disable-sshkey \
@@ -72,7 +96,7 @@ CONFIGURE_ARGS += \
 	--disable-tpm \
 	--disable-tss-trousers \
 	--disable-tss-tss2 \
-	--disable-pem \
+	--enable-pem \
 	--enable-shared \
 	--enable-monolithic \
 	--enable-resolve \
@@ -96,6 +120,7 @@ CONFIGURE_ARGS += \
 	--enable-systime-fix \
 	--enable-unity \
 	--enable-save-keys \
+	$(if $(CONFIG_STRONGSWAN_BACKTRACE),--enable-fatalsig-backtraces,--disable-fatalsig-backtraces) \
 	--with-systemdsystemunitdir=no \
 	--with-capabilities=native \
 	--with-user=nobody \

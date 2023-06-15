@@ -1,0 +1,10 @@
+diff -Naur mozilla/blacklist.txt mozilla/blacklist.txt
+--- work/mozilla/blacklist.txt	2021-10-16 19:09:43.000000000 +0300
++++ work/mozilla/blacklist.txt	2022-11-09 12:32:36.214934552 +0300
+@@ -7,6 +7,3 @@
+ "MITM subCA 2 issued by Trustwave"
+ "TURKTRUST Mis-issued Intermediate CA 1"
+ "TURKTRUST Mis-issued Intermediate CA 2"
+-
+-# Expired CA (#995432)
+-"DST Root CA X3"

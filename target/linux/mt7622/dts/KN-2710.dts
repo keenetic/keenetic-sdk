@@ -18,8 +18,8 @@
 #include <mediatek/mt6380.dtsi>
 
 / {
-	model = "Keenetic KN-2710 board";
-	compatible = "mediatek,mt7622-kn2710", "mediatek,mt7622";
+	model = "Keenetic KN-2710";
+	compatible = "keenetic,kn-2710", "mediatek,mt7622";
 
 	chosen {
 		bootargs = "console=ttyS0,115200n1 loglevel=8 swiotlb=512 rootfstype=squashfs";
@@ -27,7 +27,23 @@
 
 	memory@40000000 {
 		device_type = "memory";
-		reg = <0 0x40000000 0 0x3F000000>;
+		reg = <0 0x40000000 0 0x20000000>;
+	};
+
+	reg_fixed_3p3v: regulator-3p3v {
+		compatible = "regulator-fixed";
+		regulator-name = "fixed-3.3V";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-always-on;
+	};
+
+	reg_fixed_5v: regulator-5v {
+		compatible = "regulator-fixed";
+		regulator-name = "fixed-5V";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		regulator-always-on;
 	};
 };
 
@@ -155,6 +171,8 @@
 };
 
 &usb1 {
+	vusb33-supply = <&reg_fixed_3p3v>;
+	vbus-supply = <&reg_fixed_5v>;
 	status = "okay";
 };
 

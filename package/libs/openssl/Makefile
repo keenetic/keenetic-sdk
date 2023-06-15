@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openssl
-PKG_VERSION:=3.0.7
+PKG_VERSION:=3.0.8
 PKG_RELEASE:=1
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://mirror.switch.ch/ftp/mirror/openssl/source/ \
@@ -18,7 +18,7 @@ PKG_SOURCE_URL:=http://mirror.switch.ch/ftp/mirror/openssl/source/ \
 	ftp://ftp.pca.dfn.de/pub/tools/net/openssl/source/ \
 	ftp://guest.kuria.katowice.pl/pub/openssl/source/ \
 	https://www.openssl.org/source/old/1.1.1/
-PKG_HASH:=83049d042a260e696f62406ac5c08bf706fd84383f945cf21bd61e9ed95c396e
+PKG_HASH:=6c13d2bf38fdf31eac3ce2a347073673f5d63263398f1f69d0df4a41253e4b3e
 
 PKG_DEBUG:=false
 PKG_LICENSE:=Apache-2.0

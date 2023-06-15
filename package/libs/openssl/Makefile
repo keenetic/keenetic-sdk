@@ -84,7 +84,7 @@ endef
 
 OPENSSL_NO_CIPHERS:= no-idea no-mdc2 no-rc5 no-rmd160 \
 	no-camellia no-idea no-seed no-whirlpool no-srp no-gost \
-	no-aria no-blake2 no-siphash no-sm2 no-sm3 no-sm4 no-psk no-rc2
+	no-aria no-blake2 no-siphash no-sm2 no-sm3 no-sm4 no-psk
 
 OPENSSL_OPTIONS:= shared threads no-err zlib-dynamic no-sse2 no-tests \
 	no-afalgeng no-cms no-comp no-ct no-ubsan no-ssl-trace no-sctp no-msan \

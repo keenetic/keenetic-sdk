@@ -84,7 +84,7 @@ endef
 
 OPENSSL_NO_CIPHERS:= no-idea no-mdc2 no-rc5 no-rmd160 \
 	no-camellia no-idea no-seed no-whirlpool no-srp no-gost \
-	no-aria no-blake2 no-siphash no-sm2 no-sm3 no-sm4 no-psk
+	no-aria no-blake2 no-siphash no-sm2 no-sm3 no-sm4 no-psk no-rc2
 
 OPENSSL_OPTIONS:= shared threads no-err zlib-dynamic no-sse2 no-tests \
 	no-afalgeng no-cms no-comp no-ct no-ubsan no-ssl-trace no-sctp no-msan \
@@ -94,7 +94,7 @@ OPENSSL_OPTIONS:= shared threads no-err zlib-dynamic no-sse2 no-tests \
 	no-crypto-mdebug no-external-tests \
 	no-fips no-fips-securitychecks no-fuzz-afl no-fuzz-libfuzzer \
 	no-ktls no-padlockeng no-ssl-trace no-static-engine no-unit-test \
-	no-ssl3-method
+	no-ssl3-method no-cmp no-ui-console
 
 ifneq ($(CONFIG_OPENSSL_TLS13),y)
 	OPENSSL_OPTIONS += no-tls1_3

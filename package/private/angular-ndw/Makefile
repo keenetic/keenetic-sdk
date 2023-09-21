@@ -18,7 +18,7 @@ endef
 define Package/angular-ndw
   CATEGORY:=NDM
   TITLE:=Angular web interface
-  DEPENDS:=+libc +SSP_SUPPORT:libssp
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +fonts-roboto
   DISABLE_RSTRIP:=y
 endef
 

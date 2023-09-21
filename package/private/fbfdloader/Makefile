@@ -18,7 +18,7 @@ endef
 define Package/fbfdloader
   CATEGORY:=Base system
   TITLE:=Firmware update utility for Simcom ASR modems
-  DEPENDS:=+libc +SSP_SUPPORT:libssp @(TARGET_mt7628_KN_2212)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp @(TARGET_mt7628_KN_2212||TARGET_mt7628_KN_4910)
   DISABLE_RSTRIP:=y
 endef
 

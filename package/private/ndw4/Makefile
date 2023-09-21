@@ -18,7 +18,7 @@ endef
 define Package/ndw4
   CATEGORY:=NDM
   TITLE:=Next-generation web interface (beta)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +fonts-roboto
   DISABLE_RSTRIP:=y
 endef
 

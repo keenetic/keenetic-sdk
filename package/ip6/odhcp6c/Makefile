@@ -24,6 +24,7 @@ define Package/odhcp6c
   SECTION:=net
   CATEGORY:=IPv6
   TITLE:=Embedded DHCPv6-client
+  URL:=https://github.com/openwrt/odhcp6c
   DEPENDS:=@IPV6
 endef
 

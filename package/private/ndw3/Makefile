@@ -18,7 +18,7 @@ endef
 define Package/ndw3
   CATEGORY:=NDM
   TITLE:=Web interface wizard
-  DEPENDS:=+libc +SSP_SUPPORT:libssp @!USES_NDW2_WIZARD
+  DEPENDS:=+libc +SSP_SUPPORT:libssp @!USES_NDW2_WIZARD +fonts-roboto
   DISABLE_RSTRIP:=y
 endef
 

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2022 Keenetic Limited
+# Copyright (C) 2023 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -24,9 +24,9 @@ define Package/badvpn
 endef
 
 define Package/badvpn/install
-        if [ -d ./files-badvpn ]; then \
-                $(CP) ./files-badvpn/* $(1); \
-        fi
+	if [ -d ./files-badvpn ]; then \
+		$(CP) ./files-badvpn/* $(1); \
+	fi
 endef
 
 $(eval $(call BuildPackage,badvpn))

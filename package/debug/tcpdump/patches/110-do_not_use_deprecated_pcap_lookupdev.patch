@@ -1,0 +1,30 @@
+diff -Nuar tcpdump-3.9.8/tcpdump.c tcpdump-3.9.8-patched/tcpdump.c
+--- tcpdump-3.9.8/tcpdump.c	2022-11-12 21:21:16.116721046 +0300
++++ tcpdump-3.9.8-patched/tcpdump.c	2022-11-12 21:21:06.560675770 +0300
+@@ -448,7 +448,7 @@
+ {
+ 	register int cnt, op, i;
+ 	bpf_u_int32 localnet, netmask;
+-	register char *cp, *infile, *cmdbuf, *device, *RFileName, *WFileName, *WFileNameAlt;
++	char *cp, *infile, *cmdbuf, *device, *RFileName, *WFileName, *WFileNameAlt;
+ 	pcap_handler callback;
+ 	int type;
+ 	struct bpf_program fcode;
+@@ -852,9 +852,17 @@
+ 			error("-f and -r options are incompatible");
+ 	} else {
+ 		if (device == NULL) {
++#ifdef HAVE_PCAP_FINDALLDEVS
++			if (pcap_findalldevs(&devpointer, ebuf) < 0) {
++				error("%s", ebuf);
++			} else {
++				device = devpointer->name;
++			}
++#else
+ 			device = pcap_lookupdev(ebuf);
+ 			if (device == NULL)
+ 				error("%s", ebuf);
++#endif
+ 		}
+ #ifdef WIN32
+ 		if(strlen(device) == 1)	//we assume that an ASCII string is always longer than 1 char

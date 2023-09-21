@@ -14,6 +14,7 @@
 
 /dts-v1/;
 #include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/pinctrl/mt65xx.h>
 #include <mediatek/mt7622.dtsi>
 #include <mediatek/mt6380.dtsi>
 
@@ -94,36 +95,32 @@
 };
 
 &pio {
-	pinctrl-names = "default";
-	pinctrl-0 = <&state_default>;
-
-	state_default:pinconf_default {
-	};
-
-	uart3_pins: uart3_pins {
-		pins_bus {
-			pinmux = <MT7622_PIN_79_RTS3_N__FUNC_RTS3_N>,
-				 <MT7622_PIN_80_CTS3_N__FUNC_CTS3_N>,
-				 <MT7622_PIN_81_TXD3__FUNC_TXD3>,
-				 <MT7622_PIN_82_RXD3__FUNC_RXD3>;
+	uart3_pins: uart3-pins {
+		mux {
+			function = "uart";
+			groups = "uart3_1_tx_rx",
+				 "uart3_1_rts_cts";
 		};
 	};
 
 	snand_pins_default: snand-pins-default {
-		pins_cmd_dat {
-			pinmux = <MT7622_PIN_8_SPI_WP__FUNC_SNFI_WP>,
-				 <MT7622_PIN_9_SPI_HOLD__FUNC_SNFI_HOLD>,
-				 <MT7622_PIN_11_SPI_MOSI__FUNC_SNFI_MOSI>,
-				 <MT7622_PIN_12_SPI_MISO__FUNC_SNFI_MISO>,
-				 <MT7622_PIN_13_SPI_CS__FUNC_SNFI_CS>;
+		mux {
+			function = "flash";
+			groups = "snfi";
+		};
+
+		conf-cmd-dat {
+			pins = "SPI_WP", "SPI_HOLD", "SPI_MOSI",
+			       "SPI_MISO", "SPI_CS";
 			input-enable;
 			drive-strength = <MTK_DRIVE_16mA>;
-			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
+			bias-pull-up;
 		};
-		pins_clk {
-			pinmux = <MT7622_PIN_10_SPI_CLK__FUNC_SNFI_CLK>;
+
+		conf-clk {
+			pins = "SPI_CLK";
 			drive-strength = <MTK_DRIVE_16mA>;
-			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
+			bias-pull-down;
 		};
 	};
 
@@ -136,6 +133,7 @@
 };
 
 &snand {
+	pinctrl-names = "default";
 	pinctrl-0 = <&snand_pins_default>;
 	status = "okay";
 };

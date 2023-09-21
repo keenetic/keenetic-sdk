@@ -15,7 +15,7 @@ DEVICE_TYPE?=router
 DEFAULT_PACKAGES:=base-files libc libgcc kmod-bridge ndm-mod-base ndm-mod-lang-en
 # For router targets
 DEFAULT_PACKAGES.router:=
-DEFAULT_PACKAGES.extender:=ndm-mod-config-extender ndm-mod-ndw3
+DEFAULT_PACKAGES.extender:=ndm-mod-config-extender ndw3
 DEFAULT_PACKAGES.bootloader:=
 
 ifneq ($(DUMP),)
@@ -215,6 +215,9 @@ ifeq ($(DUMP),1)
     ifneq ($(CONFIG_MT7915_AP),)
       FEATURES += radio_mt7915
     endif
+    ifneq ($(CONFIG_MT7916_AP),)
+      FEATURES += radio_mt7916
+    endif
     ifneq ($(strip \
         $(CONFIG_MT7603_BAND_STEERING) \
         $(CONFIG_MT7610_BAND_STEERING) \
@@ -222,6 +225,7 @@ ifeq ($(DUMP),1)
         $(CONFIG_MT7615_BAND_STEERING) \
         $(CONFIG_MT7628_BAND_STEERING) \
         $(CONFIG_MT7915_BAND_STEERING) \
+        $(CONFIG_MT7916_BAND_STEERING) \
         $(CONFIG_BAND_STEERING) \
       ),)
       FEATURES += band_steering
@@ -229,6 +233,7 @@ ifeq ($(DUMP),1)
     ifneq ($(strip \
         $(CONFIG_MT7615_WHNAT_SUPPORT) \
         $(CONFIG_MT7915_WHNAT_SUPPORT) \
+        $(CONFIG_MT7916_WHNAT_SUPPORT) \
       ),)
       FEATURES += whnat
     endif
@@ -284,19 +289,16 @@ ifeq ($(TARGET_BUILD),1)
   include $(INCLUDE_DIR)/kernel-build.mk
   BuildTarget?=$(BuildKernel)
 
-  PRESETS_CONFIG:=$(TOPDIR)/package/private/ndm/presets.config
-  PLATFORM_PRESETS_CONFIG:=$(PLATFORM_SUBDIR)/presets.config
-  TMP_PRESETS_CONFIG:=$(TMP_DIR)/presets.config
+  PRESETS_CONFIG:=$(TOPDIR)/package/private/ndm/presets.json
+  PLATFORM_PRESETS_CONFIG:=$(PLATFORM_SUBDIR)/presets.json
+  TMP_PRESETS_CONFIG:=$(TMP_DIR)/presets.json
 
   ifneq ($(wildcard $(PLATFORM_PRESETS_CONFIG)),)
     $(TMP_PRESETS_CONFIG): $(PRESETS_CONFIG) $(PLATFORM_PRESETS_CONFIG)
-	$(SCRIPT_DIR)/kconfig.pl + \
-		$(PRESETS_CONFIG) \
-		$(PLATFORM_PRESETS_CONFIG) > \
-		$(TMP_PRESETS_CONFIG)
+	jq -s add $^ > $@
   else
     $(TMP_PRESETS_CONFIG): $(PRESETS_CONFIG) FORCE
-	cp $(PRESETS_CONFIG) $(TMP_PRESETS_CONFIG)
+	cp $< $@
   endif
 
   TMP_COMPONENTS_ALL:=$(TMP_DIR)/.components-all
@@ -304,26 +306,23 @@ ifeq ($(TARGET_BUILD),1)
   TMP_COMPONENTS_DIFF:=$(TMP_DIR)/.components-diff
 
   $(TMP_COMPONENTS_ALL): $(TMP_DIR)/.packageinfo
-	grep '^Package: ndm-mod-' $(TMP_DIR)/.packageinfo | \
-		sed -e 's/^Package: ndm-mod-//' | \
-		sort > $(TMP_COMPONENTS_ALL)
+	$(SCRIPT_DIR)/metadata.pl components $< > $@
 
-  $(TMP_COMPONENTS_IN_PRESETS): $(PRESETS_CONFIG)
-	grep '^CONFIG_' $(PRESETS_CONFIG) | \
-		sed -e 's/^CONFIG_//' | \
-		cut -d = -f 1 | \
-		sort > $(TMP_COMPONENTS_IN_PRESETS)
+  $(TMP_COMPONENTS_IN_PRESETS): $(TMP_PRESETS_CONFIG)
+	jq -r '[.[]] | add | sort | unique | .[]' $< > $@
 
   $(TMP_COMPONENTS_DIFF): $(TMP_COMPONENTS_ALL) $(TMP_COMPONENTS_IN_PRESETS)
-	cd $(TOPDIR) && \
-	diff -u $(TMP_COMPONENTS_IN_PRESETS:$(TOPDIR)/%=%) $(TMP_COMPONENTS_ALL:$(TOPDIR)/%=%) > $(TMP_COMPONENTS_DIFF) || \
-	true
+	grep -vxFf $^ > $@ || true
 
   ifneq ($(wildcard $(PRESETS_CONFIG)),)
     presets: $(TMP_PRESETS_CONFIG) $(TMP_COMPONENTS_DIFF)
 	if [ -s $(TMP_COMPONENTS_DIFF) ]; then \
-		echo "Please update components list in \"$(PRESETS_CONFIG:$(TOPDIR)/%=%)\" according to the diff below:"; \
-		cat $(TMP_COMPONENTS_DIFF); \
+		echo "The following unknown components found:"; \
+		sed -e 's|^|\t|' $(TMP_COMPONENTS_DIFF); \
+		echo "Please fix the following files:"; \
+		echo -e "\t$(PRESETS_CONFIG:$(TOPDIR)/%=%)"; \
+		[ -f $(PLATFORM_PRESETS_CONFIG) ] && \
+			echo -e "\t$(PLATFORM_PRESETS_CONFIG:$(TOPDIR)/%=%)"; \
 		false; \
 	fi
   else

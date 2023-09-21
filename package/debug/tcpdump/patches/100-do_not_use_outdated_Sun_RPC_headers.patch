@@ -1,0 +1,12 @@
+diff -Nuar tcpdump-3.9.8/print-sunrpc.c tcpdump-3.9.8-patched/print-sunrpc.c
+--- tcpdump-3.9.8/print-sunrpc.c	2005-04-28 01:44:06.000000000 +0400
++++ tcpdump-3.9.8-patched/print-sunrpc.c	2022-11-12 21:03:36.483750916 +0300
+@@ -30,7 +30,7 @@
+ 
+ #include <tcpdump-stdinc.h>
+ 
+-#ifdef HAVE_GETRPCBYNUMBER
++#if 0 // def HAVE_GETRPCBYNUMBER
+ #include <rpc/rpc.h>
+ #ifdef HAVE_RPC_RPCENT_H
+ #include <rpc/rpcent.h>

@@ -21,13 +21,11 @@ TIMEZONE_FILE:=/var/TZ
 
 HOST_ZIC:=/usr/sbin/zic
 ZONES:=Zones
-ZONE_INFO:=/usr/share/zoneinfo/posix
+ZONE_INFO:=/usr/share/zoneinfo
 
-TZ_DIR=$(1)$(ZONE_INFO)
-TZ_EXCLUDE:= \
-	America/Asuncion \
-	America/Santiago \
-	Pacific/Easter
+TZ_ROOT=$(1)$(ZONE_INFO)
+TZ_DIR=$(TZ_ROOT)/posix
+TZ_EXCLUDE:=
 
 PKG_LICENSE:=FREE
 PKG_LICENSE_FILES:=LICENSE
@@ -57,11 +55,13 @@ define Build/Compile
 		$(PKG_BUILD_DIR)/backward 2> /dev/null
 	# Generate timezone files for selected regions.
 	$(HOST_ZIC) -d $(PKG_BUILD_DIR)/$(ZONES) \
+		$(PKG_BUILD_DIR)/africa \
 		$(PKG_BUILD_DIR)/asia \
+		$(PKG_BUILD_DIR)/australasia \
+		$(PKG_BUILD_DIR)/etcetera \
 		$(PKG_BUILD_DIR)/europe \
 		$(PKG_BUILD_DIR)/northamerica \
-		$(PKG_BUILD_DIR)/southamerica \
-		$(PKG_BUILD_DIR)/etcetera
+		$(PKG_BUILD_DIR)/southamerica
 	# Remove timezone files from excluded regions and related symlinks.
 	(cd $(PKG_BUILD_DIR)/$(ZONES); \
 		rm -rf $(TZ_EXCLUDE); \
@@ -78,11 +78,13 @@ endef
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(TZ_DIR)
 	$(INSTALL_DIR) $(1)/etc/
+	$(CP) $(PKG_BUILD_DIR)/$(ZONES)/Africa $(TZ_DIR)
 	$(CP) $(PKG_BUILD_DIR)/$(ZONES)/America $(TZ_DIR)
 	$(CP) $(PKG_BUILD_DIR)/$(ZONES)/Antarctica $(TZ_DIR)
 	$(CP) $(PKG_BUILD_DIR)/$(ZONES)/Arctic $(TZ_DIR)
 	$(CP) $(PKG_BUILD_DIR)/$(ZONES)/Asia $(TZ_DIR)
 	$(CP) $(PKG_BUILD_DIR)/$(ZONES)/Atlantic $(TZ_DIR)
+	$(CP) $(PKG_BUILD_DIR)/$(ZONES)/Australia $(TZ_DIR)
 	$(CP) $(PKG_BUILD_DIR)/$(ZONES)/Europe $(TZ_DIR)
 	$(CP) $(PKG_BUILD_DIR)/$(ZONES)/Indian $(TZ_DIR)
 	$(CP) $(PKG_BUILD_DIR)/$(ZONES)/Pacific $(TZ_DIR)
@@ -109,6 +111,7 @@ ifneq ($(CONFIG_USE_MUSL)$(CONFIG_USE_UCLIBC),)
 	mv $(PKG_BUILD_DIR)/rules.txt $(TZ_DIR)
 endif
 	ln -sf $(TIMEZONE_FILE) $(1)$(TIMEZONE_LINK)
+	$(CP) $(PKG_BUILD_DIR)/zone1970.tab $(TZ_ROOT)
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))

@@ -7,7 +7,7 @@
 #
 
 PRESET=
-PRESETS_CFG=package/private/ndm/presets.config
+PRESETS_CFG=package/private/ndm/presets.json
 REMOVE_MODULES=false
 
 # $1 - config
@@ -47,6 +47,11 @@ config_subtarget_dir_get () {
 	else
 		echo "target/linux/$target/$subtarget"
 	fi
+}
+
+# $1 - config
+config_components_all_get () {
+	echo $(sed -ne 's|^CONFIG_PACKAGE_ndm-mod-\(.*\)=[my]$|\1|p' $1 | sort)
 }
 
 # $1 - config
@@ -103,9 +108,7 @@ cfg_cleanup() {
 
 presets_list () {
 	if [ -e $PRESETS_CFG ]; then
-		t=$(grep '^CONFIG_' $PRESETS_CFG |
-		    cut -d = -f 2 | tr -d \" | sed '/^$/d' |
-		    tr ' ' '\n' | sort | uniq)
+		t=$(jq -r 'keys | join(" ")' $PRESETS_CFG)
 	fi
 	echo -e "all manual\n$t"
 }
@@ -125,7 +128,7 @@ preset_apply () {
 
 	cp $cfg .config_backup
 	sed -i 's/^\(CONFIG_PACKAGE_ndm-mod-.*=\)y$/\1m/' $cfg
-	rm -f tmp/presets.config
+	rm -f tmp/presets.json
 
 	make $cfg 2>&1 | tee .pipe
 	if [ ${PIPESTATUS[0]} -ne 0 ]; then
@@ -137,17 +140,17 @@ preset_apply () {
 	[ -s .pipe ] && echo
 	rm .pipe
 
-	if [ $preset = "manual" ]; then
+	if [ $preset = "all" ]; then
+		t=$(config_components_all_get $cfg | tr ' ' '\n')
+	elif [ $preset = "manual" ]; then
 		echo "Paste comma-separated list from \"show version\" and press Ctrl+D."
 		t=$(cat | tr -d '\n\t ' | tr ',' '\n')
-		t+=$'\ncomponents' # hidden and always needed
 	else
-		t=$(grep '^CONFIG' tmp/presets.config)
-		[ $preset != all ] && t=$(echo "$t" | grep "[\" ]$preset[\" ]")
-		t=$(echo "$t" | cut -d = -f 1 | sed 's/CONFIG_//')
+		t=$(jq -r ".$preset[]" tmp/presets.json)
 	fi
 
-	t+=$'\nndss-override' # NDMS-893
+	t+=$'\ncomponents'	# hidden and always needed
+	t+=$'\nndss-override'	# NDMS-893
 	components=$(echo "$t" | sort | uniq)
 
 	echo "Preset \"$preset\":"

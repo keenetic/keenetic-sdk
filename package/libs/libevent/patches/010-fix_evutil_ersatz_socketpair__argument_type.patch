@@ -1,0 +1,12 @@
+diff -Nuar libevent-2.1.12-stable/util-internal.h libevent-2.1.12-stable-patched/util-internal.h
+--- libevent-2.1.12-stable/util-internal.h	2020-07-05 11:35:45.000000000 +0300
++++ libevent-2.1.12-stable-patched/util-internal.h	2022-11-03 23:11:04.835483292 +0300
+@@ -303,7 +303,7 @@
+ int evutil_socket_finished_connecting_(evutil_socket_t fd);
+ 
+ EVENT2_EXPORT_SYMBOL
+-int evutil_ersatz_socketpair_(int, int , int, evutil_socket_t[]);
++int evutil_ersatz_socketpair_(int, int , int, evutil_socket_t[2]);
+ 
+ int evutil_resolve_(int family, const char *hostname, struct sockaddr *sa,
+     ev_socklen_t *socklen, int port);

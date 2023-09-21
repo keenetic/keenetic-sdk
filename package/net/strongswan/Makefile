@@ -66,6 +66,8 @@ RSTRIP         := :
 STRIP          := :
 endif
 
+TARGET_CFLAGS  += -Wno-format -Wno-format-security
+
 IPSEC_WORK_PATH:=/tmp/ipsec
 
 CONFIGURE_ARGS += \
@@ -130,11 +132,6 @@ CONFIGURE_ARGS += \
 	--with-piddir=$(IPSEC_WORK_PATH) \
 	--sysconfdir=$(IPSEC_WORK_PATH)
 
-define Build/Prepare
-	$(call Build/Prepare/Default)
-	$(LN) $(PKG_BUILD_DIR) $(BUILD_DIR)/$(PKG_NAME)
-endef
-
 define Build/Compile
 	$(call Build/Compile/Default,DESTDIR="$(PKG_INSTALL_DIR)" install)
 endef
@@ -143,9 +140,11 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/strongswan.d/charon
 	$(INSTALL_DIR) $(1)/usr/lib/ipsec
+	$(INSTALL_DIR) $(1)/usr/sbin
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/ipsec/charon $(1)/usr/lib/ipsec
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/ipsec/starter $(1)/usr/lib/ipsec
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/ipsec/stroke $(1)/usr/lib/ipsec
+	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/swanctl $(1)/usr/sbin/swanctl
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/ipsec/lib*.so* $(1)/usr/lib/ipsec
 	$(INSTALL_DATA) ./files/strongswan.conf $(1)/etc/strongswan.conf
 	$(INSTALL_DATA) ./files/basic-plugins.conf $(1)/etc/strongswan.d/charon/basic-plugins.conf

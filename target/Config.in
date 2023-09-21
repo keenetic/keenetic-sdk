@@ -105,28 +105,48 @@ config HAS_BAND_STEERING
 config HAS_BTMTK
 	bool
 
+config HAS_RADIO_MTK
+	bool
+
 config HAS_MT7603_RADIO
+	select HAS_RADIO_MTK
 	bool
 
 config HAS_MT7610_RADIO
+	select HAS_RADIO_MTK
 	bool
 
 config HAS_MT7613_RADIO
+	select HAS_RADIO_MTK
 	bool
 
 config HAS_MT7615_RADIO
+	select HAS_RADIO_MTK
 	bool
 
 config HAS_MT7628_RADIO
+	select HAS_RADIO_MTK
 	bool
 
 config HAS_MT76X2_RADIO
+	select HAS_RADIO_MTK
 	bool
 
 config HAS_MT7915_RADIO
+	select HAS_RADIO_MTK
+	bool
+
+config HAS_MT7916_RADIO
+	select HAS_RADIO_MTK
+	bool
+
+config HAS_CONNINFRA
 	bool
 
 config HAS_WHNAT
+	bool
+
+config HAS_WARP
 	bool
 
 config HAS_HWNAT

@@ -14,7 +14,7 @@ my $xml = "$ENV{'TOPDIR'}/package/private/ndm/files-ndm/etc/components.xml";
 splice @ARGV, 0, 5;
 
 my %components;
-for (@ARGV) {
+for (split(' ', shift @ARGV)) {
 	$components{$_} = 1;
 }
 

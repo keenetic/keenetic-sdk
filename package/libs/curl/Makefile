@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=curl
-PKG_VERSION:=7.82.0
+PKG_VERSION:=8.0.1
 PKG_RELEASE:=1
 PKG_LICENSE:=MIT
 
@@ -16,7 +16,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://dl.uxnr.de/mirror/curl/ \
 	https://curl.askapache.com/download/ \
 	https://curl.se/download/
-PKG_HASH:=0aaa12d7bd04b0966254f2703ce80dd5c38dbbd76af0297d3d690cdce58a583c
+PKG_HASH:=0a381cd82f4d00a9a334438b8ca239afea5bfefcfa9a1025f2bf118e79e0b5f0
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
@@ -80,7 +80,7 @@ CONFIGURE_ARGS += \
 	--disable-manual \
 	--disable-sspi \
 	--disable-telnet \
-	--disable-tftp \
+	--enable-tftp \
 	--disable-verbose \
 	--disable-smb \
 	$(if $(CONFIG_LIBCURL_NGHTTP2),--with-nghttp2="$(STAGING_DIR)/usr",--without-nghttp2) \
@@ -100,7 +100,7 @@ CONFIGURE_ARGS += \
 	$(call autoconf_bool,CONFIG_IPV6,ipv6) \
 
 ifeq ($(CONFIG_LIBCURL_BACKTRACE),y)
-EXTRA_CFLAGS   := $(filter-out \
+TARGET_CFLAGS  := $(filter-out \
                      -fno-asynchronous-unwind-tables \
                      -fomit-frame-pointer \
                      -fno-caller-saves \

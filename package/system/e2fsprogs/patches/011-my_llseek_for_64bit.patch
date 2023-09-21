@@ -1,0 +1,11 @@
+diff -Nuar e2fsprogs-1.45.6/lib/blkid/llseek.c e2fsprogs-1.45.6-patched/lib/blkid/llseek.c
+--- e2fsprogs-1.45.6/lib/blkid/llseek.c	2022-11-02 11:17:59.858088934 +0300
++++ e2fsprogs-1.45.6-patched/lib/blkid/llseek.c	2022-11-02 11:19:14.610436472 +0300
+@@ -53,6 +53,7 @@
+ #if SIZEOF_LONG == SIZEOF_LONG_LONG
+ 
+ #define llseek lseek
++#define my_llseek lseek64
+ 
+ #else /* SIZEOF_LONG != SIZEOF_LONG_LONG */
+ 

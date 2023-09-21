@@ -1,0 +1,554 @@
+From 1ba9023fb949518b7228b0032d2744fa5d2c36ab Mon Sep 17 00:00:00 2001
+From: Sergey Korolev <sergey.korolev@keenetic.com>
+Date: Sat, 12 Nov 2022 19:22:29 +0300
+Subject: [PATCH] xpipe: avoid "-Wstringop-overflow=" warnings
+
+include/libbb.h:524:27: warning: 'xpipe' accessing 8 bytes
+in a region of size 4 [-Wstringop-overflow=]
+  524 | #define xpiped_pair(pair) xpipe(&((pair).rd))
+      |                           ^~~~~~~~~~~~~~~~~~~
+---
+ archival/cpio.c                        | 12 ++++-----
+ archival/libarchive/open_transformer.c | 12 ++++-----
+ archival/tar.c                         | 20 +++++++--------
+ include/libbb.h                        |  8 +++---
+ networking/ftpd.c                      |  8 +++---
+ networking/httpd.c                     | 14 +++++------
+ networking/ifupdown.c                  | 16 ++++++------
+ networking/udhcp/signalpipe.c          | 16 ++++++------
+ runit/runsv.c                          | 34 +++++++++++++-------------
+ runit/runsvdir.c                       | 16 ++++++------
+ shell/hush.c                           | 30 +++++++++++------------
+ 11 files changed, 94 insertions(+), 92 deletions(-)
+
+diff --git a/archival/cpio.c b/archival/cpio.c
+index cdc16c1..df7278b 100644
+--- a/archival/cpio.c
++++ b/archival/cpio.c
+@@ -398,8 +398,8 @@ int cpio_main(int argc UNUSED_PARAM, char **argv)
+ 		 * This is good enough for now.
+ 		 */
+ #if !BB_MMU
+-		pp.rd = 3;
+-		pp.wr = 4;
++		pp.pp_rd = 3;
++		pp.pp_wr = 4;
+ 		if (!re_execed) {
+ 			close(3);
+ 			close(4);
+@@ -410,15 +410,15 @@ int cpio_main(int argc UNUSED_PARAM, char **argv)
+ #endif
+ 		pid = fork_or_rexec(argv - optind);
+ 		if (pid == 0) { /* child */
+-			close(pp.rd);
+-			xmove_fd(pp.wr, STDOUT_FILENO);
++			close(pp.pp_rd);
++			xmove_fd(pp.pp_wr, STDOUT_FILENO);
+ 			goto dump;
+ 		}
+ 		/* parent */
+ 		USE_FOR_NOMMU(argv[-optind][0] &= 0x7f); /* undo fork_or_rexec() damage */
+ 		xchdir(*argv++);
+-		close(pp.wr);
+-		xmove_fd(pp.rd, STDIN_FILENO);
++		close(pp.pp_wr);
++		xmove_fd(pp.pp_rd, STDIN_FILENO);
+ 		//opt &= ~OPT_PASSTHROUGH;
+ 		opt |= OPT_EXTRACT;
+ 		goto skip;
+diff --git a/archival/libarchive/open_transformer.c b/archival/libarchive/open_transformer.c
+index be536a3..bd2331a 100644
+--- a/archival/libarchive/open_transformer.c
++++ b/archival/libarchive/open_transformer.c
+@@ -116,7 +116,7 @@ void FAST_FUNC fork_transformer(int fd, const char *transform_prog)
+ 	pid = BB_MMU ? xfork() : xvfork();
+ 	if (pid == 0) {
+ 		/* Child */
+-		close(fd_pipe.rd); /* we don't want to read from the parent */
++		close(fd_pipe.pp_rd); /* we don't want to read from the parent */
+ 		// FIXME: error check?
+ #if BB_MMU
+ 		{
+@@ -125,10 +125,10 @@ void FAST_FUNC fork_transformer(int fd, const char *transform_prog)
+ 			init_transformer_state(&xstate);
+ 			xstate.check_signature = check_signature;
+ 			xstate.src_fd = fd;
+-			xstate.dst_fd = fd_pipe.wr;
++			xstate.dst_fd = fd_pipe.pp_wr;
+ 			r = transformer(&xstate);
+ 			if (ENABLE_FEATURE_CLEAN_UP) {
+-				close(fd_pipe.wr); /* send EOF */
++				close(fd_pipe.pp_wr); /* send EOF */
+ 				close(fd);
+ 			}
+ 			/* must be _exit! bug was actually seen here */
+@@ -138,7 +138,7 @@ void FAST_FUNC fork_transformer(int fd, const char *transform_prog)
+ 		{
+ 			char *argv[4];
+ 			xmove_fd(fd, 0);
+-			xmove_fd(fd_pipe.wr, 1);
++			xmove_fd(fd_pipe.pp_wr, 1);
+ 			argv[0] = (char*)transform_prog;
+ 			argv[1] = (char*)"-cf";
+ 			argv[2] = (char*)"-";
+@@ -151,8 +151,8 @@ void FAST_FUNC fork_transformer(int fd, const char *transform_prog)
+ 	}
+ 
+ 	/* parent process */
+-	close(fd_pipe.wr); /* don't want to write to the child */
+-	xmove_fd(fd_pipe.rd, fd);
++	close(fd_pipe.pp_wr); /* don't want to write to the child */
++	xmove_fd(fd_pipe.pp_rd, fd);
+ }
+ 
+ 
+diff --git a/archival/tar.c b/archival/tar.c
+index aa03ba9..e9c9ffe 100644
+--- a/archival/tar.c
++++ b/archival/tar.c
+@@ -638,14 +638,14 @@ static void NOINLINE vfork_compressor(int tar_fd, const char *gzip)
+ 	if (gzipPid == 0) {
+ 		/* child */
+ 		/* NB: close _first_, then move fds! */
+-		close(gzipDataPipe.wr);
++		close(gzipDataPipe.pp_wr);
+ # if WAIT_FOR_CHILD
+-		close(gzipStatusPipe.rd);
+-		/* gzipStatusPipe.wr will close only on exec -
++		close(gzipStatusPipe.pp_rd);
++		/* gzipStatusPipe.pp_wr will close only on exec -
+ 		 * parent waits for this close to happen */
+-		fcntl(gzipStatusPipe.wr, F_SETFD, FD_CLOEXEC);
++		fcntl(gzipStatusPipe.pp_wr, F_SETFD, FD_CLOEXEC);
+ # endif
+-		xmove_fd(gzipDataPipe.rd, 0);
++		xmove_fd(gzipDataPipe.pp_rd, 0);
+ 		xmove_fd(tar_fd, 1);
+ 		/* exec gzip/bzip2 program/applet */
+ 		BB_EXECLP(gzip, gzip, "-f", (char *)0);
+@@ -654,20 +654,20 @@ static void NOINLINE vfork_compressor(int tar_fd, const char *gzip)
+ 	}
+ 
+ 	/* parent */
+-	xmove_fd(gzipDataPipe.wr, tar_fd);
+-	close(gzipDataPipe.rd);
++	xmove_fd(gzipDataPipe.pp_wr, tar_fd);
++	close(gzipDataPipe.pp_rd);
+ # if WAIT_FOR_CHILD
+-	close(gzipStatusPipe.wr);
++	close(gzipStatusPipe.pp_wr);
+ 	while (1) {
+ 		char buf;
+ 		int n;
+ 
+ 		/* Wait until child execs (or fails to) */
+-		n = full_read(gzipStatusPipe.rd, &buf, 1);
++		n = full_read(gzipStatusPipe.pp_rd, &buf, 1);
+ 		if (n < 0 /* && errno == EAGAIN */)
+ 			continue;	/* try it again */
+ 	}
+-	close(gzipStatusPipe.rd);
++	close(gzipStatusPipe.pp_rd);
+ # endif
+ 	if (vfork_exec_errno) {
+ 		errno = vfork_exec_errno;
+diff --git a/include/libbb.h b/include/libbb.h
+index 9e155c6..d6248aa 100644
+--- a/include/libbb.h
++++ b/include/libbb.h
+@@ -519,9 +519,11 @@ uoff_t FAST_FUNC get_volume_size_in_bytes(int fd,
+ 
+ void xpipe(int filedes[2]) FAST_FUNC;
+ /* In this form code with pipes is much more readable */
+-struct fd_pair { int rd; int wr; };
+-#define piped_pair(pair)  pipe(&((pair).rd))
+-#define xpiped_pair(pair) xpipe(&((pair).rd))
++struct fd_pair { int fd[2]; };
++#define piped_pair(pair)  pipe(&((pair).fd[0]))
++#define xpiped_pair(pair) xpipe(&((pair).fd[0]))
++#define pp_rd fd[0]
++#define pp_wr fd[1]
+ 
+ /* Useful for having small structure members/global variables */
+ typedef int8_t socktype_t;
+diff --git a/networking/ftpd.c b/networking/ftpd.c
+index 8345ae6..29da362 100644
+--- a/networking/ftpd.c
++++ b/networking/ftpd.c
+@@ -649,8 +649,8 @@ popen_ls(const char *opt)
+ #endif
+ 		/* child */
+ 		/* NB: close _first_, then move fd! */
+-		close(outfd.rd);
+-		xmove_fd(outfd.wr, STDOUT_FILENO);
++		close(outfd.pp_rd);
++		xmove_fd(outfd.pp_wr, STDOUT_FILENO);
+ 		/* Opening /dev/null in chroot is hard.
+ 		 * Just making sure STDIN_FILENO is opened
+ 		 * to something harmless. Paranoia,
+@@ -680,8 +680,8 @@ popen_ls(const char *opt)
+ 	}
+ 
+ 	/* parent */
+-	close(outfd.wr);
+-	return outfd.rd;
++	close(outfd.pp_wr);
++	return outfd.pp_rd;
+ }
+ 
+ enum {
+diff --git a/networking/httpd.c b/networking/httpd.c
+index ed15fd8..215db81 100644
+--- a/networking/httpd.c
++++ b/networking/httpd.c
+@@ -1427,10 +1427,10 @@ static void send_cgi_and_exit(
+ 		xfunc_error_retval = 242;
+ 
+ 		/* NB: close _first_, then move fds! */
+-		close(toCgi.wr);
+-		close(fromCgi.rd);
+-		xmove_fd(toCgi.rd, 0);  /* replace stdin with the pipe */
+-		xmove_fd(fromCgi.wr, 1);  /* replace stdout with the pipe */
++		close(toCgi.pp_wr);
++		close(fromCgi.pp_rd);
++		xmove_fd(toCgi.pp_rd, 0);  /* replace stdin with the pipe */
++		xmove_fd(fromCgi.pp_wr, 1);  /* replace stdout with the pipe */
+ 		/* User seeing stderr output can be a security problem.
+ 		 * If CGI really wants that, it can always do dup itself. */
+ 		/* dup2(1, 2); */
+@@ -1494,9 +1494,9 @@ static void send_cgi_and_exit(
+ 	xfunc_error_retval = 0;
+ 
+ 	/* Pump data */
+-	close(fromCgi.wr);
+-	close(toCgi.rd);
+-	cgi_io_loop_and_exit(fromCgi.rd, toCgi.wr, post_len);
++	close(fromCgi.pp_wr);
++	close(toCgi.pp_rd);
++	cgi_io_loop_and_exit(fromCgi.pp_rd, toCgi.pp_wr, post_len);
+ }
+ 
+ #endif          /* FEATURE_HTTPD_CGI */
+diff --git a/networking/ifupdown.c b/networking/ifupdown.c
+index 7c45e89..de27de3 100644
+--- a/networking/ifupdown.c
++++ b/networking/ifupdown.c
+@@ -1099,17 +1099,17 @@ static int popen2(FILE **in, FILE **out, char *command, char *param)
+ 	if (pid == 0) {
+ 		/* Child */
+ 		/* NB: close _first_, then move fds! */
+-		close(infd.wr);
+-		close(outfd.rd);
+-		xmove_fd(infd.rd, 0);
+-		xmove_fd(outfd.wr, 1);
++		close(infd.pp_wr);
++		close(outfd.pp_rd);
++		xmove_fd(infd.pp_rd, 0);
++		xmove_fd(outfd.pp_wr, 1);
+ 		BB_EXECVP_or_die(argv);
+ 	}
+ 	/* parent */
+-	close(infd.rd);
+-	close(outfd.wr);
+-	*in = xfdopen_for_write(infd.wr);
+-	*out = xfdopen_for_read(outfd.rd);
++	close(infd.pp_rd);
++	close(outfd.pp_wr);
++	*in = xfdopen_for_write(infd.pp_wr);
++	*out = xfdopen_for_read(outfd.pp_rd);
+ 	return pid;
+ }
+ 
+diff --git a/networking/udhcp/signalpipe.c b/networking/udhcp/signalpipe.c
+index 6355c5e..4505fc4 100644
+--- a/networking/udhcp/signalpipe.c
++++ b/networking/udhcp/signalpipe.c
+@@ -26,7 +26,7 @@ static struct fd_pair signal_pipe;
+ static void signal_handler(int sig)
+ {
+ 	unsigned char ch = sig; /* use char, avoid dealing with partial writes */
+-	if (write(signal_pipe.wr, &ch, 1) != 1)
++	if (write(signal_pipe.pp_wr, &ch, 1) != 1)
+ 		bb_perror_msg("can't send signal");
+ }
+ 
+@@ -36,9 +36,9 @@ void FAST_FUNC udhcp_sp_setup(void)
+ {
+ 	/* was socketpair, but it needs AF_UNIX in kernel */
+ 	xpiped_pair(signal_pipe);
+-	close_on_exec_on(signal_pipe.rd);
+-	close_on_exec_on(signal_pipe.wr);
+-	ndelay_on(signal_pipe.wr);
++	close_on_exec_on(signal_pipe.pp_rd);
++	close_on_exec_on(signal_pipe.pp_wr);
++	ndelay_on(signal_pipe.pp_wr);
+ 	bb_signals(0
+ 		+ (1 << SIGUSR1)
+ 		+ (1 << SIGUSR2)
+@@ -52,12 +52,12 @@ void FAST_FUNC udhcp_sp_setup(void)
+ int FAST_FUNC udhcp_sp_fd_set(fd_set *rfds, int extra_fd)
+ {
+ 	FD_ZERO(rfds);
+-	FD_SET(signal_pipe.rd, rfds);
++	FD_SET(signal_pipe.pp_rd, rfds);
+ 	if (extra_fd >= 0) {
+ 		close_on_exec_on(extra_fd);
+ 		FD_SET(extra_fd, rfds);
+ 	}
+-	return signal_pipe.rd > extra_fd ? signal_pipe.rd : extra_fd;
++	return signal_pipe.pp_rd > extra_fd ? signal_pipe.pp_rd : extra_fd;
+ }
+ 
+ /* Read a signal from the signal pipe. Returns 0 if there is
+@@ -67,10 +67,10 @@ int FAST_FUNC udhcp_sp_read(const fd_set *rfds)
+ {
+ 	unsigned char sig;
+ 
+-	if (!FD_ISSET(signal_pipe.rd, rfds))
++	if (!FD_ISSET(signal_pipe.pp_rd, rfds))
+ 		return 0;
+ 
+-	if (safe_read(signal_pipe.rd, &sig, 1) != 1)
++	if (safe_read(signal_pipe.pp_rd, &sig, 1) != 1)
+ 		return -1;
+ 
+ 	return sig;
+diff --git a/runit/runsv.c b/runit/runsv.c
+index 94d2860..560824e 100644
+--- a/runit/runsv.c
++++ b/runit/runsv.c
+@@ -134,13 +134,13 @@ static void warn_cannot(const char *m)
+ 
+ static void s_child(int sig_no UNUSED_PARAM)
+ {
+-	write(selfpipe.wr, "", 1);
++	write(selfpipe.pp_wr, "", 1);
+ }
+ 
+ static void s_term(int sig_no UNUSED_PARAM)
+ {
+ 	sigterm = 1;
+-	write(selfpipe.wr, "", 1); /* XXX */
++	write(selfpipe.pp_wr, "", 1); /* XXX */
+ }
+ 
+ static int open_trunc_or_warn(const char *name)
+@@ -264,7 +264,7 @@ static unsigned custom(struct svdir *s, char c)
+ 			}
+ 			if (pid == 0) {
+ 				/* child */
+-				if (haslog && dup2(logpipe.wr, 1) == -1)
++				if (haslog && dup2(logpipe.pp_wr, 1) == -1)
+ 					warn_cannot("setup stdout for control/?");
+ 				execl(a, a, (char *) NULL);
+ 				fatal_cannot("run control/?");
+@@ -344,11 +344,11 @@ static void startservice(struct svdir *s)
+ 			/* NB: bug alert! right order is close, then dup2 */
+ 			if (s->islog) {
+ 				xchdir("./log");
+-				close(logpipe.wr);
+-				xdup2(logpipe.rd, 0);
++				close(logpipe.pp_wr);
++				xdup2(logpipe.pp_rd, 0);
+ 			} else {
+-				close(logpipe.rd);
+-				xdup2(logpipe.wr, 1);
++				close(logpipe.pp_rd);
++				xdup2(logpipe.pp_wr, 1);
+ 			}
+ 		}
+ 		/* Non-ignored signals revert to SIG_DFL on exec anyway */
+@@ -461,10 +461,10 @@ int runsv_main(int argc UNUSED_PARAM, char **argv)
+ 	dir = single_argv(argv);
+ 
+ 	xpiped_pair(selfpipe);
+-	close_on_exec_on(selfpipe.rd);
+-	close_on_exec_on(selfpipe.wr);
+-	ndelay_on(selfpipe.rd);
+-	ndelay_on(selfpipe.wr);
++	close_on_exec_on(selfpipe.pp_rd);
++	close_on_exec_on(selfpipe.pp_wr);
++	ndelay_on(selfpipe.pp_rd);
++	ndelay_on(selfpipe.pp_wr);
+ 
+ 	sig_block(SIGCHLD);
+ 	bb_signals_recursive_norestart(1 << SIGCHLD, s_child);
+@@ -499,8 +499,8 @@ int runsv_main(int argc UNUSED_PARAM, char **argv)
+ 			if (stat("log/down", &s) != -1)
+ 				svd[1].sd_want = W_DOWN;
+ 			xpiped_pair(logpipe);
+-			close_on_exec_on(logpipe.rd);
+-			close_on_exec_on(logpipe.wr);
++			close_on_exec_on(logpipe.pp_rd);
++			close_on_exec_on(logpipe.pp_wr);
+ 		}
+ 	}
+ 
+@@ -581,7 +581,7 @@ int runsv_main(int argc UNUSED_PARAM, char **argv)
+ 			if (svd[0].sd_want == W_UP || svd[0].state == S_FINISH)
+ 				startservice(&svd[0]);
+ 
+-		x[0].fd = selfpipe.rd;
++		x[0].fd = selfpipe.pp_rd;
+ 		x[0].events = POLLIN;
+ 		x[1].fd = svd[0].fdcontrol;
+ 		x[1].events = POLLIN;
+@@ -594,7 +594,7 @@ int runsv_main(int argc UNUSED_PARAM, char **argv)
+ 		sig_block(SIGTERM);
+ 		sig_block(SIGCHLD);
+ 
+-		while (read(selfpipe.rd, &ch, 1) == 1)
++		while (read(selfpipe.pp_rd, &ch, 1) == 1)
+ 			continue;
+ 
+ 		for (;;) {
+@@ -660,8 +660,8 @@ int runsv_main(int argc UNUSED_PARAM, char **argv)
+ 				svd[1].sd_want = W_EXIT;
+ 				/* stopservice(&svd[1]); */
+ 				update_status(&svd[1]);
+-				close(logpipe.wr);
+-				close(logpipe.rd);
++				close(logpipe.pp_wr);
++				close(logpipe.pp_rd);
+ 			}
+ 		}
+ 	} /* for (;;) */
+diff --git a/runit/runsvdir.c b/runit/runsvdir.c
+index b4c0b2e..fb1f599 100644
+--- a/runit/runsvdir.c
++++ b/runit/runsvdir.c
+@@ -260,14 +260,14 @@ int runsvdir_main(int argc UNUSED_PARAM, char **argv)
+ 		} else if (piped_pair(logpipe)) {
+ 			warnx("can't create pipe for log");
+ 		} else {
+-			close_on_exec_on(logpipe.rd);
+-			close_on_exec_on(logpipe.wr);
+-			ndelay_on(logpipe.rd);
+-			ndelay_on(logpipe.wr);
+-			if (dup2(logpipe.wr, 2) == -1) {
++			close_on_exec_on(logpipe.pp_rd);
++			close_on_exec_on(logpipe.pp_wr);
++			ndelay_on(logpipe.pp_rd);
++			ndelay_on(logpipe.pp_wr);
++			if (dup2(logpipe.pp_wr, 2) == -1) {
+ 				warnx("can't set filedescriptor for log");
+ 			} else {
+-				pfd[0].fd = logpipe.rd;
++				pfd[0].fd = logpipe.pp_rd;
+ 				pfd[0].events = POLLIN;
+ 				stamplog = monotonic_sec();
+ 				goto run;
+@@ -341,7 +341,7 @@ int runsvdir_main(int argc UNUSED_PARAM, char **argv)
+ #if ENABLE_FEATURE_RUNSVDIR_LOG
+ 		if (rplog) {
+ 			if ((int)(now - stamplog) >= 0) {
+-				write(logpipe.wr, ".", 1);
++				write(logpipe.pp_wr, ".", 1);
+ 				stamplog = now + 900;
+ 			}
+ 		}
+@@ -360,7 +360,7 @@ int runsvdir_main(int argc UNUSED_PARAM, char **argv)
+ #if ENABLE_FEATURE_RUNSVDIR_LOG
+ 		if (pfd[0].revents & POLLIN) {
+ 			char ch;
+-			while (read(logpipe.rd, &ch, 1) > 0) {
++			while (read(logpipe.pp_rd, &ch, 1) > 0) {
+ 				if (ch < ' ')
+ 					ch = ' ';
+ 				for (i = 6; rplog[i] != '\0'; i++)
+diff --git a/shell/hush.c b/shell/hush.c
+index eabe83a..8f89b8c 100644
+--- a/shell/hush.c
++++ b/shell/hush.c
+@@ -6009,24 +6009,24 @@ static void setup_heredoc(struct redir_struct *redir)
+ 
+ 	close(redir->rd_fd); /* often saves dup2+close in xmove_fd */
+ 	xpiped_pair(pair);
+-	xmove_fd(pair.rd, redir->rd_fd);
++	xmove_fd(pair.pp_rd, redir->rd_fd);
+ 
+ 	/* Try writing without forking. Newer kernels have
+ 	 * dynamically growing pipes. Must use non-blocking write! */
+-	ndelay_on(pair.wr);
++	ndelay_on(pair.pp_wr);
+ 	while (1) {
+-		written = write(pair.wr, heredoc, len);
++		written = write(pair.pp_wr, heredoc, len);
+ 		if (written <= 0)
+ 			break;
+ 		len -= written;
+ 		if (len == 0) {
+-			close(pair.wr);
++			close(pair.pp_wr);
+ 			free(expanded);
+ 			return;
+ 		}
+ 		heredoc += written;
+ 	}
+-	ndelay_off(pair.wr);
++	ndelay_off(pair.pp_wr);
+ 
+ 	/* Okay, pipe buffer was not big enough */
+ 	/* Note: we must not create a stray child (bastard? :)
+@@ -6046,11 +6046,11 @@ static void setup_heredoc(struct redir_struct *redir)
+ 		/* grandchild */
+ 		close(redir->rd_fd); /* read side of the pipe */
+ #if BB_MMU
+-		full_write(pair.wr, heredoc, len); /* may loop or block */
++		full_write(pair.pp_wr, heredoc, len); /* may loop or block */
+ 		_exit(0);
+ #else
+ 		/* Delegate blocking writes to another process */
+-		xmove_fd(pair.wr, STDOUT_FILENO);
++		xmove_fd(pair.pp_wr, STDOUT_FILENO);
+ 		re_execute_shell(&to_free, heredoc, NULL, NULL, NULL);
+ #endif
+ 	}
+@@ -6063,7 +6063,7 @@ static void setup_heredoc(struct redir_struct *redir)
+ #if !BB_MMU
+ 	free(to_free);
+ #endif
+-	close(pair.wr);
++	close(pair.pp_wr);
+ 	free(expanded);
+ 	wait(NULL); /* wait till child has died */
+ }
+@@ -7206,8 +7206,8 @@ static NOINLINE int run_pipe(struct pipe *pi)
+ 		}
+ 
+ 		/* pipes are inserted between pairs of commands */
+-		pipefds.rd = 0;
+-		pipefds.wr = 1;
++		pipefds.pp_rd = 0;
++		pipefds.pp_wr = 1;
+ 		if (cmd_no < pi->num_cmds)
+ 			xpiped_pair(pipefds);
+ 
+@@ -7243,9 +7243,9 @@ static NOINLINE int run_pipe(struct pipe *pi)
+ 			} else {
+ 				xmove_fd(next_infd, 0);
+ 			}
+-			xmove_fd(pipefds.wr, 1);
+-			if (pipefds.rd > 1)
+-				close(pipefds.rd);
++			xmove_fd(pipefds.pp_wr, 1);
++			if (pipefds.pp_rd > 1)
++				close(pipefds.pp_rd);
+ 			/* Like bash, explicit redirects override pipes,
+ 			 * and the pipe fd is available for dup'ing. */
+ 			if (setup_redirects(command, NULL))
+@@ -7288,9 +7288,9 @@ static NOINLINE int run_pipe(struct pipe *pi)
+ 		if (cmd_no > 1)
+ 			close(next_infd);
+ 		if (cmd_no < pi->num_cmds)
+-			close(pipefds.wr);
++			close(pipefds.pp_wr);
+ 		/* Pass read (output) pipe end to next iteration */
+-		next_infd = pipefds.rd;
++		next_infd = pipefds.pp_rd;
+ 	}
+ 
+ 	if (!pi->alive_cmds) {
+-- 
+2.30.2
+

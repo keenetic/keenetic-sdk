@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openvpn
-PKG_VERSION:=2.6.0-pre-5-1
+PKG_VERSION:=2.6.0-3
 PKG_LICENSE:=GPL-2.0
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/openvpn
@@ -56,7 +56,8 @@ CONFIGURE_ARGS += \
 		--disable-plugin-down-root \
 		--enable-ndm-integration \
 		--disable-unit-tests \
-		--with-crypto-library=openssl
+		--with-crypto-library=openssl \
+		--disable-unit-tests
 
 define Package/openvpn/install
 	$(INSTALL_DIR) $(1)/usr/sbin

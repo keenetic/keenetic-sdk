@@ -1,0 +1,86 @@
+From ccb1e1f244d2a9d8cb854f63d763f72c8b179f12 Mon Sep 17 00:00:00 2001
+From: Sergey Korolev <sergey.korolev@keenetic.com>
+Date: Sat, 12 Nov 2022 19:03:31 +0300
+Subject: [PATCH] do not use deprecated stime()
+
+---
+ coreutils/date.c         |  2 +-
+ include/libbb.h          |  2 ++
+ libbb/missing_syscalls.c | 14 +++++++-------
+ util-linux/rdate.c       |  2 +-
+ 4 files changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/coreutils/date.c b/coreutils/date.c
+index 7965775..af43bf6 100644
+--- a/coreutils/date.c
++++ b/coreutils/date.c
+@@ -293,7 +293,7 @@ int date_main(int argc UNUSED_PARAM, char **argv)
+ 		maybe_set_utc(opt);
+ 
+ 		/* if setting time, set it */
+-		if ((opt & OPT_SET) && stime(&ts.tv_sec) < 0) {
++		if ((opt & OPT_SET) && bb_stime(&ts.tv_sec) < 0) {
+ 			bb_perror_msg("can't set date");
+ 		}
+ 	}
+diff --git a/include/libbb.h b/include/libbb.h
+index a8ceb44..9e155c6 100644
+--- a/include/libbb.h
++++ b/include/libbb.h
+@@ -851,6 +851,8 @@ FILE* xfdopen_for_write(int fd) FAST_FUNC;
+ int bb_pstrcmp(const void *a, const void *b) /* not FAST_FUNC! */;
+ void qsort_string_vector(char **sv, unsigned count) FAST_FUNC;
+ 
++int bb_stime(const time_t *t);
++
+ /* Wrapper which restarts poll on EINTR or ENOMEM.
+  * On other errors complains [perror("poll")] and returns.
+  * Warning! May take (much) longer than timeout_ms to return!
+diff --git a/libbb/missing_syscalls.c b/libbb/missing_syscalls.c
+index e3c1e92..161cedb 100644
+--- a/libbb/missing_syscalls.c
++++ b/libbb/missing_syscalls.c
+@@ -10,13 +10,7 @@
+ #include <sys/syscall.h>
+ #include "libbb.h"
+ 
+-#if defined(ANDROID) || defined(__ANDROID__)
+-pid_t getsid(pid_t pid)
+-{
+-	return syscall(__NR_getsid, pid);
+-}
+-
+-int stime(const time_t *t)
++int bb_stime(const time_t *t)
+ {
+ 	struct timeval tv;
+ 	tv.tv_sec = *t;
+@@ -24,6 +18,12 @@ int stime(const time_t *t)
+ 	return settimeofday(&tv, NULL);
+ }
+ 
++#if defined(ANDROID) || defined(__ANDROID__)
++pid_t getsid(pid_t pid)
++{
++	return syscall(__NR_getsid, pid);
++}
++
+ int sethostname(const char *name, size_t len)
+ {
+ 	return syscall(__NR_sethostname, name, len);
+diff --git a/util-linux/rdate.c b/util-linux/rdate.c
+index 8075ef6..3e70fd6 100644
+--- a/util-linux/rdate.c
++++ b/util-linux/rdate.c
+@@ -68,7 +68,7 @@ int rdate_main(int argc UNUSED_PARAM, char **argv)
+ 		if (current_time == remote_time)
+ 			bb_error_msg("current time matches remote time");
+ 		else
+-			if (stime(&remote_time) < 0)
++			if (bb_stime(&remote_time) < 0)
+ 				bb_perror_msg_and_die("can't set time of day");
+ 	}
+ 
+-- 
+2.30.2
+

@@ -1,0 +1,12 @@
+diff -Nuar libevent-2.1.12-stable/event.c libevent-2.1.12-stable-patched/event.c
+--- libevent-2.1.12-stable/event.c	2020-07-05 15:01:34.000000000 +0300
++++ libevent-2.1.12-stable-patched/event.c	2022-11-03 23:47:16.725498541 +0300
+@@ -1359,7 +1359,7 @@
+ 	/* Allows deletes to work */
+ 	ncalls = ev->ev_ncalls;
+ 	if (ncalls != 0)
+-		ev->ev_pncalls = &ncalls;
++		ev->ev_pncalls = &ev->ev_ncalls;
+ 	EVBASE_RELEASE_LOCK(base, th_base_lock);
+ 	while (ncalls) {
+ 		ncalls--;

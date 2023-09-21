@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2022 Keenetic Limited
+# Copyright (C) 2023 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -20,6 +20,7 @@ define KernelPackage/ensoc_eth
   SUBMENU:=Network Devices
   CATEGORY:=Kernel modules
   TITLE:=Ethernet switch driver for EcoNet EN75xx SoCs
+  DEPENDS:=@TARGET_en7512||TARGET_en7516||TARGET_en7528
   DISABLE_RSTRIP:=y
 endef
 

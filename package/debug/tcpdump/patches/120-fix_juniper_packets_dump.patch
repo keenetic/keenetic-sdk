@@ -1,0 +1,31 @@
+diff -Nuar tcpdump-3.9.8/print-juniper.c tcpdump-3.9.8-patched/print-juniper.c
+--- tcpdump-3.9.8/print-juniper.c	2006-09-19 23:07:57.000000000 +0400
++++ tcpdump-3.9.8-patched/print-juniper.c	2022-11-12 21:33:45.800098439 +0300
+@@ -219,6 +219,7 @@
+         };
+         u_int rewrite_len,es_type_bundle;
+         const struct juniper_ipsec_header *ih;
++        u_int32_t src_ip, dst_ip;
+ 
+         l2info.pictype = DLT_JUNIPER_ES;
+         if(juniper_parse_header(p, h, &l2info) == 0)
+@@ -250,14 +251,17 @@
+ 
+         if (eflag) {
+             if (!es_type_bundle) {
++                src_ip = EXTRACT_32BITS(&ih->src_ip);
++                dst_ip = EXTRACT_32BITS(&ih->dst_ip);
++
+                 printf("ES SA, index %u, ttl %u type %s (%u), spi %u, Tunnel %s > %s, length %u\n", 
+                        EXTRACT_16BITS(&ih->sa_index),
+                        ih->ttl, 
+                        tok2str(juniper_ipsec_type_values,"Unknown",ih->type),
+                        ih->type,
+                        EXTRACT_32BITS(&ih->spi),
+-                       ipaddr_string(EXTRACT_32BITS(&ih->src_ip)),
+-                       ipaddr_string(EXTRACT_32BITS(&ih->dst_ip)),
++                       ipaddr_string(&src_ip),
++                       ipaddr_string(&dst_ip),
+                        l2info.length);
+             } else {
+                 printf("ES SA, index %u, ttl %u type %s (%u), length %u\n", 

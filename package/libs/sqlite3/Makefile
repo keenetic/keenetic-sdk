@@ -69,8 +69,8 @@ TARGET_CFLAGS += $(FPIC) \
 	-DSQLITE_ENABLE_UNLOCK_NOTIFY
 
 CONFIGURE_ARGS += \
-	--disable-shared \
-	--enable-static \
+	--enable-shared \
+	--disable-static \
 	--disable-readline \
 	--disable-dynamic-extensions \
 	--disable-dependency-tracking
@@ -94,9 +94,14 @@ define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/sqlite3{,ext}.h $(1)/usr/include/
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libsqlite3.a $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libsqlite3.so* $(1)/usr/lib/
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
 	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/sqlite3.pc $(1)/usr/lib/pkgconfig/
+endef
+
+define Package/libsqlite3/install
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libsqlite3.so* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,libsqlite3))

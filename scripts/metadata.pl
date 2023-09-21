@@ -147,6 +147,8 @@ sub target_config_features(@) {
 		/^ndw2_wizard$/ and $ret .= "\tselect USES_NDW2_WIZARD\n";
 		/^old_modes$/ and $ret .= "\tselect USES_OLD_MODES\n";
 		/^whnat$/ and $ret .= "\tselect HAS_WHNAT\n";
+		/^warp$/ and $ret .= "\tselect HAS_WARP\n";
+		/^conninfra$/ and $ret .= "\tselect HAS_CONNINFRA\n";
 		/^extender$/ and $ret .= "\tselect IS_EXTENDER\n";
 		/^extended_storage$/ and $ret .= "\tselect USES_EXTENDED_STORAGE\n";
 		/^hwnat$/ and $ret .= "\tselect HAS_HWNAT\n";

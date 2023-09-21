@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libav
-PKG_VERSION:=v11.7
+PKG_VERSION:=v11.11
 PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
@@ -59,6 +59,7 @@ CONFIGURE_ARGS := \
 		--enable-small \
 		--enable-pthreads \
 		--enable-zlib \
+		--disable-bzlib \
 		--disable-runtime-cpudetect \
 		--disable-doc \
 		--disable-debug \

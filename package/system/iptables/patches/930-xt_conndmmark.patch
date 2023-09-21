@@ -22,13 +22,13 @@ diff -Naur a/include/linux/netfilter/xt_connndmmark.h b/include/linux/netfilter/
 +};
 +
 +struct xt_connndmmark_tginfo {
-+	__u8 ctmark, ctmask, nfmask;
-+	__u8 mode;
++	__u32 ctmark, ctmask, nfmask;
++	__u32 mode;
 +};
 +
 +struct xt_connndmmark_mtinfo {
-+	__u8 mark, mask;
-+	__u8 invert;
++	__u32 mark, mask;
++	__u32 invert;
 +};
 +
 +#endif /*_XT_CONNNDMMARK_H*/
@@ -64,8 +64,8 @@ diff -Naur a/extensions/libxt_connndmmark.c b/extensions/libxt_connndmmark.c
 +#include <linux/netfilter/xt_connndmmark.h>
 +
 +struct xt_connndmmark_info {
-+	uint8_t mark, mask;
-+	uint8_t invert;
++	uint32_t mark, mask;
++	uint32_t invert;
 +};
 +
 +enum {
@@ -98,7 +98,7 @@ diff -Naur a/extensions/libxt_connndmmark.c b/extensions/libxt_connndmmark.c
 +
 +static void print_mark(unsigned int mark, unsigned int mask)
 +{
-+	if (mask != 0xffU)
++	if (mask != 0xffffffffU)
 +		printf(" 0x%x/0x%x", mark, mask);
 +	else
 +		printf(" 0x%x", mark);
@@ -162,8 +162,8 @@ diff -Naur a/extensions/libxt_connndmmark.c b/extensions/libxt_connndmmark.c
 +	 * Need these defaults for --save-mark/--restore-mark if no
 +	 * --ctmark or --nfmask is given.
 +	 */
-+	info->ctmask = 0xFF;
-+	info->nfmask = 0xFF;
++	info->ctmask = 0xffffffffU;
++	info->nfmask = 0xffffffffU;
 +}
 +
 +static void connndmmark_tg_parse(struct xt_option_call *cb)
@@ -200,19 +200,19 @@ diff -Naur a/extensions/libxt_connndmmark.c b/extensions/libxt_connndmmark.c
 +	case XT_CONNNDMMARK_SET:
 +		if (info->ctmark == 0)
 +			printf(" CONNNDMMARK and 0x%x",
-+			       (unsigned int)(uint8_t)~info->ctmask);
++			       (unsigned int)(uint32_t)~info->ctmask);
 +		else if (info->ctmark == info->ctmask)
 +			printf(" CONNNDMMARK or 0x%x", info->ctmark);
 +		else if (info->ctmask == 0)
 +			printf(" CONNNDMMARK xor 0x%x", info->ctmark);
-+		else if (info->ctmask == 0xFF)
++		else if (info->ctmask == 0xffffffff)
 +			printf(" CONNNDMMARK set 0x%x", info->ctmark);
 +		else
 +			printf(" CONNNDMMARK xset 0x%x/0x%x",
 +			       info->ctmark, info->ctmask);
 +		break;
 +	case XT_CONNNDMMARK_RESTORE:
-+		if (info->ctmask == 0xFF && info->nfmask == 0xFF)
++		if (info->ctmask == 0xffffffff && info->nfmask == 0xffffffff)
 +			printf(" CONNNDMMARK restore");
 +		else if (info->ctmask == info->nfmask)
 +			printf(" CONNNDMMARK restore mask 0x%x", info->ctmask);
@@ -250,7 +250,7 @@ diff -Naur a/extensions/libxt_connndmmark.c b/extensions/libxt_connndmmark.c
 +	{
 +		.family        = NFPROTO_UNSPEC,
 +		.name          = "connndmmark",
-+		.revision      = 0,
++		.revision      = 1,
 +		.version       = XTABLES_VERSION,
 +		.size          = XT_ALIGN(sizeof(struct xt_connndmmark_info)),
 +		.userspacesize = XT_ALIGN(sizeof(struct xt_connndmmark_info)),
@@ -266,7 +266,7 @@ diff -Naur a/extensions/libxt_connndmmark.c b/extensions/libxt_connndmmark.c
 +	{
 +		.version       = XTABLES_VERSION,
 +		.name          = "CONNNDMMARK",
-+		.revision      = 0,
++		.revision      = 1,
 +		.family        = NFPROTO_UNSPEC,
 +		.size          = XT_ALIGN(sizeof(struct xt_connndmmark_tginfo)),
 +		.userspacesize = XT_ALIGN(sizeof(struct xt_connndmmark_tginfo)),

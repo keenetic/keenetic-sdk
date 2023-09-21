@@ -158,6 +158,10 @@ $(eval $(call RequireCommand,curl, \
 	Please install curl. \
 ))
 
+$(eval $(call RequireCommand,jq, \
+	Please install jq. \
+))
+
 define Require/git
 	git --version | awk '($$$$1 == "git") && ($$$$2 == "version") && ($$$$3 >= "1.6.5") { print "ok" }' | grep ok > /dev/null
 endef

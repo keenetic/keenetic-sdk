@@ -6,9 +6,9 @@
 # See /LICENSE for more information.
 #
 
-beginswith() {
-	case $2 in
-		"$1"*)
+is_ndm_tag() {
+	case $1 in
+		NDM-*|NDMS-*|SYS-*)
 			true;;
 		*)
 			false;;
@@ -21,7 +21,7 @@ try() {
 	local last_tag
 
 	current_branch=$(git rev-parse --abbrev-ref HEAD)
-	beginswith NDMS- "$current_branch" || return 1
+	is_ndm_tag "$current_branch" || return 1
 
 	last_tag=$(git describe --abbrev=0)
 	[ -z "$last_tag" ] && return 1

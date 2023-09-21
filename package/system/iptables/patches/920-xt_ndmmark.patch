@@ -8,8 +8,8 @@ diff -aurN a/extensions/libxt_ndmmark.c b/extensions/libxt_ndmmark.c
 +#include <linux/netfilter/xt_ndmmark.h>
 +
 +struct xt_ndmmark_info {
-+	uint8_t mark, mask;
-+	uint8_t invert;
++	uint32_t mark, mask;
++	uint32_t invert;
 +};
 +
 +enum {
@@ -42,7 +42,7 @@ diff -aurN a/extensions/libxt_ndmmark.c b/extensions/libxt_ndmmark.c
 +}
 +
 +static const struct xt_option_entry ndmmark_mt_opts[] = {
-+	{.name = "ndmmark", .id = O_MARK, .type = XTTYPE_TOSMASK,
++	{.name = "ndmmark", .id = O_MARK, .type = XTTYPE_MARKMASK32,
 +	 .flags = XTOPT_MAND | XTOPT_INVERT},
 +	XTOPT_TABLEEND,
 +};
@@ -56,13 +56,13 @@ diff -aurN a/extensions/libxt_ndmmark.c b/extensions/libxt_ndmmark.c
 +	if (cb->invert)
 +		info->invert = 1;
 +
-+	info->mark = cb->val.tos_value;
-+	info->mask = cb->val.tos_mask;
++	info->mark = cb->val.mark;
++	info->mask = cb->val.mask;
 +}
 +
 +static void print_ndmmark(unsigned int mark, unsigned int mask)
 +{
-+	if (mask != 0xffU)
++	if (mask != 0xffffffffu)
 +		printf(" 0x%x/0x%x", mark, mask);
 +	else
 +		printf(" 0x%x", mark);
@@ -94,15 +94,15 @@ diff -aurN a/extensions/libxt_ndmmark.c b/extensions/libxt_ndmmark.c
 +}
 +
 +static const struct xt_option_entry ndmmark_tg_opts[] = {
-+	{.name = "set-xndmmark", .id = O_SET_XMARK, .type = XTTYPE_TOSMASK,
++	{.name = "set-xndmmark", .id = O_SET_XMARK, .type = XTTYPE_MARKMASK32,
 +	 .excl = F_ANY},
-+	{.name = "set-ndmmark", .id = O_SET_MARK, .type = XTTYPE_TOSMASK,
++	{.name = "set-ndmmark", .id = O_SET_MARK, .type = XTTYPE_MARKMASK32,
 +	 .excl = F_ANY},
-+	{.name = "and-ndmmark", .id = O_AND_MARK, .type = XTTYPE_UINT8,
++	{.name = "and-ndmmark", .id = O_AND_MARK, .type = XTTYPE_UINT32,
 +	 .excl = F_ANY},
-+	{.name = "or-ndmmark", .id = O_OR_MARK, .type = XTTYPE_UINT8,
++	{.name = "or-ndmmark", .id = O_OR_MARK, .type = XTTYPE_UINT32,
 +	 .excl = F_ANY},
-+	{.name = "xor-ndmmark", .id = O_XOR_MARK, .type = XTTYPE_UINT8,
++	{.name = "xor-ndmmark", .id = O_XOR_MARK, .type = XTTYPE_UINT32,
 +	 .excl = F_ANY},
 +	XTOPT_TABLEEND,
 +};
@@ -126,22 +126,22 @@ diff -aurN a/extensions/libxt_ndmmark.c b/extensions/libxt_ndmmark.c
 +	xtables_option_parse(cb);
 +	switch (cb->entry->id) {
 +	case O_SET_XMARK:
-+		info->mark = cb->val.tos_value;
-+		info->mask = cb->val.tos_mask;
++		info->mark = cb->val.mark;
++		info->mask = cb->val.mask;
 +		break;
 +	case O_SET_MARK:
-+		info->mark = cb->val.tos_value;
-+		info->mask = cb->val.tos_value | cb->val.tos_mask;
++		info->mark = cb->val.mark;
++		info->mask = cb->val.mark | cb->val.mask;
 +		break;
 +	case O_AND_MARK:
 +		info->mark = 0;
-+		info->mask = ~cb->val.u8;
++		info->mask = ~cb->val.u32;
 +		break;
 +	case O_OR_MARK:
-+		info->mark = info->mask = cb->val.u8;
++		info->mark = info->mask = cb->val.u32;
 +		break;
 +	case O_XOR_MARK:
-+		info->mark = cb->val.u8;
++		info->mark = cb->val.u32;
 +		info->mask = 0;
 +		break;
 +	}
@@ -165,7 +165,7 @@ diff -aurN a/extensions/libxt_ndmmark.c b/extensions/libxt_ndmmark.c
 +		printf(" NDMMARK or 0x%x", info->mark);
 +	else if (info->mask == 0)
 +		printf(" NDMMARK xor 0x%x", info->mark);
-+	else if (info->mask == 0xffU)
++	else if (info->mask == 0xffffffffU)
 +		printf(" NDMMARK set 0x%x", info->mark);
 +	else
 +		printf(" NDMMARK xset 0x%x/0x%x", info->mark, info->mask);
@@ -182,7 +182,7 @@ diff -aurN a/extensions/libxt_ndmmark.c b/extensions/libxt_ndmmark.c
 +	{
 +		.family        = NFPROTO_UNSPEC,
 +		.name          = "ndmmark",
-+		.revision      = 0,
++		.revision      = 1,
 +		.version       = XTABLES_VERSION,
 +		.size          = XT_ALIGN(sizeof(struct xt_ndmmark_info)),
 +		.userspacesize = XT_ALIGN(sizeof(struct xt_ndmmark_info)),
@@ -198,7 +198,7 @@ diff -aurN a/extensions/libxt_ndmmark.c b/extensions/libxt_ndmmark.c
 +	{
 +		.version       = XTABLES_VERSION,
 +		.name          = "NDMMARK",
-+		.revision      = 0,
++		.revision      = 1,
 +		.family        = NFPROTO_UNSPEC,
 +		.size          = XT_ALIGN(sizeof(struct xt_ndmmark_tginfo)),
 +		.userspacesize = XT_ALIGN(sizeof(struct xt_ndmmark_tginfo)),
@@ -226,12 +226,12 @@ diff -aurN a/include/linux/netfilter/xt_ndmmark.h b/include/linux/netfilter/xt_n
 +#include <linux/types.h>
 +
 +struct xt_ndmmark_tginfo {
-+	__u8 mark, mask;
++	__u32 mark, mask;
 +};
 +
 +struct xt_ndmmark_mtinfo {
-+	__u8 mark, mask;
-+	__u8 invert;
++	__u32 mark, mask;
++	__u32 invert;
 +};
 +
 +#endif /* _XT_NDMMARK_H */

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2022 Keenetic Limited
+# Copyright (C) 2023 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -16,9 +16,9 @@ define Build/Compile
 endef
 
 define Package/hw_nat_ctl
-  CATEGORY:=Base system
+  CATEGORY:=Debug suite
   TITLE:=HW NAT control utility
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +(TARGET_mt7621||TARGET_mt7622):kmod-mtk-hwnat +(TARGET_en7512||TARGET_en7516||TARGET_en7528):kmod-en-hwnat @!TARGET_mt7628
+  DEPENDS:=+libc +SSP_SUPPORT:libssp @HAS_HWNAT
   DISABLE_RSTRIP:=y
 endef
 

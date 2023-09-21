@@ -1,0 +1,33 @@
+diff -Nuar tcpdump-3.9.8/print-802_11.c tcpdump-3.9.8-patched/print-802_11.c
+--- tcpdump-3.9.8/print-802_11.c	2007-07-24 06:15:23.000000000 +0400
++++ tcpdump-3.9.8-patched/print-802_11.c	2022-11-12 23:10:12.218579326 +0300
+@@ -1159,12 +1159,16 @@
+ 		return caplen;
+ 	}
+ 	for (last_presentp = &hdr->it_present;
+-	     IS_EXTENDED(last_presentp) &&
+ 	     (u_char*)(last_presentp + 1) <= p + len;
+-	     last_presentp++);
++	     last_presentp++) {
++		memcpy(&present, last_presentp, sizeof(present));
++
++		if (!IS_EXTENDED(&present))
++			 break;
++	}
+ 
+ 	/* are there more bitmap extensions than bytes in header? */
+-	if (IS_EXTENDED(last_presentp)) {
++	if ((u_char*)(last_presentp + 1) > p + len) {
+ 		printf("[|802.11]");
+ 		return caplen;
+ 	}
+@@ -1181,7 +1185,8 @@
+ 	pad = 0;
+ 	for (bit0 = 0, presentp = &hdr->it_present; presentp <= last_presentp;
+ 	     presentp++, bit0 += 32) {
+-		for (present = EXTRACT_LE_32BITS(presentp); present;
++		memcpy(&present, presentp, sizeof(present));
++		for (present = EXTRACT_LE_32BITS(&present); present;
+ 		     present = next_present) {
+ 			/* clear the least significant bit that is set */
+ 			next_present = present & (present - 1);

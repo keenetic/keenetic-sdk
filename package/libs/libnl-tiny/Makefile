@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libnl-tiny
-PKG_VERSION:=0.1
+PKG_VERSION:=0.2
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)

@@ -8,14 +8,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libevent
-PKG_VERSION:=2.1.11
+PKG_VERSION:=2.1.12
 PKG_RELEASE:=1
 PKG_LICENSE:=BSD
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)-stable
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-stable.tar.gz
 PKG_SOURCE_URL:=https://github.com/libevent/libevent/releases/download/release-$(PKG_VERSION)-stable/
-PKG_HASH:=a65bac6202ea8c5609fd5c7e480e6d25de467ea1917c08290c521752f147283d
+PKG_HASH:=92e6de1be9ec176428fd2367677e61ceffc2ee1cb119035037a27d346b0403bb
 
 PKG_LICENSE_FILES:=LICENSE
 

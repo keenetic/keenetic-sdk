@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2022 Keenetic Limited
+# Copyright (C) 2023 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -21,7 +21,7 @@ define KernelPackage/mtk-hwnat
   CATEGORY:=Kernel modules
   TITLE:=Mediatek Hardware NAT
   KCONFIG:=CONFIG_RA_HW_NAT
-  DEPENDS:=@TARGET_mt7621||TARGET_mt7622
+  DEPENDS:=@TARGET_mt7621||TARGET_mt7622||TARGET_mt7981||TARGET_mt7986
   DISABLE_RSTRIP:=y
 endef
 

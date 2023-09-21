@@ -1,0 +1,81 @@
+#
+# Copyright (C) 2011-2013 OpenWrt.org
+#
+# This is free software, licensed under the GNU General Public License v2.
+# See /LICENSE for more information.
+#
+
+include $(TOPDIR)/rules.mk
+include $(INCLUDE_DIR)/kernel.mk
+
+PKG_NAME:=perf
+PKG_VERSION:=$(LINUX_VERSION)
+PKG_RELEASE:=4
+
+# Perf's makefile and headers are not relocatable and must be built from the
+# Linux sources directory
+PKG_BUILD_DIR:=$(LINUX_DIR)/tools/perf-$(TARGET_DIR_NAME)
+
+TARGET_LTO_FLAGS :=
+
+include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/nls.mk
+
+define Package/perf
+  SECTION:=devel
+  CATEGORY:=Development
+  DEPENDS:= +libelf +libdw +PACKAGE_libunwind:libunwind +libpthread +librt +objdump \
+	    +PACKAGE_libbfd:libbfd +PACKAGE_libopcodes:libopcodes
+  KCONFIG:= \
+	CONFIG_PERF_EVENTS=y \
+	CONFIG_HW_PERF_EVENTS=y
+  TITLE:=Linux performance monitoring tool
+  VERSION:=$(LINUX_VERSION)-$(PKG_RELEASE)
+  URL:=http://www.kernel.org
+endef
+
+define Package/perf/description
+  perf is the Linux performance monitoring tool.
+  It requires KERNEL_PERF_EVENTS and (optionally)
+  KERNEL_SCHEDSTATS kernel options
+endef
+
+HOST_CFLAGS += -I$(LINUX_DIR)/tools/include
+
+TARGET_LDFLAGS += $(INTL_LDFLAGS)
+
+MAKE_FLAGS = \
+	ARCH="$(LINUX_KARCH)" \
+	NO_LIBPERL=1 \
+	NO_LIBPYTHON=1 \
+	NO_NEWT=1 \
+	NO_LZMA=1 \
+	NO_BACKTRACE=1 \
+	NO_LIBNUMA=1 \
+	NO_GTK2=1 \
+	NO_LIBAUDIT=1 \
+	NO_LIBCRYPTO=1 \
+	NO_LIBUNWIND=1 \
+	NO_LIBZSTD=1 \
+	NO_LIBCAP=1 \
+	CROSS_COMPILE="$(TARGET_CROSS)" \
+	EXTRA_CFLAGS="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS)" \
+	LDFLAGS="$(TARGET_LDFLAGS)" \
+	KBUILD_HOSTCFLAGS="$(HOST_CFLAGS)" \
+	$(if $(findstring c,$(OPENWRT_VERBOSE)),V=1,V='') \
+	WERROR=0 \
+	O=$(PKG_BUILD_DIR) \
+	prefix=/usr
+
+define Build/Compile
+	+$(MAKE_FLAGS) $(MAKE) $(PKG_JOBS) \
+		--no-print-directory \
+		-C $(LINUX_DIR)/tools/perf
+endef
+
+define Package/perf/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/perf $(1)/usr/bin/
+endef
+
+$(eval $(call BuildPackage,perf))

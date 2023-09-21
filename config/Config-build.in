@@ -180,9 +180,56 @@ menu "Global build settings"
 		depends on KERNEL_FUNCTION_TRACER
 		default n
 
-	config KERNEL_DEBUG_KERNEL
-		bool
+	config KERNEL_NET_DROP_MONITOR
+		bool "Trace network packet drop"
+		depends on KERNEL_FTRACE
 		default n
+
+	config KERNEL_PREEMPTIRQ_EVENTS
+		bool "Trace events for preempt and irq disable/enable"
+		depends on KERNEL_FTRACE
+		default n
+
+	config KERNEL_IRQSOFF_TRACER
+		bool "Trace interrupts-off latency"
+		depends on KERNEL_FTRACE
+		default n
+
+	config KERNEL_SCHED_TRACER
+		bool "Trace scheduling latency"
+		depends on KERNEL_FTRACE
+		default n
+
+	config KERNEL_FTRACE_SYSCALLS
+		bool "Trace syscalls"
+		depends on KERNEL_FTRACE
+		default n
+
+	config KERNEL_STACK_TRACER
+		bool "Trace max stack"
+		depends on KERNEL_FTRACE
+		default n
+
+	config KERNEL_BLK_DEV_IO_TRACE
+		bool "Trace block IO actions"
+		depends on KERNEL_FTRACE
+		default n
+
+	config KERNEL_UPROBE_EVENT
+		bool "Trace uprobes-based dynamic events"
+		depends on KERNEL_FTRACE
+		default n
+
+	config KERNEL_DYNAMIC_FTRACE
+		bool "Enable/disable function tracing dynamically"
+		depends on KERNEL_FTRACE
+		default n
+
+	config KERNEL_DEBUG_KERNEL
+		bool "Compile the kernel with debugging support"
+		default n
+		help
+		  This will compile your kernel with basic debugging capabilities.
 
 	config KERNEL_DEBUG_INFO
 		bool "Compile the kernel with debug information"
@@ -190,6 +237,17 @@ menu "Global build settings"
 		select KERNEL_DEBUG_KERNEL
 		help
 		  This will compile your kernel and modules with debug information.
+
+	config KERNEL_SCHEDSTATS
+		bool "Compile the kernel with the scheduler statistics collector"
+		default n
+		select KERNEL_DEBUG_KERNEL
+		help
+		  Enable additional code that will be inserted into the
+		  scheduler and related routines to collect statistics about
+		  scheduler behavior and provide them in /proc/schedstat. These
+		  stats may be useful for both tuning and debugging the scheduler
+		  as well as for the perf profiling utility.
 
 	config KERNEL_DEBUG_LL_UART_NONE
 		bool

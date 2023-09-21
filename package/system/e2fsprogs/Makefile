@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=e2fsprogs
-PKG_VERSION:=1.45.6
+PKG_VERSION:=1.46.5
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@KERNEL/linux/kernel/people/tytso/e2fsprogs/v$(PKG_VERSION)/
-PKG_HASH:=ffa7ae6954395abdc50d0f8605d8be84736465afc53b8938ef473fcf7ff44256
+PKG_HASH:=2f16c9176704cf645dc69d5b15ff704ae722d665df38b2ed3cfc249757d8d81e
 
 PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=NOTICE
@@ -68,6 +68,7 @@ define Package/libcomerr
   CATEGORY:=Libraries
   TITLE:=common error description library
   URL:=http://e2fsprogs.sourceforge.net/
+  DEPENDS:=+librt +libpthread
   ABI_VERSION:=0
 endef
 

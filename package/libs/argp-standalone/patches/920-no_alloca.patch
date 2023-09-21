@@ -1,0 +1,55 @@
+diff -Nuar argp-standalone-1.3/argp-help.c argp-standalone-1.3-patched/argp-help.c
+--- argp-standalone-1.3/argp-help.c	2022-09-08 15:57:57.526283505 +0300
++++ argp-standalone-1.3-patched/argp-help.c	2022-09-08 16:06:05.508159593 +0300
+@@ -1337,9 +1337,12 @@
+     {
+       unsigned nentries;
+       struct hol_entry *entry;
+-      char *short_no_arg_opts = alloca (strlen (hol->short_options) + 1);
++      char *short_no_arg_opts = malloc (strlen (hol->short_options) + 1);
+       char *snao_end = short_no_arg_opts;
+ 
++      if (! short_no_arg_opts)
++	return;
++
+       /* First we put a list of short options without arguments.  */
+       for (entry = hol->entries, nentries = hol->num_entries
+ 	   ; nentries > 0
+@@ -1365,6 +1368,8 @@
+ 	   ; entry++, nentries--)
+ 	hol_entry_long_iterate (entry, usage_long_opt,
+ 				entry->argp->argp_domain, stream);
++
++      free (short_no_arg_opts);
+     }
+ }
+ 
+@@ -1606,7 +1611,10 @@
+     {
+       int first_pattern = 1, more_patterns;
+       size_t num_pattern_levels = argp_args_levels (argp);
+-      char *pattern_levels = alloca (num_pattern_levels);
++      char *pattern_levels = malloc (num_pattern_levels);
++
++      if (! pattern_levels)
++	goto cleanup;		/* Just return, after cleaning up.  */
+ 
+       memset (pattern_levels, 0, num_pattern_levels);
+ 
+@@ -1654,6 +1662,8 @@
+ 	  first_pattern = 0;
+ 	}
+       while (more_patterns);
++
++      free (pattern_levels);
+     }
+ 
+   if (flags & ARGP_HELP_PRE_DOC)
+@@ -1694,6 +1704,7 @@
+       anything = 1;
+     }
+ 
++cleanup:
+   FUNLOCKFILE (stream);
+ 
+   if (hol)

@@ -7,8 +7,7 @@
  *
  */
 
-#define _POSIX_SOURCE
-#define _POSIX_C_SOURCE 199309L /* getopt */
+#include <endian.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -68,9 +67,9 @@ int main(int argc, char *argv[]) {
   struct signature
   {
     const char magic[4];
-    unsigned int device_id;
+    u_int32_t device_id;
     char firmware_version[48];
-    unsigned int crc32;
+    u_int32_t crc32;
   }
   sign =
   {
@@ -103,6 +102,7 @@ int main(int argc, char *argv[]) {
         sign.device_id = atoi(optarg);
         if (sign.device_id == 0)
           sign.device_id = (int)strtol(optarg, NULL, 16);
+        sign.device_id = htobe32(sign.device_id);
         break;
 
       case '?':
@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
     }
 
     fseek(f, 0, SEEK_SET);
-    sign.crc32 = chksum_crc32(f);
+    sign.crc32 = htole32(chksum_crc32(f));
     fwrite(&sign, sizeof(sign), 1, f);
     fclose(f);
 

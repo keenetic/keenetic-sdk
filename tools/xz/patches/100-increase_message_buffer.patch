@@ -1,0 +1,12 @@
+diff -Nuar xz-5.2.7/src/xz/message.c xz-5.2.7-patched/src/xz/message.c
+--- xz-5.2.7/src/xz/message.c	2022-09-29 16:50:31.000000000 +0300
++++ xz-5.2.7-patched/src/xz/message.c	2022-11-04 11:44:31.287438789 +0300
+@@ -380,7 +380,7 @@
+ 	//  - 99 KiB/s
+ 	//  - 999 KiB/s
+ 	// Use big enough buffer to hold e.g. a multibyte decimal point.
+-	static char buf[16];
++	static char buf[32];
+ 	snprintf(buf, sizeof(buf), "%.*f %s",
+ 			speed > 9.9 ? 0 : 1, speed, unit[unit_index]);
+ 	return buf;

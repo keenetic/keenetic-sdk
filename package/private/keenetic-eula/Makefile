@@ -30,6 +30,21 @@ endef
 
 $(eval $(call BuildPackage,keenetic-eula-common))
 
+define Package/keenetic-eula-da
+  CATEGORY:=Base system
+  TITLE:=Keenetic EULA document files (DA)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files +keenetic-eula-common
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/keenetic-eula-da/install
+	if [ -d ./files-keenetic-eula-da ]; then \
+		$(CP) ./files-keenetic-eula-da/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,keenetic-eula-da))
+
 define Package/keenetic-eula-de
   CATEGORY:=Base system
   TITLE:=Keenetic EULA document files (DE)

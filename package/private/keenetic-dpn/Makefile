@@ -30,6 +30,21 @@ endef
 
 $(eval $(call BuildPackage,keenetic-dpn-common))
 
+define Package/keenetic-dpn-da
+  CATEGORY:=Base system
+  TITLE:=Keenetic DPN document files (DA)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp base-files +keenetic-dpn-common
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/keenetic-dpn-da/install
+	if [ -d ./files-keenetic-dpn-da ]; then \
+		$(CP) ./files-keenetic-dpn-da/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,keenetic-dpn-da))
+
 define Package/keenetic-dpn-de
   CATEGORY:=Base system
   TITLE:=Keenetic DPN document files (DE)

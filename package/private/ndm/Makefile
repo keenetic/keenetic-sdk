@@ -454,7 +454,7 @@ define Package/ndm-mod-factory
   SUBMENU:=Factory
   CATEGORY:=NDM
   TITLE:=NDM Factory module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +phr_ctl +ated +HAS_BTMTK:bluedroid +HAS_MT7603_RADIO:kmod-mt7603-ate +HAS_MT7610_RADIO:kmod-mt7610-ate +HAS_MT7613_RADIO:kmod-mt7613-ate +HAS_MT7615_RADIO:kmod-mt7615-ate +HAS_MT7628_RADIO:kmod-mt7628-ate +HAS_MT76X2_RADIO:kmod-mt76x2-ate +HAS_MT7915_RADIO:kmod-mt7915-ate +HAS_MT7916_RADIO:kmod-mt7916-ate +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):ndm-mod-usbqmi +(TARGET_en7516||TARGET_en7512_KN_2012):ndm-mod-dsl
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +phr_ctl +ated +ndm-mod-dhcpd +ndm-mod-corewireless +HAS_BTMTK:bluedroid +HAS_MT7603_RADIO:kmod-mt7603-ate +HAS_MT7610_RADIO:kmod-mt7610-ate +HAS_MT7613_RADIO:kmod-mt7613-ate +HAS_MT7615_RADIO:kmod-mt7615-ate +HAS_MT7628_RADIO:kmod-mt7628-ate +HAS_MT76X2_RADIO:kmod-mt76x2-ate +HAS_MT7915_RADIO:kmod-mt7915-ate +HAS_MT7916_RADIO:kmod-mt7916-ate +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):ndm-mod-usbqmi +(TARGET_en7516||TARGET_en7512_KN_2012):ndm-mod-dsl
   DISABLE_RSTRIP:=y
 endef
 
@@ -726,7 +726,7 @@ define Package/ndm-mod-lang-all
   SUBMENU:=Languages
   CATEGORY:=NDM
   TITLE:=All
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-de +ndm-mod-lang-en +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-es +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-fr +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-it +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-pl +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-pt +ndm-mod-lang-ru +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-sv +!OLD_MODEL_1:ndm-mod-lang-tr +ndm-mod-lang-uk
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-da +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-de +ndm-mod-lang-en +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-es +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-fr +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-it +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-pl +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-pt +ndm-mod-lang-ru +!(OLD_MODEL_1||OLD_MODEL_2):ndm-mod-lang-sv +!OLD_MODEL_1:ndm-mod-lang-tr +ndm-mod-lang-uk
   DISABLE_RSTRIP:=y
 endef
 
@@ -737,6 +737,22 @@ define Package/ndm-mod-lang-all/install
 endef
 
 $(eval $(call BuildPackage,ndm-mod-lang-all))
+
+define Package/ndm-mod-lang-da
+  SUBMENU:=Languages
+  CATEGORY:=NDM
+  TITLE:=Danish
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +angular-ndw-da-locale +keenetic-eula-da +keenetic-dpn-da @!(OLD_MODEL_1||OLD_MODEL_2)
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-lang-da/install
+	if [ -d ./files-ndm-mod-lang-da ]; then \
+		$(CP) ./files-ndm-mod-lang-da/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-lang-da))
 
 define Package/ndm-mod-lang-de
   SUBMENU:=Languages

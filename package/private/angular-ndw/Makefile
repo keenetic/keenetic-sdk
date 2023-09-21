@@ -30,6 +30,21 @@ endef
 
 $(eval $(call BuildPackage,angular-ndw))
 
+define Package/angular-ndw-da-locale
+  CATEGORY:=NDM
+  TITLE:=Angular web interface (DA locale)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp angular-ndw
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/angular-ndw-da-locale/install
+	if [ -d ./files-angular-ndw-da-locale ]; then \
+		$(CP) ./files-angular-ndw-da-locale/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,angular-ndw-da-locale))
+
 define Package/angular-ndw-de-locale
   CATEGORY:=NDM
   TITLE:=Angular web interface (DE locale)

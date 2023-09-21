@@ -242,6 +242,22 @@ endef
 
 $(eval $(call BuildPackage,ndm-mod-corewireless))
 
+define Package/ndm-mod-crash
+  SUBMENU:=Debug
+  CATEGORY:=NDM
+  TITLE:=NDM crash test module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-crash/install
+	if [ -d ./files-ndm-mod-crash ]; then \
+		$(CP) ./files-ndm-mod-crash/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-crash))
+
 define Package/ndm-mod-crowdin-editor
   SUBMENU:=Debug
   CATEGORY:=NDM
@@ -1782,7 +1798,7 @@ define Package/ndm-mod-usblte
   SUBMENU:=USB modems
   CATEGORY:=NDM
   TITLE:=NDM UsbLte module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-usb +ndm-mod-mobile +ndm-mod-dhcpd +kmod-usb-storage +kmod-usb-serial-option +kmod-usb-acm +kmod-usb-net-huawei-cdc-ncm +kmod-usb-net-rndis +kmod-usb-net-cdc-ether +kmod-ubridge +(TARGET_mt7621_KN_2311||TARGET_mt7621_KN_2910||TARGET_mt7628_KN_2211):ltefw +(TARGET_mt7621_KN_2311||TARGET_mt7621_KN_2910||TARGET_mt7628_KN_2211):qdloader
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-usb +ndm-mod-mobile +ndm-mod-dhcpd +kmod-usb-storage +kmod-usb-serial-option +kmod-usb-acm +kmod-usb-net-huawei-cdc-ncm +kmod-usb-net-rndis +kmod-usb-net-cdc-ether +kmod-ubridge +(TARGET_mt7621_KN_2311||TARGET_mt7621_KN_2910||TARGET_mt7628_KN_2211||TARGET_mt7628_KN_2212):ltefw +(TARGET_mt7621_KN_2311||TARGET_mt7621_KN_2910||TARGET_mt7628_KN_2211):qdloader +(TARGET_mt7628_KN_2212):fbfdloader
   DISABLE_RSTRIP:=y
 endef
 

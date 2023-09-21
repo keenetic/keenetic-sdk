@@ -18,7 +18,7 @@ endef
 define Package/ltefw
   CATEGORY:=Base system
   TITLE:=Firmware update utility for LTE module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +libndm +libopenssl @(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210||TARGET_mt7621_KN_2311||TARGET_mt7621_KN_2910||TARGET_mt7628_KN_2211)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +libndm +libopenssl @(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210||TARGET_mt7621_KN_2311||TARGET_mt7621_KN_2910||TARGET_mt7628_KN_2211||TARGET_mt7628_KN_2212)
   DISABLE_RSTRIP:=y
 endef
 

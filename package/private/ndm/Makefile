@@ -658,6 +658,22 @@ endef
 
 $(eval $(call BuildPackage,ndm-mod-isp-lock))
 
+define Package/ndm-mod-isp-snmp
+  SUBMENU:=Extras
+  CATEGORY:=NDM
+  TITLE:=NDM ISP SNMP
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +ndm-mod-snmp
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-isp-snmp/install
+	if [ -d ./files-ndm-mod-isp-snmp ]; then \
+		$(CP) ./files-ndm-mod-isp-snmp/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-isp-snmp))
+
 define Package/ndm-mod-isp-tools-get
   SUBMENU:=Extras
   CATEGORY:=NDM

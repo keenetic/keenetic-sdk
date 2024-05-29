@@ -18,13 +18,21 @@ You need the 64-bit Debian-based Linux distribution.
 We recommend to use the latest long-term support (LTS) version of Ubuntu (https://ubuntu.com/download).
 
 	# apt install attr bc build-essential curl gawk git gperf libhtml-parser-perl libjson-perl libncurses-dev libssl-dev libxml-libxml-perl python python3 subversion unzip zlib1g-dev
-
+ 	# apt install python3-distutils
+  	# apt install gperf
+   	# apt install jq
+	# ln -s /usr/bin/python3.10 /usr/bin/python
 ## Step 3. Prepare source
 
 	$ # replace '<version>' below with yours from Step 1
 	$ git clone --depth 1 --branch <version> https://github.com/keenetic/keenetic-sdk.git
 	$ cd keenetic-sdk
-
+	## We check the availability of the necessary tag
+		# git tag
+	## If the tag is missing
+		# git tag -a 4.00.C.4.0-0 -m "Release 4.00.C.4.0-0"
+ 		# git tag
+  
 ## Step 4. Unpack firmware
 
 	$ # replace '<firmware.bin>' below with the path to your firmware from Step 1

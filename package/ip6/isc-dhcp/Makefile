@@ -35,10 +35,24 @@ define Package/isc-dhcp-server-ipv6
   DEPENDS:=@IPV6 +zlib
 endef
 
+define Package/isc-dhcp-client-ipv4
+  SECTION:=net
+  CATEGORY:=Network
+  TITLE:=ISC's DHCP client IPv4
+  URL:=https://www.isc.org/software/dhcp
+  DEPENDS:=+zlib
+endef
+
 define Package/isc-dhcp-server-ipv6/description
  implements the Dynamic Host Configuration Protocol (DHCP) and the Internet
  Bootstrap Protocol (BOOTP).
  This package is compiled with IPv6 support.
+endef
+
+define Package/isc-dhcp-client-ipv4/description
+ provides a means for configuring one or more network interfaces using the
+ Dynamic Host Configuration Protocol, BOOTP protocol, or if these protocols
+ fail, by statically assigning an address.
 endef
 
 CONFIGURE_ARGS += \
@@ -79,4 +93,10 @@ define Package/isc-dhcp-server-ipv6/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/dhcpd $(1)/usr/sbin
 endef
 
+define Package/isc-dhcp-client-ipv4/install
+	$(INSTALL_DIR) $(1)/usr/sbin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/dhclient $(1)/usr/sbin
+endef
+
 $(eval $(call BuildPackage,isc-dhcp-server-ipv6))
+$(eval $(call BuildPackage,isc-dhcp-client-ipv4))

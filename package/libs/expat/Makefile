@@ -1,6 +1,4 @@
 #
-# Copyright (C) 2006-2014 OpenWrt.org
-#
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
@@ -8,25 +6,22 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=expat
-PKG_VERSION:=2.1.0
-PKG_RELEASE:=3
+PKG_VERSION:=2.6.3
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_HASH:=823705472f816df21c8f6aa026dd162b280806838bb55b3432b0fb1fcca7eb86
-PKG_SOURCE_URL:= \
-	https://github.com/libexpat/libexpat/releases/download/R_2_1_0 \
-	http://pkgs.fedoraproject.org/repo/pkgs/$(PKG_NAME)/$(PKG_NAME)-$(PKG_VERSION).tar.gz/dd7dab7a5fea97d2a6a43f511449b7cd/
+PKG_SOURCE_URL:=https://github.com/libexpat/libexpat/releases/download/R_$(subst .,_,$(PKG_VERSION))
+PKG_HASH:=17aa6cfc5c4c219c09287abfc10bc13f0c06f30bb654b28bfe6f567ca646eb79
 
+PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
+PKG_CPE_ID:=cpe:/a:libexpat_project:libexpat
 
-PKG_FIXUP:=autoreconf
-PKG_REMOVE_FILES:=conftools/libtool.m4
+CMAKE_INSTALL:=1
 
-PKG_INSTALL:=1
-
-include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/cmake.mk
 
 define Package/libexpat
   SECTION:=libs
@@ -39,26 +34,19 @@ define Package/libexpat/description
  A fast, non-validating, stream-oriented XML parsing library.
 endef
 
-TARGET_CFLAGS += $(FPIC)
-
-CONFIGURE_ARGS += \
-	--disable-shared \
-	--enable-static
-
-define Host/Install
-	$(MAKE) -C $(HOST_BUILD_DIR) install
-endef
+CMAKE_OPTIONS += \
+	-DBUILD_SHARED_LIBS=OFF \
+	-DEXPAT_BUILD_TOOLS=OFF \
+	-DEXPAT_BUILD_EXAMPLES=OFF \
+	-DEXPAT_BUILD_TESTS=OFF \
+	-DEXPAT_BUILD_DOCS=OFF \
+	-DEXPAT_DTD=OFF \
+	-DEXPAT_NS=OFF \
+	-DEXPAT_DEV_URANDOM=OFF
 
 define Build/InstallDev
-	$(INSTALL_DIR) $(1)/usr/include
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/expat{,_external}.h $(1)/usr/include/
-
-	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
-	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/expat.pc $(1)/usr/lib/pkgconfig/
-
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libexpat.a $(1)/usr/lib/
 endef
 
-$(eval $(call HostBuild))
 $(eval $(call BuildPackage,libexpat))

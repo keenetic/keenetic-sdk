@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025 Keenetic Limited
+# Copyright (C) 2026 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -18,7 +18,7 @@ endef
 define Package/nvox
   CATEGORY:=Multimedia
   TITLE:=NDM telephony
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +ca-certificates +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +USE_GLIBC:libc-locales
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +ca-certificates +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +NVOX_BACKTRACE:libfatalsig +USE_GLIBC:libc-locales
   DISABLE_RSTRIP:=y
 endef
 
@@ -26,6 +26,7 @@ define Package/nvox/config
 	config NVOX_BACKTRACE
 		bool "Backtrace"
 		depends on PACKAGE_nvox
+		select PJPROJECT_BACKTRACE
 		default n
 	config NVOX_DECT
 		bool "DECT support"
@@ -52,7 +53,7 @@ $(eval $(call BuildPackage,nvox))
 define Package/nvox-fxs-prod-flash
   CATEGORY:=Multimedia
   TITLE:=NDM telephony (FXS flasher)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +ca-certificates +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +USE_GLIBC:libc-locales
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +ca-certificates +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +NVOX_BACKTRACE:libfatalsig +USE_GLIBC:libc-locales
   DISABLE_RSTRIP:=y
 endef
 
@@ -67,7 +68,7 @@ $(eval $(call BuildPackage,nvox-fxs-prod-flash))
 define Package/nvox-fxs-prod-int
   CATEGORY:=Multimedia
   TITLE:=NDM telephony (FXS inward tests)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +ca-certificates +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +USE_GLIBC:libc-locales
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +ca-certificates +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +NVOX_BACKTRACE:libfatalsig +USE_GLIBC:libc-locales
   DISABLE_RSTRIP:=y
 endef
 
@@ -82,7 +83,7 @@ $(eval $(call BuildPackage,nvox-fxs-prod-int))
 define Package/nvox-fxs-prod-test
   CATEGORY:=Multimedia
   TITLE:=NDM telephony (FXS tester)
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +ca-certificates +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +USE_GLIBC:libc-locales
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +ca-certificates +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +NVOX_BACKTRACE:libfatalsig +USE_GLIBC:libc-locales
   DISABLE_RSTRIP:=y
 endef
 
@@ -93,3 +94,18 @@ define Package/nvox-fxs-prod-test/install
 endef
 
 $(eval $(call BuildPackage,nvox-fxs-prod-test))
+
+define Package/nvox-fxs-voice-test
+  CATEGORY:=Multimedia
+  TITLE:=NDM telephony (FXS inward voice test)
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +fxs +kmod-usb-acm +libopenssl +libsupcxx +libusb +pjproject +ca-certificates +NVOX_MIMALLOC:libatomic +NVOX_MIMALLOC:mimalloc +NVOX_BACKTRACE:libfatalsig +USE_GLIBC:libc-locales
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/nvox-fxs-voice-test/install
+	if [ -d ./files-nvox-fxs-voice-test ]; then \
+		$(CP) ./files-nvox-fxs-voice-test/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,nvox-fxs-voice-test))

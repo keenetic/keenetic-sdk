@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025 Keenetic Limited
+# Copyright (C) 2026 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -20,7 +20,7 @@ define KernelPackage/usb_extras
   SUBMENU:=USB Support
   CATEGORY:=Kernel modules
   TITLE:=Special USB hub hooks and extentions
-  DEPENDS:=+kmod-usb-core +(TARGET_en7512||TARGET_en7516||TARGET_en7528||TARGET_an7581||TARGET_mt7621||TARGET_mt7622||TARGET_mt7981||TARGET_mt7986||TARGET_mt7988):kmod-usb-xhci-mtk +(TARGET_qemu):kmod-usb3
+  DEPENDS:=+kmod-usb-core +(TARGET_en7512||TARGET_en7516||TARGET_en7528||TARGET_an7552||TARGET_an7581||TARGET_mt7621||TARGET_mt7622||TARGET_mt7981||TARGET_mt7986||TARGET_mt7987||TARGET_mt7988):kmod-usb-xhci-mtk
   DISABLE_RSTRIP:=y
 endef
 

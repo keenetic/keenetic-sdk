@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025 Keenetic Limited
+# Copyright (C) 2026 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -19,10 +19,14 @@ endef
 define KernelPackage/mtk-warp
   SUBMENU:=Wireless
   CATEGORY:=Kernel modules
-  TITLE:=MediaTek WARP v2/v3 driver
+  TITLE:=MediaTek WARP driver
   KCONFIG:=CONFIG_MTK_WARP CONFIG_FW_LOADER=y
   DEPENDS:=@HAS_WARP
   DISABLE_RSTRIP:=y
+endef
+
+define Package/mtk-warp/config
+	source "package/kernel/mtk-warp/Config.in"
 endef
 
 define KernelPackage/mtk-warp/install

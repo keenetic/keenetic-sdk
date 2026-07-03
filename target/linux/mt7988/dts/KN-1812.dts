@@ -26,6 +26,8 @@
 		compatible = "ethernet-phy-ieee802.3-c45";
 		pinctrl-names = "default";
 		pinctrl-0 = <&i2p5gbe_led0_pins>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 286 IRQ_TYPE_LEVEL_HIGH>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 		reg = <15>;
@@ -34,6 +36,8 @@
 
 	phy1: phy-gmac3 {
 		compatible = "ethernet-phy-ieee802.3-c45";
+		interrupt-parent = <&pio>;
+		interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 		reg = <27>;

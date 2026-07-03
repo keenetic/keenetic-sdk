@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025 Keenetic Limited
+# Copyright (C) 2026 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -17,7 +17,7 @@ endef
 
 define Package/miniupnpd
   CATEGORY:=Network
-  TITLE:=Lightweight UPnP daemon
+  TITLE:=Lightweight UPnP IGD & PCP/NAT-PMP daemon
   DEPENDS:=+libc +SSP_SUPPORT:libssp +libndm
   DISABLE_RSTRIP:=y
 endef

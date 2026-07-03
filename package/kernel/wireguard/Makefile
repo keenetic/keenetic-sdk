@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=wireguard
-PKG_VERSION:=1.0.20200623-18
+PKG_VERSION:=1.0.20200623-20
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)
 PKG_SOURCE_VERSION:=$(PKG_VERSION)
@@ -67,7 +67,8 @@ define KernelPackage/wireguard
   TITLE:=WireGuard kernel module
   URL:=https://www.wireguard.com/
   DEPENDS:=kmod-udptunnel6 +kmod-udptunnel4
-  FILES:= $(PKG_BUILD_DIR)/src/wireguard.ko
+  FILES:= $(PKG_BUILD_DIR)/src/wireguard.ko \
+	$(PKG_BUILD_DIR)/src/xt_WGOBFS.ko
 endef
 
 define KernelPackage/wireguard/description

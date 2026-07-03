@@ -112,10 +112,6 @@ config HAS_MT7603_RADIO
 	select HAS_RADIO_MTK
 	bool
 
-config HAS_MT7610_RADIO
-	select HAS_RADIO_MTK
-	bool
-
 config HAS_MT7613_RADIO
 	select HAS_RADIO_MTK
 	bool
@@ -141,6 +137,10 @@ config HAS_MT7916_RADIO
 	bool
 
 config HAS_MT7992_RADIO
+	select HAS_RADIO_MTK
+	bool
+
+config HAS_MT7993_RADIO
 	select HAS_RADIO_MTK
 	bool
 

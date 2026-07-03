@@ -19,6 +19,8 @@ menu "Firmware Options"
 		default "EM-2311" if TARGET_mt7621_KN_2311
 		default "EM-2212" if TARGET_mt7628_KN_2212 || TARGET_mt7628_KN_4910
 		default "EM-2312" if TARGET_mt7981_KN_2312 || TARGET_mt7621_KN_2911
+		default "EM-2312" if TARGET_mt7981_KN_2313
+		default "EM-4110" if TARGET_mt7981_KN_4110
 		default ""
 
 	config TARGET_EULA_ROOT_DIRECTORY

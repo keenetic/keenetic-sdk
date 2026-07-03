@@ -793,12 +793,13 @@ define KernelPackage/usb-net-r815x
 	CONFIG_USB_RTL8152
   FILES:= \
 	$(LINUX_DIR)/drivers/$(USBNET_DIR)/rtl8150.ko \
-	$(LINUX_DIR)/drivers/$(USBNET_DIR)/r8152.ko
+	$(LINUX_DIR)/drivers/$(USBNET_DIR)/r8152.ko \
+	$(LINUX_DIR)/drivers/$(USBNET_DIR)/r8157.ko
   $(call AddDepends/usb-net)
 endef
 
 define KernelPackage/usb-net-r815x/description
- Kernel module for USB-to-Ethernet Realtek 8150/8152/3/6 convertors
+ Kernel module for USB-to-Ethernet Realtek 8150/8152/3/6/7/9 convertors
 endef
 
 $(eval $(call KernelPackage,usb-net-r815x))
@@ -1042,7 +1043,7 @@ define KernelPackage/usb3
   TITLE:=Support for USB3 controllers
   DEPENDS:= \
 	+kmod-usb-xhci-hcd \
-	+(TARGET_an7581||TARGET_en7528||TARGET_en7516||TARGET_en7512||TARGET_mt7621||TARGET_mt7622||TARGET_mt7981||TARGET_mt7986||TARGET_mt7988):kmod-usb-xhci-mtk
+	+(TARGET_an7552||TARGET_an7581||TARGET_en7528||TARGET_en7516||TARGET_en7512||TARGET_mt7621||TARGET_mt7622||TARGET_mt7981||TARGET_mt7986||TARGET_mt7987||TARGET_mt7988):kmod-usb-xhci-mtk
   KCONFIG:= \
 	CONFIG_USB_XHCI_PCI \
 	CONFIG_USB_XHCI_PLATFORM

@@ -530,7 +530,7 @@ $(eval $(call KernelPackage,crypto-mv-cesa))
 
 define KernelPackage/crypto-safexcel
   TITLE:=Inside Secure's cryptographic engine driver
-  DEPENDS:=@TARGET_mt7981||TARGET_mt7986||TARGET_mt7988 \
+  DEPENDS:=@TARGET_mt7981||TARGET_mt7986||TARGET_mt7987||TARGET_mt7988 \
 		+kmod-crypto-manager \
 		+kmod-crypto-aes \
 		+kmod-crypto-authenc \
@@ -542,6 +542,7 @@ define KernelPackage/crypto-safexcel
 		+kmod-crypto-sha1 \
 		+kmod-crypto-sha256 \
 		+kmod-crypto-sha512 \
+		+TARGET_mt7987:eip197-mini-firmware \
 		+TARGET_mt7988:eip197-mini-firmware
   KCONFIG:=CONFIG_CRYPTO_DEV_SAFEXCEL
   FILES:=$(LINUX_DIR)/drivers/crypto/inside-secure/crypto_safexcel.ko

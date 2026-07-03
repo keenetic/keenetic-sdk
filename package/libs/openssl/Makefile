@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openssl
-PKG_VERSION:=3.0.16
+PKG_VERSION:=3.0.20
 PKG_RELEASE:=1
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_BASE:=$(subst $(space),.,$(wordlist 1,2,$(subst .,$(space),$(PKG_VERSION))))
@@ -20,7 +20,7 @@ PKG_SOURCE_URL:= \
 	http://ftp.fi.muni.cz/pub/openssl/source/old/$(PKG_BASE)/ \
 	https://github.com/openssl/openssl/releases/download/openssl-$(PKG_VERSION)/
 
-PKG_HASH:=57e03c50feab5d31b152af2b764f10379aecd8ee92f16c985983ce4a99f7ef86
+PKG_HASH:=c80a01dfc70ece4dc21168932c37739042d404d46ccc81a5986dd75314ecda6f
 
 PKG_DEBUG:=false
 PKG_LICENSE:=Apache-2.0
@@ -137,6 +137,8 @@ ifeq ($(CONFIG_mips),y)
   OPENSSL_TARGET:=linux-mips-ndm32eb
 else ifeq ($(CONFIG_mipsel),y)
   OPENSSL_TARGET:=linux-mips-ndm32le
+else ifeq ($(CONFIG_arm),y)
+  OPENSSL_TARGET:=linux-armv4
 else ifeq ($(CONFIG_aarch64),y)
   OPENSSL_TARGET:=linux-aarch64
 else

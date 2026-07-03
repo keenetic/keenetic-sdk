@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025 Keenetic Limited
+# Copyright (C) 2026 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -18,7 +18,7 @@ endef
 define Package/traceroute
   CATEGORY:=Network
   TITLE:=Traceroute utility for NDM
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +librt
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +librt +libndm
   DISABLE_RSTRIP:=y
 endef
 

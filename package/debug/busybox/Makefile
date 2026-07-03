@@ -30,6 +30,7 @@ endif
 define Package/busybox
   SECTION:=debug
   CATEGORY:=Debug suite
+  DEPENDS:=+USE_GLIBC:libxcrypt
   TITLE:=Core utilities for embedded Linux
   URL:=http://busybox.net/
 endef

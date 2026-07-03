@@ -79,7 +79,7 @@ MAKE_FLAGS       += CFLAGS="$(TARGET_CFLAGS) $(TR_CFLAGS) $(TARGET_CPPFLAGS) $(T
                     LDFLAGS="$(TARGET_LDFLAGS) $(TR_LDFLAGS)"
 
 define Build/Configure
-	(cd $(PKG_BUILD_DIR); AUTOGEN_SUBDIR_MODE=1 ./autogen.sh );
+	(cd $(PKG_BUILD_DIR); AUTOGEN_SUBDIR_MODE=1 INTLTOOLIZE=true ./autogen.sh );
 	$(call Build/Configure/Default)
 endef
 

@@ -54,20 +54,6 @@ menuconfig EXTERNAL_TOOLCHAIN
 		default "powerpc-unknown-linux-gnu"  if powerpc
 		default "x86_64-unknown-linux-gnu"   if x86_64
 
-	config TOOLCHAIN_URL
-		string
-		prompt "Toolchain URL" if DEVEL
-		depends on EXTERNAL_TOOLCHAIN && !NATIVE_TOOLCHAIN
-		help
-		  URL of the custom toolchain tarball to download and install.
-
-	config TOOLCHAIN_HASH
-		string
-		prompt "Toolchain hash" if DEVEL
-		depends on EXTERNAL_TOOLCHAIN && !NATIVE_TOOLCHAIN
-		help
-		  Hash of the custom toolchain tarball.
-
 	config TOOLCHAIN_PREFIX
 		string
 		prompt "Toolchain prefix"  if DEVEL

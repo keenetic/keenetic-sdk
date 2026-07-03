@@ -8,12 +8,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cmake
-PKG_VERSION:=3.23.1
+PKG_VERSION:=3.31.8
 
 PKG_ARCH:=linux-x86_64
+ifeq ($(HOST_ARCH),aarch64)
+  PKG_ARCH:=linux-aarch64
+endif
+
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_ARCH).tar.gz
 PKG_SOURCE_URL:=https://github.com/Kitware/CMake/releases/download/v$(PKG_VERSION)
-PKG_HASH:=f3c654b2e226b9d43369e0bd8487c51618d4dbe5a1af929dd32af7e6ca432d60
+PKG_HASH:=630615d8e98ac33eba7fbe472626dff5c899c85af3c024585ae109166a6909d0
+ifeq ($(HOST_ARCH),aarch64)
+  PKG_HASH:=609735983e3bdf24b6ab379d918458d64196fe72b98226f62dd5e9fe7b2997cc
+endif
 
 HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/$(PKG_NAME)-$(PKG_VERSION)-$(PKG_ARCH)
 

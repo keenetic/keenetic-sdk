@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ocserv
-PKG_VERSION:=1.2.4-2
+PKG_VERSION:=1.2.4-3
 PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)

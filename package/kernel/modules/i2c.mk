@@ -160,7 +160,7 @@ I2C_MT65XX_MODULES:=\
 define KernelPackage/i2c-mt65xx
   $(call i2c_defaults,$(I2C_MT65XX_MODULES),59)
   TITLE:=MediaTek I2C interface support
-  DEPENDS:=@TARGET_mt7622||TARGET_mt7981||TARGET_mt7986||TARGET_mt7988 +kmod-i2c-core
+  DEPENDS:=@TARGET_mt7622||TARGET_mt7981||TARGET_mt7986||TARGET_mt7987||TARGET_mt7988 +kmod-i2c-core
 endef
 
 define KernelPackage/i2c-mt65xx/description

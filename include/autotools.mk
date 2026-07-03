@@ -23,7 +23,8 @@ AM_TOOL_PATHS:= \
 	LIBTOOLIZE=$(STAGING_DIR_HOST)/bin/libtoolize \
 	LIBTOOL=$(STAGING_DIR_HOST)/bin/libtool \
 	M4=$(STAGING_DIR_HOST)/bin/m4 \
-	AUTOPOINT=true
+	AUTOPOINT=true \
+	GTKDOCIZE=true
 
 # 1: build dir
 # 2: remove files
@@ -85,11 +86,11 @@ endef
 
 define gettext_version_target
 	(cd $(PKG_BUILD_DIR) && \
-		GETTEXT_VERSION=$(shell $(STAGING_DIR_HOST)/bin/gettext -V | $(STAGING_DIR_HOST)/bin/sed -ne '1s/.*\([0-9]\.[0-9]\{2\}\.[0-9]\).*/\1/p' ) && \
+		GETTEXT_VERSION=$(shell $(STAGING_DIR)/host/bin/gettext -V | $(STAGING_DIR_HOST)/bin/sed -ne '1s/.*\([0-9]\.[0-9]\{2\}\.[0-9]\).*/\1/p' ) && \
 		$(STAGING_DIR_HOST)/bin/sed \
 			-i $(PKG_BUILD_DIR)/configure.ac \
 			-e "s/AM_GNU_GETTEXT_VERSION(.*)/AM_GNU_GETTEXT_VERSION(\[$$$$GETTEXT_VERSION\])/g" && \
-		$(STAGING_DIR_HOST)/bin/autopoint --force \
+		$(STAGING_DIR)/host/bin/autopoint --force \
 	);
 endef
 

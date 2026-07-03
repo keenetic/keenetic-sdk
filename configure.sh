@@ -13,7 +13,7 @@ REMOVE_MODULES=false
 # $1 - config
 # $2 - option
 kconfig_string_value () {
-	echo $(egrep "$2=.*$" $1 | cut -d = -f 2 | tr -d \")
+	echo $(grep -E "$2=.*$" $1 | cut -d = -f 2 | tr -d \")
 }
 
 # $1 - config
@@ -85,8 +85,8 @@ cfg_cleanup() {
 	[ -s .pipe ] && echo
 	rm .pipe
 
-	egrep -v '^CONFIG_PACKAGE_' -v $cfg > ${prefix_path}_1
-	egrep '^CONFIG_PACKAGE_ndm-mod-' $cfg > ${prefix_path}_2
+	grep -Ev '^CONFIG_PACKAGE_' -v $cfg > ${prefix_path}_1
+	grep -E '^CONFIG_PACKAGE_ndm-mod-' $cfg > ${prefix_path}_2
 
 	scripts/kconfig.pl '+' ${prefix_path}_1 ${prefix_path}_2 > ${prefix_path}_3
 	scripts/config/conf --defconfig=${prefix_path}_3 -w ${prefix_path}_4 Config.in >/dev/null

@@ -1,0 +1,39 @@
+# cwmpclient configuration
+
+if PACKAGE_cwmpclient
+
+config CWMP_BACKTRACE
+	bool "Log a backtrace on a server crash"
+	default n
+
+config CWMPCLIENT_LOG_FILE
+	string "Log file complete name or syslog identifier"
+	default "/var/log/cwmpclnt.log"
+
+config CWMPCLIENT_PID_FILE
+	string "Pid file for daemon mode"
+	default "/var/run/cwmpclnt.pid"
+
+config CWMPCLIENT_DOWNLOADS_FOLDER
+	string "Folder for downloaded files"
+	default "/var/tmp/"
+
+config CWMPCLIENT_USER_AGENT
+	string "HTTP User agent string"
+	default "NDMS/1.0"
+
+config CWMPCLIENT_USE_LIBC_REGEX
+	bool "Use regex functions from libc"
+	default y
+
+comment "logging ---"
+
+config CWMPCLIENT_BUILD_WITH_TRACE_LOGGING
+	bool "Build with trace messages"
+	default n
+
+config CWMPCLIENT_BUILD_WITH_DEBUG_LOGGING
+	bool "Build with debug messages"
+	default n
+
+endif

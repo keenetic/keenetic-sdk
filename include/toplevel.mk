@@ -6,7 +6,6 @@
 # See /LICENSE for more information.
 #
 
-RELEASE:=Attitude Adjustment
 PREP_MK= OPENWRT_BUILD= QUIET=0
 
 include $(TOPDIR)/include/verbose.mk
@@ -19,16 +18,16 @@ else
 endif
 
 HOSTCC ?= gcc
-OPENWRTVERSION:=$(RELEASE)$(if $(REVISION), ($(REVISION)))
-export RELEASE
 export REVISION
-export OPENWRTVERSION
 export IS_TTY=$(shell tty -s && echo 1 || echo 0)
 export LD_LIBRARY_PATH:=$(subst ::,:,$(if $(LD_LIBRARY_PATH),$(LD_LIBRARY_PATH):)$(TOPDIR)/staging_dir/host/lib)
 export DYLD_LIBRARY_PATH:=$(subst ::,:,$(if $(DYLD_LIBRARY_PATH),$(DYLD_LIBRARY_PATH):)$(TOPDIR)/staging_dir/host/lib)
 export GIT_CONFIG_PARAMETERS='core.autocrlf=false'
 export MAKE_JOBSERVER=$(filter --jobserver%,$(MAKEFLAGS))
 export SOURCE_DATE_EPOCH:=$(shell $(TOPDIR)/scripts/get_source_date_epoch.sh)
+export GNU_HOST_NAME:=$(shell $(TOPDIR)/scripts/config.guess)
+export HOST_OS:=$(shell uname)
+export HOST_ARCH:=$(shell uname -m)
 
 # prevent perforce from messing with the patch utility
 unexport P4PORT P4USER P4CONFIG P4CLIENT
@@ -44,14 +43,26 @@ unexport LPATH
 # make sure that a predefined CFLAGS variable does not disturb packages
 export CFLAGS=
 
+empty:=
+space:= $(empty) $(empty)
+path:=$(subst :,$(space),$(PATH))
+path:=$(filter-out .%,$(path))
+path:=$(subst $(space),:,$(path))
+export PATH:=$(path)
+
+unexport TAR_OPTIONS
+
 ifeq ($(FORCE),)
   .config scripts/config/conf scripts/config/mconf: tmp/.prereq-build
 endif
 
 SCAN_COOKIE?=$(shell echo $$$$)
 export SCAN_COOKIE
+export STAGING_DIR_HOST=$(TOPDIR)/staging_dir/host
 
 SUBMAKE:=umask 022; $(SUBMAKE)
+
+ULIMIT_FIX=_limit=`ulimit -n`; [ "$$_limit" = "unlimited" -o "$$_limit" -ge 1024 ] || ulimit -n 1024;
 
 prepare-mk: FORCE ;
 
@@ -174,7 +185,7 @@ check: .config FORCE
 			false; \
 		fi \
 	)
-	@+$(SUBMAKE) -r $@
+	@+$(ULIMIT_FIX) $(SUBMAKE) -r $@
 
 help:
 	cat README

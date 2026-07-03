@@ -1,0 +1,19 @@
+if PACKAGE_kmod-mtk-warp
+
+if TARGET_mt7986 || TARGET_mt7988
+
+config MTK_WARP_FW_WO1
+	bool "Use second WO CPU firmware"
+	default n
+
+endif
+
+if TARGET_mt7988
+
+config MTK_WARP_FW_WO2
+	bool "Use third WO CPU firmware"
+	default n
+
+endif
+
+endif

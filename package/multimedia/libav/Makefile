@@ -125,7 +125,11 @@ CONFIGURE_ARGS := \
 		$(DECODERS_CONFIG) \
 		$(DEMUXERS_CONFIG)
 
-TARGET_CFLAGS += -D_GNU_SOURCE
+ifneq ($(CONFIG_USE_MUSL),)
+  TARGET_CFLAGS += -D_GNU_SOURCE
+endif
+
+TARGET_CFLAGS += -Wno-incompatible-pointer-types
 
 define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \

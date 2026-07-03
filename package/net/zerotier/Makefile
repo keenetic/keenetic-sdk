@@ -6,7 +6,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=zerotier
-PKG_VERSION:=1.10.6-3
+PKG_VERSION:=1.14.2-2
 PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/ZeroTierOne
@@ -29,7 +29,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/zerotier
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+libpthread +libstdcpp +kmod-tun +libndm
+  DEPENDS:=+libpthread +libstdcpp +kmod-tun +libndm +libatomic
   TITLE:=Create flat virtual Ethernet networks of almost unlimited size
   URL:=https://www.zerotier.com
   SUBMENU:=VPN

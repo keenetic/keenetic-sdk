@@ -71,6 +71,7 @@ Build/Patch:=$(Build/Patch/Default)
 ifneq ($(strip $(PKG_UNPACK)),)
   define Build/Prepare/Default
 	$(PKG_UNPACK)
+	[ ! -d ./src/ ] || $(CP) ./src/* $(PKG_BUILD_DIR)
 	$(Build/Patch)
   endef
 endif
@@ -165,6 +166,7 @@ define Build/Install/Default
 	$(MAKE_VARS) \
 	$(MAKE) -C $(PKG_BUILD_DIR)/$(PKG_MAKE_PATH) \
 		$(MAKE_INSTALL_FLAGS) \
+		$(if $(PKG_SUBDIRS),SUBDIRS='$$$$(wildcard $(PKG_SUBDIRS))') \
 		$(if $(1), $(1), install);
 endef
 

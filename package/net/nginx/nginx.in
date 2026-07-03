@@ -6,6 +6,10 @@ config NGINX_BACKTRACE
 	bool "Log a backtrace on a server crash"
 	default n
 
+config NGINX_HTTP2
+	bool "Enable support for HTTP/2"
+	default y
+
 config NGINX_PCRE_JIT
 	bool "Speedup regexps computations"
 	default n
@@ -14,8 +18,8 @@ config NGINX_PCRE_UTF
 	bool "Add support for UTF in regexps"
 	default n
 
-config NGINX_HTTP2
-	bool "Enable support for HTTP/2"
+config NGINX_ZSTD
+	bool "Enable Zstandard support"
 	default y
 
 endif

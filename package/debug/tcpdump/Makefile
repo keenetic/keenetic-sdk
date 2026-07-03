@@ -1,24 +1,25 @@
-# 
-# Copyright (C) 2007 OpenWrt.org
+#
+# Copyright (C) 2007-2011 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
-# $Id: Makefile 12175 2008-08-05 22:04:10Z florian $
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tcpdump
-PKG_VERSION:=3.9.8
+PKG_VERSION:=4.99.5
 PKG_RELEASE:=1
-PKG_LICENSE:=BSD
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://www.tcpdump.org/release/ \
-	http://ftp.gwdg.de/pub/misc/tcpdump/ \
-	http://www.at.tcpdump.org/ \
-	http://www.br.tcpdump.org/
-PKG_MD5SUM:=bf704e33058ae56c63054a1d374eaa57
+PKG_SOURCE_URL:=https://www.tcpdump.org/release/
+PKG_HASH:=8c75856e00addeeadf70dad67c9ff3dd368536b2b8563abf6854d7c764cd3adb
+
+PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
+PKG_LICENSE:=BSD
+PKG_CPE_ID:=cpe:/a:tcpdump:tcpdump
+
+PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -30,31 +31,14 @@ define Package/tcpdump
   URL:=http://www.tcpdump.org/
 endef
 
-define Build/Configure
-	perl -p -i.bak -e "s/.*PKG_CHECK_MODULES.*//" $(PKG_BUILD_DIR)/configure
-	$(call Build/Configure/Default, \
-		--enable-ipv6 \
-		--without-crypto \
-		, \
-		BUILD_CC="$(TARGET_CC)" \
-		HOSTCC="$(HOSTCC)" \
-		td_cv_buggygetaddrinfo="no" \
-	)
-endef
-
-define Build/Compile
-	$(call Build/Compile/Default, \
-		CCOPT="$(TARGET_CFLAGS)" \
-		INCLS="-I. -I$(STAGING_DIR)/usr/include" \
-		DESTDIR="$(PKG_INSTALL_DIR)")
-	$(call Build/Compile/Default, \
-		DESTDIR="$(PKG_INSTALL_DIR)" \
-		install)
-endef
+CONFIGURE_ARGS += \
+	--without-cap-ng \
+	--without-crypto \
+	--enable-ipv6
 
 define Package/tcpdump/install
-	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/tcpdump $(1)/usr/sbin/
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/tcpdump $(1)/usr/bin/
 endef
 
 $(eval $(call BuildPackage,tcpdump))

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025 Keenetic Limited
+# Copyright (C) 2026 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -19,8 +19,8 @@ endef
 define KernelPackage/mt7988_eth
   SUBMENU:=Network Devices
   CATEGORY:=Kernel modules
-  TITLE:=Ethernet switch driver for MediaTek MT7988A/D
-  DEPENDS:=@TARGET_mt7988
+  TITLE:=Ethernet switch driver for MediaTek MT7987/8
+  DEPENDS:=@TARGET_mt7987||TARGET_mt7988 +kmod-phr
   DISABLE_RSTRIP:=y
 endef
 

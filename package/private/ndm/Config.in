@@ -12,6 +12,9 @@ config NDM_BACKTRACE
 config NDM_GENERIC_DEBUG
 	bool "Generic debug"
 
+config NDM_ASSERTS
+	bool "Enable asserts"
+
 if NDM_GENERIC_DEBUG
 
 	config NDM_TIMER_DEBUG

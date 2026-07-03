@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025 Keenetic Limited
+# Copyright (C) 2026 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -18,7 +18,7 @@ endef
 define Package/nginx
   CATEGORY:=Network
   TITLE:=Nginx web server
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +NGINX_BACKTRACE:libfatalsig +libndmacl_stub +zlib +libopenssl +libndm
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +NGINX_BACKTRACE:libfatalsig +NGINX_ZSTD:zstd +USE_GLIBC:libxcrypt +libndm +libndmacl_stub +libopenssl +zlib
   DISABLE_RSTRIP:=y
 endef
 

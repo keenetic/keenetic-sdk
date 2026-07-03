@@ -16,7 +16,7 @@ FIRMWARE_SIZE  = $(call qstrip,$(CONFIG_TARGET_FIRMWARE_SIZE))
 FIRMWARE_FILE  = $(BIN_DIR)/$(NDM_FIRMWARE_FNAME)
 SIZE_FILE      = $(BUILD_LOG_DIR)/sizes/$(NDM_FIRMWARE_SIZE_FNAME)
 FIRMWARE_DESC  = $(shell echo $(call qstrip,$(CONFIG_TARGET_ARCH_PACKAGES)) '$(BSP_VERSION)')
-FW_COMPONENTS  = $(subst $(space),$(comma),$(sort $(NDM_PACKAGES)))
+FW_COMPONENTS  = $(subst $(space),$(comma),$(sort $(NDM_COMPONENTS_Y)))
 
 ifneq ($(wildcard $(STAGING_DIR_HOST)/bin/ndmfw),)
   NDMFW_MARK   = ndmfw mark \

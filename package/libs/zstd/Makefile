@@ -7,12 +7,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=zstd
-PKG_VERSION:=1.5.0
+PKG_VERSION:=1.5.7
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/facebook/zstd/releases/download/v$(PKG_VERSION)
-PKG_HASH:=5194fbfa781fcf45b98c5e849651aa7b3b0a008c6b72d4a0db760f3002291e94
+PKG_HASH:=eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3
 
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
@@ -51,18 +51,9 @@ endef
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) $(PKG_BUILD_DIR)/lib/zstd.h $(1)/usr/include
+	$(CP) $(PKG_BUILD_DIR)/lib/zstd_errors.h $(1)/usr/include
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_BUILD_DIR)/lib/libzstd.a $(1)/usr/lib
-	$(CP) $(PKG_BUILD_DIR)/lib/libzstd.so $(1)/usr/lib
-	$(LN) libzstd.so.$(PKG_VERSION) $(1)/usr/lib/libzstd.so
-	$(LN) libzstd.so.$(PKG_VERSION) $(1)/usr/lib/libzstd.so.1
-endef
-
-define Package/zstd/install
-	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_BUILD_DIR)/lib/libzstd.so.$(PKG_VERSION) $(1)/usr/lib
-	$(LN) libzstd.so.$(PKG_VERSION) $(1)/usr/lib/libzstd.so
-	$(LN) libzstd.so.$(PKG_VERSION) $(1)/usr/lib/libzstd.so.1
 endef
 
 HOST_MAKE_FLAGS += \

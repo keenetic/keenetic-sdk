@@ -9,7 +9,7 @@ override TARGET_BUILD=
 include $(INCLUDE_DIR)/prereq.mk
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/host.mk
-include $(INCLUDE_DIR)/ndm-packages.mk
+include $(INCLUDE_DIR)/ndm-components.mk
 
 override MAKE:=$(_SINGLE)$(SUBMAKE)
 override NO_TRACE_MAKE:=$(_SINGLE)$(NO_TRACE_MAKE)
@@ -30,13 +30,13 @@ NDM_FIRMWARE_FNAME = $(NDM_FIRMWARE_DATE)_Firmware-$(NDM_FIRMWARE_ID)-$(BSP_VERS
 NDM_FIRMWARE_SIZE_FNAME = $(NDM_FIRMWARE_FNAME:bin=siz)
 
 NDM_KMOD_ONDEMAND ?= drxvi314 u200 igmpsn hw_nat whnat warp_proxy pppoe_pt ipv6_pt
-NDM_KMOD_ONDEMAND += mt7603_ap mt7610_ap mt76x2_ap mt7613_ap mt7628_ap mt7615_ap
-NDM_KMOD_ONDEMAND += mt7915_ap mt7916_ap mt7992_ap mtk_hwifi
+NDM_KMOD_ONDEMAND += mt7603_ap mt76x2_ap mt7613_ap mt7628_ap mt7615_ap
+NDM_KMOD_ONDEMAND += mt7915_ap mt7916_ap mt7992_ap mt7993_ap mtk_hwifi
 NDM_KMOD_ONDEMAND += osal_kernel ve_vtsp_hw ve_vtsp_rt pcmdriver_slic cc
 NDM_KMOD_ONDEMAND += ntc ntce nnfm rtsoc_eth ensoc_eth fastvpn vdsl zram nacct
 NDM_KMOD_ONDEMAND += crypto_aes_engine eip93_cryptoapi tcrypt crypto_safexcel
-NDM_KMOD_ONDEMAND += mt7621_eth mt7622_eth mt7986_eth mt7988_eth
-NDM_KMOD_ONDEMAND += ensoc_flt ensoc_dmt ensoc_dsl
+NDM_KMOD_ONDEMAND += mt7621_eth mt7622_eth mt7986_eth mt7988_eth ansoc_eth
+NDM_KMOD_ONDEMAND += ensoc_flt ensoc_dmt ensoc_dsl en7517_dsl
 NDM_KMOD_ONDEMAND += ipt_NETFLOW iptable_raw ip6table_raw
 
 NDM_KMOD_ONDEMAND += xt_DSCP xt_statistic ip6t_ah xt_length xt_CLASSIFY xt_dscp
@@ -49,7 +49,7 @@ NDM_KMOD_ONDEMAND += ip6table_nat xt_ipp2p xt_TEE ip6t_hbh
 NDM_KMOD_ONDEMAND += xt_TEE ah4 xt_geoip xt_iprange ip6t_rt xt_addrtype
 NDM_KMOD_ONDEMAND += ip6t_mh xt_IPMARK xt_ACCOUNT xt_iface xfrm4_mode_beet
 NDM_KMOD_ONDEMAND += xt_time xt_DNETMAP xt_socket xt_length2 xt_fuzzy xt_ipv4options
-NDM_KMOD_ONDEMAND += xt_DELUDE xt_CHAOS ip6t_NPT xt_NFQUEUE xt_NFLOG
+NDM_KMOD_ONDEMAND += xt_DELUDE xt_CHAOS ip6t_NPT xt_NFLOG
 NDM_KMOD_ONDEMAND += ip6t_ipv6header xt_hashlimit xt_LOGMARK
 NDM_KMOD_ONDEMAND += ip_set_hash_ipportnet ip_set_bitmap_port xt_multiport
 NDM_KMOD_ONDEMAND += ip6t_eui64 xt_DHCPMAC xt_psd xt_owner ip6t_frag
@@ -286,13 +286,6 @@ else
 
   define Image/mkfs/squashfs
 	$(STAGING_DIR_HOST)/bin/mksquashfs4 $(TARGET_DIR) $(KDIR)/root.squashfs -nopad -noappend -root-owned -comp $(SQUASHFSCOMP) $(SQUASHFSOPT) -processors $(N_CPU)
-	$(if $(CONFIG_TARGET_qemu),mkdir -p $(BUILD_DIR_BASE)/qemu,)
-	$(if $(CONFIG_TARGET_qemu),rm -f $(BUILD_DIR_BASE)/qemu/root.squashfs,)
-	$(if $(CONFIG_TARGET_qemu),rm -f $(BUILD_DIR_BASE)/qemu/vmlinux,)
-	$(if $(CONFIG_TARGET_qemu),cp $(KDIR)/root.squashfs $(BUILD_DIR_BASE)/qemu/root.squashfs,)
-	$(if $(CONFIG_TARGET_qemu),truncate -s %256k $(BUILD_DIR_BASE)/qemu/root.squashfs,)
-	$(if $(CONFIG_TARGET_qemu),cp $(KERNEL_BUILD_DIR)/vmlinux $(BUILD_DIR_BASE)/qemu/vmlinux,)
-	$(if $(CONFIG_TARGET_qemu),cp $(BUILD_DIR_BASE)/../scripts/private/qemu.bat $(BUILD_DIR_BASE)/qemu/qemu.bat,)
   endef
 
   define Image/mkfs/ndmsfs
@@ -348,8 +341,8 @@ ifneq ($(CONFIG_PACKAGE_ndm),)
 	$(SCRIPT_DIR)/ndm_xml.pl $(call qstrip,$(CONFIG_TARGET_ARCH_PACKAGES)) device \
 		$(PACKAGE_DIR)/Packages \
 		$(GIT_TAG) $(BSP_LOCAL) \
-		"$(NDM_PACKAGES)" \
-		"$(NDM_UNHIDDEN_PACKAGES)" \
+		"$(NDM_COMPONENTS_Y)" \
+		"$(NDM_COMPONENTS_U)" \
 		> $(TARGET_DIR)/etc/components.xml && \
 		setfattr -n user.package -v ndm $(TARGET_DIR)/etc/components.xml
 	MODULES=$$$$($(TOPDIR)/scripts/mdeps.pl -b $(TARGET_DIR) -k $(LINUX_UNAME_VERSION)) || exit 1; \
@@ -392,7 +385,7 @@ ifneq ($(CONFIG_PACKAGE_ndw4),)
 	CONSTANTS_JS=$$$${HTDOCS_}/assets/ndmConstants.js; \
 	CONSTANTS_JSON=$$$${HTDOCS_}/assets/ndmConstants.json; \
 	LANGUAGES_JSON=$$$${HTDOCS_}/ndmLanguages.json; \
-	LANGS="$(filter-out all zz,$(patsubst lang-%,%,$(filter lang-%,$(NDM_PACKAGES))))"; \
+	LANGS="$(filter-out all zz,$(patsubst lang-%,%,$(filter lang-%,$(NDM_COMPONENTS_Y))))"; \
 	mkdir -p $$$${HTDOCS_}; \
 	JQLANGS=$$$$(printf '%s:true,' $$$${LANGS}); \
 	jq --tab ".profile.languages={$$$${JQLANGS}}" $$$${CONSTANTS_JSON} > \
@@ -409,7 +402,7 @@ ifneq ($(CONFIG_PACKAGE_ndw4),)
 	ln -sf /var/run/ndmComponents.js $$$${HTDOCS_}; \
 	ln -sf /var/run/ndmContacts.js $$$${HTDOCS_}; \
 	ln -sf /var/run/ndmFeatures.json $$$${HTDOCS_}; \
-	ln -sf /var/run/ndmContacts.json $$$${HTDOCS_} \
+	ln -sf /var/run/ndmContacts.json $$$${HTDOCS_}; \
 	ln -sf /var/run/version.js $$$${HTDOCS_}
 endif
 endef
@@ -544,7 +537,7 @@ NDMFW_DESCRIPTION = "$(call qstrip,$(CONFIG_TARGET_ARCH_PACKAGES)) $(BSP_VERSION
 
 ifneq ($(wildcard $(STAGING_DIR_HOST)/bin/ndmfw),)
 
-  NDMFW_COMPONENTS = $(subst $(space),$(comma),$(sort $(NDM_PACKAGES)))
+  NDMFW_COMPONENTS = $(subst $(space),$(comma),$(sort $(NDM_COMPONENTS_Y)))
 
   define Build/ndmfw-dump
 	$(if $(CONFIG_TARGET_SIGN_FIRMWARE), \
@@ -625,6 +618,13 @@ else # ($(wildcard $(STAGING_DIR_HOST)/bin/ndmfw),)
 
 endif # ($(wildcard $(STAGING_DIR_HOST)/bin/ndmfw),)
 
+define Build/sysupgrade-tar
+	sh $(TOPDIR)/scripts/sysupgrade-tar.sh \
+		--board $(if $(BOARD_NAME),$(BOARD_NAME),$(DEVICE_NAME)) \
+		--kernel $(word 1,$^) \
+		--rootfs $(word 2,$^) \
+		$@
+endef
 
 define Device/Init
   PROFILES := $(PROFILE)
@@ -634,6 +634,7 @@ define Device/Init
   KERNEL_SIZE:=
   CMDLINE:=
 
+  IMAGES :=
   IMAGE_PREFIX := $(IMG_PREFIX)-$(1)
   IMAGE_NAME = $$(IMAGE_PREFIX)-$$(1)-$$(2)
   KERNEL_PREFIX = $(1)
@@ -647,6 +648,8 @@ define Device/Init
 
   DEVICE_DTS_CONFIG :=
 
+  BOARD_NAME :=
+
   FILESYSTEMS := $(TARGET_FILESYSTEMS)
 endef
 
@@ -655,7 +658,7 @@ define Device/ExportVar
 
 endef
 define Device/Export
-  $(foreach var,$(DEVICE_VARS) DEVICE_DTS_CONFIG DEVICE_NAME KERNEL,$(call Device/ExportVar,$(1),$(var)))
+  $(foreach var,$(DEVICE_VARS) BOARD_NAME DEVICE_DTS_CONFIG DEVICE_NAME KERNEL,$(call Device/ExportVar,$(1),$(var)))
   $(1) : FILESYSTEM:=$(2)
 endef
 
@@ -742,10 +745,12 @@ define BuildImage
 		$(call Build/Clean)
 
     image_prepare: compile
+		rm -rf $(KDIR)/tmp
 		mkdir -p $(KDIR)/tmp
 		$(call Image/Prepare)
   else
     image_prepare: compile
+		rm -rf $(KDIR)/tmp
 		mkdir -p $(KDIR)/tmp
   endif
 

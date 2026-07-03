@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libunwind
-PKG_VERSION:=v1.5-rc1-ndm-4
+PKG_VERSION:=v1.5-rc1-ndm-6
 PKG_LICENSE:=FREE
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)
@@ -47,6 +47,8 @@ ifneq ($(findstring $(ARCH),aarch64),)
   LIBUNWIND_ARCH:=aarch64
 else ifneq ($(findstring $(ARCH),mips mipsel),)
   LIBUNWIND_ARCH:=mips
+else ifeq ($(ARCH),arm)
+  LIBUNWIND_ARCH:=arm
 else
   LIBUNWIND_ARCH:=unk
 endif

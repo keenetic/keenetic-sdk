@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025 Keenetic Limited
+# Copyright (C) 2026 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -18,7 +18,7 @@ endef
 define Package/iperf3
   CATEGORY:=Network
   TITLE:=Internet Protocol bandwidth measuring tool
-  DEPENDS:=+libc +SSP_SUPPORT:libssp
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +libatomic
   DISABLE_RSTRIP:=y
 endef
 

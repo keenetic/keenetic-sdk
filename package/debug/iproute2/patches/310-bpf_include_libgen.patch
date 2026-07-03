@@ -1,0 +1,11 @@
+diff --git a/lib/bpf.c b/lib/bpf.c
+--- a/lib/bpf.c
++++ b/lib/bpf.c
+@@ -22,6 +22,7 @@
+ #include <stdarg.h>
+ #include <limits.h>
+ #include <assert.h>
++#include <libgen.h>
+ 
+ #ifdef HAVE_ELF
+ #include <libelf.h>

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025 Keenetic Limited
+# Copyright (C) 2026 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -19,7 +19,7 @@ endef
 define KernelPackage/mt7992
   SUBMENU:=Wireless
   CATEGORY:=Kernel modules
-  TITLE:=Wireless MediaTek MT7992 driver
+  TITLE:=Wireless MediaTek MT7992 Eagle/Kite driver
   KCONFIG:=CONFIG_MT7992_AP CONFIG_FW_LOADER=y
   DEPENDS:=@HAS_MT7992_RADIO +kmod-phr
   DISABLE_RSTRIP:=y
@@ -40,7 +40,7 @@ $(eval $(call KernelPackage,mt7992))
 define KernelPackage/mt7992-ate
   SUBMENU:=Wireless
   CATEGORY:=Kernel modules
-  TITLE:=Wireless MediaTek MT7992 driver (ATE)
+  TITLE:=Wireless MediaTek MT7992 Eagle/Kite driver (ATE)
   KCONFIG:=CONFIG_MT7992_AP CONFIG_FW_LOADER=y
   DEPENDS:=@HAS_MT7992_RADIO +kmod-phr
   DISABLE_RSTRIP:=y

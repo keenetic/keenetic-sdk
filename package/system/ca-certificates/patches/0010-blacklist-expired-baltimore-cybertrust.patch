@@ -1,0 +1,8 @@
+diff --git a/mozilla/blacklist.txt b/mozilla/blacklist.txt
+--- a/mozilla/blacklist.txt
++++ b/mozilla/blacklist.txt
+@@ -4,3 +4,4 @@
+ "Explicitly Distrust DigiNotar Root CA"
+ 
+ # Expired CAs
++"Baltimore CyberTrust Root"

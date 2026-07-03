@@ -25,7 +25,7 @@ ifdef CONFIG_USE_MKLIBS
 	# first find all programs and add them to the mklibs list
 	find $(STAGING_DIR_ROOT) -type f -perm /100 -print0 | while IFS= read -r -d '' i; do \
 		$(STAGING_DIR_HOST)/bin/mklibs-readelf --print-elf-header "$$i" 2>/dev/null | \
-			egrep --silent '^[12] [12] 2 [0-9]+ [0-9]+$$' || \
+			grep -E --silent '^[12] [12] 2 [0-9]+ [0-9]+$$' || \
 			continue; \
 		$(STAGING_DIR_HOST)/bin/mklibs-readelf --print-interp "$$i" >/dev/null || \
 			continue; \
@@ -34,7 +34,7 @@ ifdef CONFIG_USE_MKLIBS
 	# find all loadable objects that are not regular libraries and add them to the list as well
 	find $(STAGING_DIR_ROOT) -type f -name \*.so\* -print0 | while IFS= read -r -d '' i; do \
 		$(STAGING_DIR_HOST)/bin/mklibs-readelf --print-elf-header "$$i" 2>/dev/null | \
-			egrep --silent '^[12] [12] 3 [0-9]+ [0-9]+$$' || \
+			grep -E --silent '^[12] [12] 3 [0-9]+ [0-9]+$$' || \
 			continue; \
 		echo "$$i" >> $(TMP_DIR)/mklibs-libs; \
 	done

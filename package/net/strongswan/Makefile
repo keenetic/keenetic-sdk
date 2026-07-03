@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=strongswan
-PKG_VERSION:=5.9.14-7
+PKG_VERSION:=6.0.1-2
 PKG_LICENSE:=GPL-2.0+
 
 PKG_SOURCE_URL:=$(NDM_STORAGE)/$(PKG_NAME)
@@ -98,6 +98,7 @@ CONFIGURE_ARGS += \
 	--disable-tpm \
 	--disable-tss-trousers \
 	--disable-tss-tss2 \
+	--enable-stroke \
 	--enable-pem \
 	--enable-shared \
 	--enable-monolithic \
@@ -117,6 +118,7 @@ CONFIGURE_ARGS += \
 	--enable-openssl \
 	--enable-xcbc \
 	--enable-cmac \
+	--enable-hmac \
 	--enable-ctr \
 	--enable-error-notify \
 	--enable-systime-fix \

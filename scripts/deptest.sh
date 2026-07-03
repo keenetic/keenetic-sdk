@@ -69,7 +69,7 @@ clean_kernel_build_dir()
 	(
 		cd "$KERNEL_BUILD_DIR" || die "Failed to enter kernel build dir"
 		for entry in *; do
-			[ -z "$(echo "$entry" | egrep -e '^linux-*.*.*$')" ] || continue
+			[ -z "$(echo "$entry" | grep -Ee '^linux-*.*.*$')" ] || continue
 			rm -rf "$entry" || die "Failed to clean kernel build dir"
 		done
 	)

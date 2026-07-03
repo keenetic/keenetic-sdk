@@ -1,0 +1,17 @@
+diff --git a/lib/eu-config.h b/lib/eu-config.h
+--- a/lib/eu-config.h
++++ b/lib/eu-config.h
+@@ -31,11 +31,12 @@
+ 
+ #include "locks.h"
+ 
+-#include <libintl.h>
+ /* gettext helper macros.  */
+ #define N_(Str) Str
+ #define _(Str) dgettext ("elfutils", Str)
+ 
++#include <libintl.h>
++
+ /* Compiler-specific definitions.  */
+ #define strong_alias(name, aliasname) \
+   extern __typeof (name) aliasname __attribute__ ((alias (#name)));

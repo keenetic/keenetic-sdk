@@ -34,7 +34,7 @@ HOST_CFLAGS   := -pipe -std=c99 -O2 \
                  -Wempty-body -Wall -Winit-self -Wswitch-enum -Wundef \
                  -Waddress -Wmissing-field-initializers -Wconversion \
                  -Wredundant-decls -Wvla -Wstack-protector -Wshadow \
-                 -Wpointer-arith -Wtype-limits -Werror
+                 -Wpointer-arith -Wtype-limits -Werror -fsigned-char
 
 HOST_LDFLAGS  := -pthread -Wl,--gc-section
 

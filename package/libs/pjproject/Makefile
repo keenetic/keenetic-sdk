@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025 Keenetic Limited
+# Copyright (C) 2026 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -23,6 +23,10 @@ define Package/pjproject
 endef
 
 define Package/pjproject/config
+	config PJPROJECT_BACKTRACE
+		bool "Backtrace"
+		depends on PACKAGE_pjproject
+		default n
 	config PJPROJECT_MIMALLOC
 		bool "Use mimalloc for in heap memory allocation"
 		depends on PACKAGE_pjproject

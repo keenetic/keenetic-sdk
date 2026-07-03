@@ -2,6 +2,13 @@ if PACKAGE_kmod-mt7992
 
 choice
 	prompt "SKU type"
+
+	config MTK_WIFI7_SKU_BE19000
+		bool "BE19000 (3-adie, 2+5+6)"
+	config MTK_WIFI7_SKU_BE13500
+		bool "BE13500 (2-adie, 2+5+6)"
+	config MTK_WIFI7_SKU_BE13000
+		bool "BE13000 (3-adie, 2+5+5)"
 	config MTK_WIFI7_SKU_BE7200
 		bool "BE7200"
 	config MTK_WIFI7_SKU_BE6500

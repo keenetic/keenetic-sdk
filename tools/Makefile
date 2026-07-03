@@ -23,9 +23,9 @@ endif
 
 tools-y += m4 libtool autoconf automake flex bison pkg-config ragel
 tools-y += sstrip cmake missing-macros
-tools-y += quilt mkimage libndm libndmfw ndmfw tze
+tools-y += quilt mkimage libndm libndmfw ndmfw tze ntrx
 tools-y += lzma squashfskit4 node
-tools-y += gengetopt patchelf
+tools-y += gengetopt gnulib patchelf
 tools-y += discount links
 tools-$(CONFIG_IB) += jq
 tools-$(CONFIG_KERNEL_IMAGE_CMDLINE_HACK) += patch-cmdline
@@ -36,19 +36,19 @@ tools-$(BUILD_ZYIMAGE) += zyimage
 
 # builddir dependencies
 $(curdir)/bison/compile := $(curdir)/flex/install
-$(curdir)/flex/compile := $(curdir)/automake/install
-$(curdir)/libtool/compile := $(curdir)/automake/install $(curdir)/missing-macros/install
+$(curdir)/flex/compile := $(curdir)/libtool/install
+$(curdir)/libtool/compile := $(curdir)/automake/install $(curdir)/gnulib/install $(curdir)/missing-macros/install
 $(curdir)/quilt/compile := $(curdir)/autoconf/install
 $(curdir)/autoconf/compile := $(curdir)/m4/install
-$(curdir)/automake/compile := $(curdir)/m4/install $(curdir)/autoconf/install $(curdir)/pkg-config/install $(curdir)/missing-macros/install
-$(curdir)/gmp/compile := $(curdir)/automake/install
+$(curdir)/automake/compile := $(curdir)/autoconf/install $(curdir)/pkg-config/install
+$(curdir)/gmp/compile := $(curdir)/libtool/install
 $(curdir)/mpc/compile := $(curdir)/mpfr/install $(curdir)/gmp/install
 $(curdir)/mpfr/compile := $(curdir)/gmp/install
 $(curdir)/ppl/compile := $(curdir)/gmp/install
 $(curdir)/cloog/compile := $(curdir)/ppl/install
-$(curdir)/mklibs/compile := $(curdir)/automake/install
-$(curdir)/missing-macros/compile := $(curdir)/automake/install
-$(curdir)/gengetopt/compile := $(curdir)/automake/install $(curdir)/libtool/install
+$(curdir)/mklibs/compile := $(curdir)/libtool/install
+$(curdir)/missing-macros/compile := $(curdir)/autoconf/install
+$(curdir)/gengetopt/compile := $(curdir)/libtool/install
 $(curdir)/patchelf/compile := $(curdir)/libtool/install
 $(curdir)/libndmfw/compile := $(curdir)/libndm/install
 $(curdir)/links/compile := $(curdir)/automake/install

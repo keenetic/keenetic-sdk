@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025 Keenetic Limited
+# Copyright (C) 2026 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -18,7 +18,7 @@ endef
 define Package/ndm
   CATEGORY:=NDM
   TITLE:=Network device manager
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +libsupcxx +tzdata +libopenssl +ping +arping +traceroute +reboot +nlldp +dhcp +nginx +telnetd +init +ndnproxy +deadwood +libndmacl_stub +libndm +libndmfw +zlib +kmod-ipt-core +kmod-ipt-filter +kmod-ipt-conntrack +kmod-ip6tables +kmod-ipt-ipopt +kmod-ipt-nat +kmod-ipt-nat6 +kmod-ipt-nat6 +kmod-nf-nat6-extra +kmod-phr +kmod-tun +kmod-zram +kmod-ipt-ndm-extra +kmod-nf-nat-cone +!IS_EXTENDER:kmod-fast-nat +!IS_EXTENDER:kmod-nacct +nsh +kmod-mtdoops_proc +kmod-nf-conntrack-netlink +kmod-sched-base +kmod-sch_cake +kmod-ipt-ipset-base +NDM_BACKTRACE:libunwind +NDM_ASAN_DEBUG:busybox +NDM_ASAN_DEBUG:libasan +NDM_ASAN_DEBUG:libssp +NDM_TSAN_DEBUG:busybox +NDM_TSAN_DEBUG:libtsan +NDM_UBSAN_DEBUG:busybox +NDM_UBSAN_DEBUG:libubsan +ndw4 +HAS_BTMTK:uart_launcher
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +libsupcxx +tzdata +libopenssl +ping +arping +traceroute +reboot +nlldp +dhcp +nginx +telnetd +init +ndnproxy +deadwood +libndmacl_stub +libndm +libndmfw +zlib +kmod-ipt-core +kmod-ipt-filter +kmod-ipt-conntrack +kmod-ip6tables +kmod-ipt-ipopt +kmod-ipt-nat +kmod-ipt-nat6 +kmod-ipt-nat6 +kmod-nf-nat6-extra +kmod-phr +kmod-tun +kmod-zram +kmod-ipt-ndm-extra +kmod-nf-nat-cone +kmod-ipt-nfqueue +kmod-dummy +!IS_EXTENDER:kmod-fast-nat +!IS_EXTENDER:kmod-nacct +nsh +kmod-mtdoops_proc +kmod-nf-conntrack-netlink +kmod-sched-base +kmod-sch_cake +kmod-ipt-ipset-base +NDM_BACKTRACE:libunwind +NDM_ASAN_DEBUG:busybox +NDM_ASAN_DEBUG:libasan +NDM_ASAN_DEBUG:libssp +NDM_TSAN_DEBUG:busybox +NDM_TSAN_DEBUG:libtsan +NDM_UBSAN_DEBUG:busybox +NDM_UBSAN_DEBUG:libubsan +ndw4 +HAS_BTMTK:uart_launcher
   DISABLE_RSTRIP:=y
 endef
 
@@ -70,7 +70,7 @@ define Package/ndm-mod-amend-ndms-316
   SUBMENU:=Amends
   CATEGORY:=NDM
   TITLE:=NDMS-316
-  DEPENDS:=+libc +SSP_SUPPORT:libssp @TARGET_mt7621_KN_1010||TARGET_mt7628_KN_1110||TARGET_mt7628_KN_1310||TARGET_mt7628_KN_1410||TARGET_mt7628_KN_1510||TARGET_mt7628_KN_1610||TARGET_mt7628_KN_1710||TARGET_mt7621_KN_1810||TARGET_mt7621_KN_1910||TARGET_en7512_KN_2011||TARGET_en7512_KN_2111
+  DEPENDS:=+libc +SSP_SUPPORT:libssp @TARGET_mt7621_KN_1010||TARGET_mt7621_KN_1810||TARGET_mt7621_KN_1910||TARGET_en7512_KN_2011||TARGET_en7512_KN_2111
   DISABLE_RSTRIP:=y
 endef
 
@@ -246,7 +246,7 @@ define Package/ndm-mod-corewireless
   SUBMENU:=Base system
   CATEGORY:=NDM
   TITLE:=NDM WiFi module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +!USES_OLD_MODES:ndm-mod-config-extender +HAS_BAND_STEERING:bndstrg +HAS_MT7603_RADIO:kmod-mt7603 +HAS_MT7610_RADIO:kmod-mt7610 +HAS_MT7613_RADIO:kmod-mt7613 +HAS_MT7615_RADIO:kmod-mt7615 +HAS_MT7628_RADIO:kmod-mt7628 +HAS_MT76X2_RADIO:kmod-mt76x2 +HAS_MT7915_RADIO:kmod-mt7915 +HAS_MT7916_RADIO:kmod-mt7916 +HAS_MT7992_RADIO:kmod-mt7992 +HAS_CONNINFRA:kmod-mtk-conninfra +HAS_WARP:kmod-mtk-warp +HAS_RADIO_MTK:mtkiappd +HAS_RADIO_MTK:wind
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +!USES_OLD_MODES:ndm-mod-config-extender +HAS_BAND_STEERING:bndstrg +HAS_MT7603_RADIO:kmod-mt7603 +HAS_MT7613_RADIO:kmod-mt7613 +HAS_MT7615_RADIO:kmod-mt7615 +HAS_MT7628_RADIO:kmod-mt7628 +HAS_MT76X2_RADIO:kmod-mt76x2 +HAS_MT7915_RADIO:kmod-mt7915 +HAS_MT7916_RADIO:kmod-mt7916 +HAS_MT7992_RADIO:kmod-mt7992 +HAS_MT7993_RADIO:kmod-mt7993 +HAS_CONNINFRA:kmod-mtk-conninfra +HAS_WARP:kmod-mtk-warp +HAS_RADIO_MTK:mtkiappd +HAS_RADIO_MTK:wind +!HAS_RADIO_MTK:ip +!HAS_RADIO_MTK:isc-dhcp-client-ipv4
   DISABLE_RSTRIP:=y
 endef
 
@@ -273,6 +273,158 @@ define Package/ndm-mod-crash/install
 endef
 
 $(eval $(call BuildPackage,ndm-mod-crash))
+
+define Package/ndm-mod-cwmp-agent-069
+  SUBMENU:=CWMP
+  CATEGORY:=NDM
+  TITLE:=NDM CWMP TR-069 Agent module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-cwmp-base +cwmpclient
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-cwmp-agent-069/config
+if PACKAGE_ndm-mod-cwmp-agent-069
+	config CWMP_DEFAULT_ACS_URL
+		string "Default ACS URL"
+		default ""
+
+	config CWMP_DEFAULT_ACS_USERNAME
+		string "Default ACS username"
+		default "cpe"
+
+	config CWMP_DEFAULT_ACS_PASSWORD
+		string "Default ACS password"
+		default "cpe"
+
+	config CWMP_DEFAULT_CRS_INTERFACE
+		string "Default CRS interface (an empty string means an interface leading to a default gateway)"
+		default ""
+
+	config CWMP_DEFAULT_CRS_PORT
+		string "Default CRS port"
+		default "30005"
+
+	config CWMP_DEFAULT_CRS_USERNAME
+		string "Default CRS username"
+		default "cpe"
+
+	config CWMP_DEFAULT_CRS_PASSWORD
+		string "Default CRS password"
+		default "cpe"
+
+	config CWMP_DEFAULT_PERIODIC_INFORM_ENABLED
+		bool "Default state of Periodic Inform Event"
+		default y
+
+	config CWMP_DEFAULT_PERIODIC_INFORM_INTERVAL
+		string "Default Periodic Inform Event Interval(in seconds)"
+		default "3600"
+
+	config CWMP_DEFAULT_RETRY_MINIMUM_WAIT_INTERVAL
+		string "Default minimum wait interval for an inform retry (in seconds)"
+		default "5"
+
+	config CWMP_DEFAULT_RETRY_INTERVAL_MULTIPLIER
+		string "Default inform retry interval multiplier (in thousandth, i.e. 2020 means 2.02)"
+		default "2000"
+endif
+endef
+
+define Package/ndm-mod-cwmp-agent-069/install
+	if [ -d ./files-ndm-mod-cwmp-agent-069 ]; then \
+		$(CP) ./files-ndm-mod-cwmp-agent-069/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-cwmp-agent-069))
+
+define Package/ndm-mod-cwmp-base
+  SUBMENU:=CWMP
+  CATEGORY:=NDM
+  TITLE:=NDM CWMP Base module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-pppoe
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-cwmp-base/config
+if PACKAGE_ndm-mod-cwmp-base
+	config CWMP_DEFAULT_PROVISIONING_CODE
+		string "Provider specific provisioning code"
+		default ""
+endif
+endef
+
+define Package/ndm-mod-cwmp-base/install
+	if [ -d ./files-ndm-mod-cwmp-base ]; then \
+		$(CP) ./files-ndm-mod-cwmp-base/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-cwmp-base))
+
+define Package/ndm-mod-cwmp-igd1-baseline
+  SUBMENU:=CWMP
+  CATEGORY:=NDM
+  TITLE:=NDM CWMP IGD:1 Baseline profiles module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-cwmp-base +ndm-mod-cwmp-agent-069
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-cwmp-igd1-baseline/install
+	if [ -d ./files-ndm-mod-cwmp-igd1-baseline ]; then \
+		$(CP) ./files-ndm-mod-cwmp-igd1-baseline/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-cwmp-igd1-baseline))
+
+define Package/ndm-mod-cwmp-igd1-cellular
+  SUBMENU:=CWMP
+  CATEGORY:=NDM
+  TITLE:=NDM CWMP IGD:1 Cellular module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-mobile +ndm-mod-cwmp-base +ndm-mod-cwmp-igd1-baseline
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-cwmp-igd1-cellular/install
+	if [ -d ./files-ndm-mod-cwmp-igd1-cellular ]; then \
+		$(CP) ./files-ndm-mod-cwmp-igd1-cellular/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-cwmp-igd1-cellular))
+
+define Package/ndm-mod-cwmp-igd1-diagnostics
+  SUBMENU:=CWMP
+  CATEGORY:=NDM
+  TITLE:=NDM CWMP IGD:1 Diagnostic profiles module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ping +traceroute +ndm-mod-cwmp-base +ndm-mod-cwmp-igd1-baseline
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-cwmp-igd1-diagnostics/install
+	if [ -d ./files-ndm-mod-cwmp-igd1-diagnostics ]; then \
+		$(CP) ./files-ndm-mod-cwmp-igd1-diagnostics/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-cwmp-igd1-diagnostics))
+
+define Package/ndm-mod-cwmp-igd1-wifi
+  SUBMENU:=CWMP
+  CATEGORY:=NDM
+  TITLE:=NDM CWMP IGD:1 WiFi module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-corewireless +ndm-mod-cwmp-base +ndm-mod-cwmp-igd1-baseline
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-cwmp-igd1-wifi/install
+	if [ -d ./files-ndm-mod-cwmp-igd1-wifi ]; then \
+		$(CP) ./files-ndm-mod-cwmp-igd1-wifi/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-cwmp-igd1-wifi))
 
 define Package/ndm-mod-ddns
   SUBMENU:=Applications
@@ -326,7 +478,7 @@ define Package/ndm-mod-dns-filter
   SUBMENU:=Internet filters
   CATEGORY:=NDM
   TITLE:=NDM DNS Filter module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind
   DISABLE_RSTRIP:=y
 endef
 
@@ -390,7 +542,7 @@ define Package/ndm-mod-dsl
   SUBMENU:=Base system
   CATEGORY:=NDM
   TITLE:=NDM xDSL module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +HAS_EN751X_DSL:kmod-ensoc_dsl @!TARGET_en7512_KN_2010 @!TARGET_en7512_KN_2011 @!TARGET_en7512_KN_2110 @!TARGET_en7512_KN_2111
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +HAS_EN751X_DSL:kmod-ensoc_dsl +HAS_EN7517_DSL:kmod-en7517_dsl @!TARGET_en7512_KN_2010 @!TARGET_en7512_KN_2011 @!TARGET_en7512_KN_2110 @!TARGET_en7512_KN_2111
   DISABLE_RSTRIP:=y
 endef
 
@@ -406,7 +558,7 @@ define Package/ndm-mod-easyconfig
   SUBMENU:=Base system
   CATEGORY:=NDM
   TITLE:=NDM NetFriend module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER @!NO_WIZARD +accel-ppp-pppoe +ndw3
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!NO_WIZARD +!IS_EXTENDER:accel-ppp-pppoe +ndw3 +ndm-mod-dns-filter
   DISABLE_RSTRIP:=y
 endef
 
@@ -422,7 +574,7 @@ define Package/ndm-mod-eoip
   SUBMENU:=Networking
   CATEGORY:=NDM
   TITLE:=NDM EoIP module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +kmod-gre +ndm-mod-tunnel
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +kmod-gre
   DISABLE_RSTRIP:=y
 endef
 
@@ -470,7 +622,7 @@ define Package/ndm-mod-factory
   SUBMENU:=Factory
   CATEGORY:=NDM
   TITLE:=NDM Factory module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +phr_ctl +HAS_RADIO_MTK:ated +HAS_BTMTK:bluedroid +HAS_MT7603_RADIO:kmod-mt7603-ate +HAS_MT7610_RADIO:kmod-mt7610-ate +HAS_MT7613_RADIO:kmod-mt7613-ate +HAS_MT7615_RADIO:kmod-mt7615-ate +HAS_MT7628_RADIO:kmod-mt7628-ate +HAS_MT76X2_RADIO:kmod-mt76x2-ate +HAS_MT7915_RADIO:kmod-mt7915-ate +HAS_MT7916_RADIO:kmod-mt7916-ate +HAS_MT7992_RADIO:kmod-mt7992-ate +HAS_RADIO_MTK:ndm-mod-corewireless +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):ndm-mod-usbqmi +(TARGET_en7516||TARGET_en7512_KN_2012||TARGET_en7512_KN_2013):ndm-mod-dsl +HAS_EN7517_DSL:ndm-mod-dsl +ndm-mod-isp-tools-get
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +phr_ctl +HAS_RADIO_MTK:ated +HAS_BTMTK:bluedroid +HAS_MT7603_RADIO:kmod-mt7603-ate +HAS_MT7613_RADIO:kmod-mt7613-ate +HAS_MT7615_RADIO:kmod-mt7615-ate +HAS_MT7628_RADIO:kmod-mt7628-ate +HAS_MT76X2_RADIO:kmod-mt76x2-ate +HAS_MT7915_RADIO:kmod-mt7915-ate +HAS_MT7916_RADIO:kmod-mt7916-ate +HAS_MT7992_RADIO:kmod-mt7992-ate +HAS_MT7993_RADIO:kmod-mt7993-ate +HAS_RADIO_MTK:ndm-mod-corewireless +(TARGET_en7516||TARGET_en7512_KN_2012||TARGET_en7512_KN_2013):ndm-mod-dsl +HAS_EN7517_DSL:ndm-mod-dsl +ndm-mod-isp-tools-get
   DISABLE_RSTRIP:=y
 endef
 
@@ -534,7 +686,7 @@ define Package/ndm-mod-gre
   SUBMENU:=Networking
   CATEGORY:=NDM
   TITLE:=NDM GRE module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +kmod-gre +ndm-mod-tunnel +grecka
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +kmod-gre +grecka
   DISABLE_RSTRIP:=y
 endef
 
@@ -582,7 +734,7 @@ define Package/ndm-mod-ike-client
   SUBMENU:=Networking
   CATEGORY:=NDM
   TITLE:=NDM IKE client module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +strongswan +ndm-mod-ipsec +ca-certificates +ndm-mod-tunnel +ndm-mod-vpn
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +strongswan +ndm-mod-ipsec +ca-certificates +ndm-mod-vpn
   DISABLE_RSTRIP:=y
 endef
 
@@ -614,7 +766,7 @@ define Package/ndm-mod-ip6
   SUBMENU:=Networking
   CATEGORY:=NDM
   TITLE:=NDM IPv6 support module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +radvd +isc-dhcp-server-ipv6 +odhcp6c +kmod-ipv6 +kmod-sit +kmod-ip6-tunnel +kmod-ipv6_pt +kmod-nat46 +kmod-ipt-nat-extra +ndm-mod-tunnel
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +radvd +isc-dhcp-server-ipv6 +odhcp6c +kmod-ipv6 +kmod-sit +kmod-ip6-tunnel +kmod-ipv6_pt +kmod-nat46 +kmod-ipt-nat-extra
   DISABLE_RSTRIP:=y
 endef
 
@@ -626,11 +778,27 @@ endef
 
 $(eval $(call BuildPackage,ndm-mod-ip6))
 
+define Package/ndm-mod-iperf3
+  SUBMENU:=Applications
+  CATEGORY:=NDM
+  TITLE:=NDM iperf3 module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +iperf3
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-iperf3/install
+	if [ -d ./files-ndm-mod-iperf3 ]; then \
+		$(CP) ./files-ndm-mod-iperf3/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-iperf3))
+
 define Package/ndm-mod-ipip
   SUBMENU:=Networking
   CATEGORY:=NDM
   TITLE:=NDM IPIP module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +kmod-ipip +ndm-mod-tunnel
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +kmod-ipip
   DISABLE_RSTRIP:=y
 endef
 
@@ -646,7 +814,7 @@ define Package/ndm-mod-ipsec
   SUBMENU:=Networking
   CATEGORY:=NDM
   TITLE:=NDM IPSec module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +strongswan +(TARGET_en7512||TARGET_en7516||TARGET_en7528||TARGET_mt7621):kmod-eip93-cryptoapi +(TARGET_mt7981||TARGET_mt7986||TARGET_mt7988):kmod-crypto-safexcel +TARGET_mt7628:kmod-mtk-aes-engine +kmod-crypto-ctr +kmod-crypto-gcm +kmod-crypto-ccm +kmod-crypto-chacha20poly1305 +kmod-crypto-sha512 +kmod-ipsec4 +kmod-xfrm-interface +ndm-mod-radius
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +strongswan +(TARGET_an7552||TARGET_an7581):kmod-eip93-safexcel +(TARGET_en7512||TARGET_en7516||TARGET_en7528||TARGET_mt7621):kmod-eip93-cryptoapi +(TARGET_mt7981||TARGET_mt7986||TARGET_mt7987||TARGET_mt7988):kmod-crypto-safexcel +TARGET_mt7628:kmod-mtk-aes-engine +kmod-crypto-ctr +kmod-crypto-gcm +kmod-crypto-ccm +kmod-crypto-chacha20poly1305 +kmod-crypto-sha512 +kmod-ipsec4 +kmod-xfrm-interface +ndm-mod-radius
   DISABLE_RSTRIP:=y
 endef
 
@@ -662,7 +830,7 @@ define Package/ndm-mod-isp-lock
   SUBMENU:=Extras
   CATEGORY:=NDM
   TITLE:=NDM ISP lock
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +ndm-mod-easyconfig
   DISABLE_RSTRIP:=y
 endef
 
@@ -998,7 +1166,7 @@ define Package/ndm-mod-mobile
   SUBMENU:=Base system
   CATEGORY:=NDM
   TITLE:=NDM Mobile module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +ndm-mod-usb
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind
   DISABLE_RSTRIP:=y
 endef
 
@@ -1030,7 +1198,7 @@ define Package/ndm-mod-mws
   SUBMENU:=Base system
   CATEGORY:=NDM
   TITLE:=NDM Wi-Fi System module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-corewireless
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-corewireless +ndm-mod-mobile
   DISABLE_RSTRIP:=y
 endef
 
@@ -1222,7 +1390,7 @@ define Package/ndm-mod-ntce
   SUBMENU:=Applications
   CATEGORY:=NDM
   TITLE:=NDM NTCE module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ntce-pace2 +kmod-nnfm +kmod-dummy +ndm-mod-trafficcontrol
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ntce-pace2 +kmod-nnfm +ndm-mod-trafficcontrol
   DISABLE_RSTRIP:=y
 endef
 
@@ -1478,7 +1646,7 @@ define Package/ndm-mod-ppe
   SUBMENU:=Base system
   CATEGORY:=NDM
   TITLE:=NDM PPE module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @(!IS_EXTENDER||(IS_EXTENDER&&HAS_HWNAT)) +!IS_EXTENDER:kmod-fastvpn +NDM_MOD_PPE_ECNT:kmod-en-hwnat +NDM_MOD_PPE_MTK:kmod-mtk-hwnat
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @(!IS_EXTENDER||(IS_EXTENDER&&HAS_HWNAT)) +!IS_EXTENDER:kmod-fastvpn +NDM_MOD_PPE_ECNT:kmod-en-hwnat +NDM_MOD_PPE_ARHT:kmod-an-hwnat +NDM_MOD_PPE_MTK:kmod-mtk-hwnat
   DISABLE_RSTRIP:=y
 endef
 
@@ -1491,13 +1659,13 @@ config NDM_MOD_PPE_ECNT
 
 config NDM_MOD_PPE_ARHT
 	bool
-	default y if TARGET_an7581
+	default y if TARGET_an7552 || TARGET_an7581
 
 config NDM_MOD_PPE_MTK
 	bool
 	default y if TARGET_mt7621 || TARGET_mt7622
-	default y if TARGET_mt7981 || TARGET_mt7986 || TARGET_mt7988
-
+	default y if TARGET_mt7981 || TARGET_mt7986
+	default y if TARGET_mt7987 || TARGET_mt7988
 endif
 endef
 
@@ -1625,7 +1793,7 @@ define Package/ndm-mod-shell
   SUBMENU:=Debug
   CATEGORY:=NDM
   TITLE:=NDM shell module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +busybox +ip +iptables +iptables-mod-conntrack-extra +iptables-mod-ipopt +iptables-mod-ipsec +iptables-mod-ndm-extra +ip6tables +iperf3 +ipset +!TARGET_qemu:rt_reg +!TARGET_qemu:mii_mgr +TARGET_qemu:perf +tcpdump +wireless-tools +HAS_HWNAT:hw_nat_ctl +(TARGET_en7516||TARGET_en7512):br2684ctl +TARGET_mt7628:mt7628-switch +TARGET_an7581:mt7530-switch +TARGET_en7528:mt7530-switch +TARGET_en7516:mt7530-switch +TARGET_en7512:mt7530-switch +TARGET_mt7621:mt7530-switch +TARGET_mt7621_ku_rd:rtl8370m-switch +TARGET_mt7622_KN_1811:mt7530-switch +TARGET_mt7622_ZN_1811:mt7530-switch +TARGET_mt7981:mt7530-switch +TARGET_mt7986:mt7530-switch +TARGET_mt7988:mt7530-switch
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +busybox +ip +iptables +iptables-mod-conntrack-extra +iptables-mod-ipopt +iptables-mod-ipsec +iptables-mod-ndm-extra +ip6tables +iperf3 +ipset +rt_reg +mii_mgr +tcpdump +wireless-tools +HAS_HWNAT:hw_nat_ctl +(TARGET_en7516||TARGET_en7512):br2684ctl +TARGET_mt7628:mt7628-switch +TARGET_an7552:mt7530-switch +TARGET_an7581:mt7530-switch +TARGET_en7528:mt7530-switch +TARGET_en7516:mt7530-switch +TARGET_en7512:mt7530-switch +TARGET_mt7621:mt7530-switch +TARGET_mt7621_ku_rd:rtl8370m-switch +TARGET_mt7622_KN_1811:mt7530-switch +TARGET_mt7981:mt7530-switch +TARGET_mt7986:mt7530-switch +TARGET_mt7987:mt7530-switch +TARGET_mt7988:mt7530-switch
   DISABLE_RSTRIP:=y
 endef
 
@@ -1721,7 +1889,7 @@ define Package/ndm-mod-storage
   SUBMENU:=USB storage
   CATEGORY:=NDM
   TITLE:=NDM storage module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +kmod-fs-jffs2 +kmod-lbdaf +kmod-nls-cp1251 +kmod-nls-cp437 +kmod-nls-cp866 +kmod-nls-utf8 +kmod-usb-storage +(TARGET_mt7981||TARGET_mt7986||TARGET_mt7988||TARGET_mt7622):kmod-usb-storage-uas +ndm-mod-usb +USES_EXTENDED_STORAGE:kmod-fs-ubifs +USES_EXTENDED_STORAGE:kmod-ndm-storage +HAS_NVME:kmod-nvme
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +kmod-fs-jffs2 +kmod-lbdaf +kmod-nls-cp1251 +kmod-nls-cp437 +kmod-nls-cp866 +kmod-nls-utf8 +kmod-usb-storage +(TARGET_mt7981||TARGET_mt7986||TARGET_mt7987||TARGET_mt7988||TARGET_mt7622):kmod-usb-storage-uas +ndm-mod-usb +USES_EXTENDED_STORAGE:kmod-fs-ubifs +USES_EXTENDED_STORAGE:kmod-ndm-storage +HAS_NVME:kmod-nvme
   DISABLE_RSTRIP:=y
 endef
 
@@ -1732,6 +1900,22 @@ define Package/ndm-mod-storage/install
 endef
 
 $(eval $(call BuildPackage,ndm-mod-storage))
+
+define Package/ndm-mod-tacacs
+  SUBMENU:=Networking
+  CATEGORY:=NDM
+  TITLE:=NDM TACACS module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-tacacs/install
+	if [ -d ./files-ndm-mod-tacacs ]; then \
+		$(CP) ./files-ndm-mod-tacacs/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-tacacs))
 
 define Package/ndm-mod-trafficcontrol
   SUBMENU:=Applications
@@ -1753,7 +1937,7 @@ define Package/ndm-mod-transmission
   SUBMENU:=USB storage
   CATEGORY:=NDM
   TITLE:=NDM torrent module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +ndm-mod-storage +transmission-daemon +kmod-block-sched +TARGET_mt7628:transmission-web-control-tiny +(TARGET_en7512||TARGET_en7516||TARGET_en7528||TARGET_an7581||TARGET_mt7621||TARGET_mt7622||TARGET_mt7981||TARGET_mt7986||TARGET_mt7988||TARGET_qemu):transmission-web-control-full
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +ndm-mod-storage +transmission-daemon +kmod-block-sched +TARGET_mt7628:transmission-web-control-tiny +(TARGET_en7512||TARGET_en7516||TARGET_en7528||TARGET_an7552||TARGET_an7581||TARGET_mt7621||TARGET_mt7622||TARGET_mt7981||TARGET_mt7986||TARGET_mt7987||TARGET_mt7988):transmission-web-control-full
   DISABLE_RSTRIP:=y
 endef
 
@@ -1781,22 +1965,6 @@ endef
 
 $(eval $(call BuildPackage,ndm-mod-tsmb))
 
-define Package/ndm-mod-tunnel
-  SUBMENU:=Networking
-  CATEGORY:=NDM
-  TITLE:=NDM Tunnel module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind
-  DISABLE_RSTRIP:=y
-endef
-
-define Package/ndm-mod-tunnel/install
-	if [ -d ./files-ndm-mod-tunnel ]; then \
-		$(CP) ./files-ndm-mod-tunnel/* $(1); \
-	fi
-endef
-
-$(eval $(call BuildPackage,ndm-mod-tunnel))
-
 define Package/ndm-mod-udpxy
   SUBMENU:=Applications
   CATEGORY:=NDM
@@ -1817,7 +1985,7 @@ define Package/ndm-mod-usb
   SUBMENU:=Base system
   CATEGORY:=NDM
   TITLE:=NDM USB module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +kmod-scsi-cdrom +kmod-scsi-generic +kmod-usb_extras +TARGET_mt7628:kmod-usb2 +(TARGET_an7581||TARGET_en7528||TARGET_en7516||TARGET_en7512||TARGET_mt7621||TARGET_mt7622||TARGET_mt7981||TARGET_mt7986||TARGET_mt7988):kmod-usb-xhci-mtk +(TARGET_qemu):kmod-usb3
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +kmod-scsi-cdrom +kmod-scsi-generic +kmod-usb_extras +TARGET_mt7628:kmod-usb2 +(TARGET_an7552||TARGET_an7581||TARGET_en7528||TARGET_en7516||TARGET_en7512||TARGET_mt7621||TARGET_mt7622||TARGET_mt7981||TARGET_mt7986||TARGET_mt7987||TARGET_mt7988):kmod-usb-xhci-mtk
   DISABLE_RSTRIP:=y
 endef
 
@@ -1849,7 +2017,7 @@ define Package/ndm-mod-usblte
   SUBMENU:=USB modems
   CATEGORY:=NDM
   TITLE:=NDM UsbLte module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-usb +ndm-mod-mobile +kmod-usb-storage +kmod-usb-serial-option +kmod-usb-acm +kmod-usb-net-huawei-cdc-ncm +kmod-usb-net-rndis +kmod-usb-net-cdc-ether +kmod-ubridge +(TARGET_mt7621_KN_2311||TARGET_mt7621_KN_2910||TARGET_mt7628_KN_2211):ltefw +(TARGET_mt7621_KN_2311||TARGET_mt7621_KN_2910||TARGET_mt7628_KN_2211):qdloader +(TARGET_mt7621_KN_2911||TARGET_mt7628_KN_2212||TARGET_mt7628_KN_4910||TARGET_mt7981_KN_2312):ltefw +(TARGET_mt7628_KN_2212||TARGET_mt7628_KN_4910||TARGET_mt7621_KN_2911||TARGET_mt7981_KN_2312):fbfdloader
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-usb +ndm-mod-mobile +kmod-usb-storage +kmod-usb-serial-option +kmod-usb-acm +kmod-usb-net-huawei-cdc-ncm +kmod-usb-net-rndis +kmod-usb-net-cdc-ether +kmod-ubridge +lpac +(HAS_EMB_MODEM):ltefw +(TARGET_mt7621_KN_2311||TARGET_mt7621_KN_2910||TARGET_mt7628_KN_2211):qdloader +(TARGET_mt7981_KN_4110):qdloader +(TARGET_mt7628_KN_2212||TARGET_mt7628_KN_4910||TARGET_mt7621_KN_2911||TARGET_mt7981_KN_2312||TARGET_mt7981_KN_2313):fbfdloader
   DISABLE_RSTRIP:=y
 endef
 
@@ -1913,7 +2081,7 @@ define Package/ndm-mod-usbqmi
   SUBMENU:=USB modems
   CATEGORY:=NDM
   TITLE:=NDM UsbQmi module
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-usb +ndm-mod-mobile +kmod-usb-storage +kmod-usb-serial-option +kmod-usb-serial-qualcomm +kmod-usb-net-qmi-wwan +kmod-ubridge +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):adb +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):ltefw
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +ndm-mod-usb +ndm-mod-mobile +kmod-usb-storage +kmod-usb-serial-option +kmod-usb-serial-qualcomm +kmod-usb-net-qmi-wwan +kmod-ubridge +lpac +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):adb +(TARGET_mt7621_KN_2310||TARGET_mt7628_KN_2210):ltefw
   DISABLE_RSTRIP:=y
 endef
 
@@ -2052,6 +2220,22 @@ define Package/ndm-mod-wireguard/install
 endef
 
 $(eval $(call BuildPackage,ndm-mod-wireguard))
+
+define Package/ndm-mod-wireguard-server
+  SUBMENU:=Networking
+  CATEGORY:=NDM
+  TITLE:=NDM Wireguard Server module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind @!IS_EXTENDER +kmod-wireguard +ndm-mod-wireguard +ndm-mod-vpn
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-wireguard-server/install
+	if [ -d ./files-ndm-mod-wireguard-server ]; then \
+		$(CP) ./files-ndm-mod-wireguard-server/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-wireguard-server))
 
 define Package/ndm-mod-wpa-eap
   SUBMENU:=Base system

@@ -16,7 +16,7 @@ PKG_CAT:=zcat
 
 include $(INCLUDE_DIR)/host-build.mk
 
-HOST_CPPFLAGS += -std=gnu++98
+HOST_CPPFLAGS += -std=gnu++98 -fsigned-char
 HOST_LDFLAGS += $(HOST_STATIC_LINKING)
 
 define Host/Clean

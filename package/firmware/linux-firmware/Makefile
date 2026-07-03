@@ -16,8 +16,6 @@ PKG_SOURCE_URL:=@KERNEL/linux/kernel/firmware
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_HASH:=bc2657dd8eb82386a9a7ec6df9ccf31c32c7e9073c05d37786c1edc273f9440a
 
-PKG_LICENSE_FILES:=LICENCE.rtlwifi_firmware.txt
-
 include $(INCLUDE_DIR)/package.mk
 
 define Package/firmware-default
@@ -26,13 +24,15 @@ define Package/firmware-default
   URL:=http://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git
   TITLE:=$(1)
   DEPENDS:=$(2)
+  LICENSE_FILES:=$(3)
 endef
 
 define Build/Compile
 
 endef
 
-Package/r815x-firmware = $(call Package/firmware-default,RealTek RTL8152/3/6 firmware)
+Package/r815x-firmware = $(call Package/firmware-default,RealTek RTL8152/3/6 firmware,,LICENCE.rtlwifi_firmware.txt)
+
 define Package/r815x-firmware/install
 	$(INSTALL_DIR) $(1)/lib/firmware/rtl_nic
 	$(CP) $(PKG_BUILD_DIR)/rtl_nic/rtl8153a-2.fw $(1)/lib/firmware/rtl_nic/rtl8153a-2.fw
@@ -44,9 +44,11 @@ define Package/r815x-firmware/install
 	$(CP) $(PKG_BUILD_DIR)/rtl_nic/rtl8156a-2.fw $(1)/lib/firmware/rtl_nic/rtl8156a-2.fw
 	$(CP) $(PKG_BUILD_DIR)/rtl_nic/rtl8156b-2.fw $(1)/lib/firmware/rtl_nic/rtl8156b-2.fw
 endef
+
 $(eval $(call BuildPackage,r815x-firmware))
 
-Package/eip197-mini-firmware = $(call Package/firmware-default,Inside Secure EIP197 mini firmware)
+Package/eip197-mini-firmware = $(call Package/firmware-default,Inside Secure EIP197 mini firmware,,LICENCE.inside-secure)
+
 define Package/eip197-mini-firmware/install
 	$(INSTALL_DIR) $(1)/lib/firmware/inside-secure/eip197_minifw
 	$(INSTALL_DATA) \
@@ -54,4 +56,5 @@ define Package/eip197-mini-firmware/install
 		$(PKG_BUILD_DIR)/inside-secure/eip197_minifw/ipue.bin \
 		$(1)/lib/firmware/inside-secure/eip197_minifw
 endef
+
 $(eval $(call BuildPackage,eip197-mini-firmware))

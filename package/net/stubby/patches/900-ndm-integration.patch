@@ -204,7 +204,7 @@ diff -Naur a/src/server.c b/src/server.c
 +                goto error;
 +        }
 +
-+        if (strcmp(qname_str, "servfail.invalid") == 0)
++        if (strcmp(qname_str, "servfail.invalid.") == 0)
 +                goto error;
  
          else if ((r=getdns_dict_get_int(request,"/question/qtype",&qtype)))

@@ -12,10 +12,10 @@ __target_inc=1
 DEVICE_TYPE?=router
 
 # Default packages - the really basic set
-DEFAULT_PACKAGES:=base-files libc libgcc kmod-bridge ndm-mod-base ndm-mod-lang-en
+DEFAULT_PACKAGES:=base-files libc libgcc kmod-bridge ndm-mod-base ndm-mod-lang-en ndm-mod-ip6
 # For router targets
 DEFAULT_PACKAGES.router:=
-DEFAULT_PACKAGES.extender:=ndm-mod-config-extender ndw3
+DEFAULT_PACKAGES.extender:=ndm-mod-easyconfig ndm-mod-config-extender
 DEFAULT_PACKAGES.bootloader:=
 
 ifneq ($(DUMP),)
@@ -197,9 +197,6 @@ ifeq ($(DUMP),1)
     ifneq ($(CONFIG_MT7603_AP),)
       FEATURES += radio_mt7603
     endif
-    ifneq ($(CONFIG_MT7610_AP),)
-      FEATURES += radio_mt7610
-    endif
     ifneq ($(CONFIG_MT7613_AP),)
       FEATURES += radio_mt7613
     endif
@@ -221,15 +218,18 @@ ifeq ($(DUMP),1)
     ifneq ($(CONFIG_MT7992_AP),)
       FEATURES += radio_mt7992
     endif
+    ifneq ($(CONFIG_MT7993_AP),)
+      FEATURES += radio_mt7993
+    endif
     ifneq ($(strip \
         $(CONFIG_MT7603_BAND_STEERING) \
-        $(CONFIG_MT7610_BAND_STEERING) \
         $(CONFIG_MT7613_BAND_STEERING) \
         $(CONFIG_MT7615_BAND_STEERING) \
         $(CONFIG_MT7628_BAND_STEERING) \
         $(CONFIG_MT7915_BAND_STEERING) \
         $(CONFIG_MT7916_BAND_STEERING) \
         $(CONFIG_MT7992_BAND_STEERING) \
+        $(CONFIG_MT7993_BAND_STEERING) \
         $(CONFIG_BAND_STEERING) \
       ),)
       FEATURES += band_steering

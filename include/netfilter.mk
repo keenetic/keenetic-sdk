@@ -58,6 +58,7 @@ $(eval $(call nf_add,IPT_CORE,CONFIG_IP_NF_TARGET_REJECT=y, $(P_V4)nf_reject_ipv
 $(eval $(call nf_add,IPT_CORE,CONFIG_NETFILTER_XT_MARK=y, $(P_XT)xt_mark))
 $(eval $(call nf_add,IPT_CORE,CONFIG_NETFILTER_XT_MATCH_PKTTYPE=y, $(P_XT)xt_pkttype))
 $(eval $(call nf_add,IPT_CORE,CONFIG_NETFILTER_XT_MATCH_MAC=y, $(P_XT)xt_mac))
+$(eval $(call nf_add,IPT_CORE,CONFIG_NETFILTER_XT_MATCH_OWNER=y, $(P_XT)xt_owner))
 
 # kernel has xt_MARK.ko merged into xt_mark.ko, userspace is still separate
 # userland: xt_MARK.so
@@ -191,15 +192,15 @@ $(eval $(if $(NF_KMOD),$(call nf_add,NF_NAT,CONFIG_NF_NAT_NEEDED=y,),))
 $(eval $(if $(NF_KMOD),$(call nf_add,NF_NAT,CONFIG_NF_NAT_REDIRECT=y, $(P_XT)nf_nat_redirect),))
 $(eval $(if $(NF_KMOD),$(call nf_add,NF_NAT,CONFIG_NF_NAT_IPV4=y, $(P_V4)nf_nat_ipv4),))
 $(eval $(if $(NF_KMOD),$(call nf_add,NF_NAT6,CONFIG_NF_NAT_IPV6=y, $(P_V6)nf_nat_ipv6),))
-$(eval $(if $(NF_KMOD),$(call nf_add,NF_NAT6_EXTRA,CONFIG_NF_NAT_MASQUERADE_IPV6, $(P_V6)nf_nat_masquerade_ipv6),))
+$(eval $(if $(NF_KMOD),$(call nf_add,NF_NAT6_EXTRA,CONFIG_NF_NAT_MASQUERADE_IPV6=y, $(P_V6)nf_nat_masquerade_ipv6),))
 
 $(eval $(if $(NF_KMOD),$(call nf_add,IPT_NAT,CONFIG_NF_NAT=y, $(P_XT)xt_nat),))
 $(eval $(if $(NF_KMOD),$(call nf_add,IPT_NAT,CONFIG_NETFILTER_XT_NAT=y, $(P_XT)xt_nat),))
 $(eval $(if $(NF_KMOD),$(call nf_add,IPT_NAT,CONFIG_NF_NAT_IPV4=y, $(P_V4)iptable_nat),))
 $(eval $(if $(NF_KMOD),$(call nf_add,IPT_NAT,CONFIG_IP_NF_NAT=y, $(P_V4)iptable_nat),))
 $(eval $(if $(NF_KMOD),$(call nf_add,NF_NAT6,CONFIG_IP6_NF_NAT=y, $(P_V6)ip6table_nat),))
-$(eval $(if $(NF_KMOD),$(call nf_add,NF_NAT6_EXTRA,CONFIG_IP6_NF_TARGET_MASQUERADE, $(P_V6)ip6t_MASQUERADE),))
-$(eval $(if $(NF_KMOD),$(call nf_add,NF_NAT6_EXTRA,CONFIG_IP6_NF_TARGET_NPT, $(P_V6)ip6t_NPT),))
+$(eval $(if $(NF_KMOD),$(call nf_add,NF_NAT6_EXTRA,CONFIG_IP6_NF_TARGET_MASQUERADE=y, $(P_V6)ip6t_MASQUERADE),))
+$(eval $(if $(NF_KMOD),$(call nf_add,NF_NAT6_EXTRA,CONFIG_IP6_NF_TARGET_NPT=y, $(P_V6)ip6t_NPT),))
 
 # userland only
 $(eval $(if $(NF_KMOD),,$(call nf_add,IPT_NAT,CONFIG_NF_NAT, ipt_SNAT ipt_DNAT)))

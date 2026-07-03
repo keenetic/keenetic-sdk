@@ -340,10 +340,16 @@ define KernelPackage/mmc
 	CONFIG_MMC_DEBUG=n \
 	CONFIG_MMC_UNSAFE_RESUME=n \
 	CONFIG_MMC_BLOCK_BOUNCE=y \
-	CONFIG_MMC_SDHCI=n \
+	CONFIG_MMC_SDHCI=y \
 	CONFIG_MMC_TIFM_SD=n \
 	CONFIG_MMC_WBSD=n \
-	CONFIG_SDIO_UART=n
+	CONFIG_SDIO_UART=n \
+	CONFIG_MMC_RICOH_MMC=n \
+	CONFIG_MMC_SDHCI_PLTFM=m \
+	CONFIG_MMC_ARMMMCI=m \
+	CONFIG_MMC_SDHCI_OF_ARASAN=n \
+	CONFIG_MMC_SDHCI_OF_AT91=n \
+	CONFIG_MMC_SDHCI_F_SDH30=n
   FILES:= \
 	$(LINUX_DIR)/drivers/mmc/core/mmc_core.ko \
 	$(LINUX_DIR)/drivers/mmc/card/mmc_block.ko
@@ -356,6 +362,23 @@ endef
 
 $(eval $(call KernelPackage,mmc))
 
+define KernelPackage/sdhci-pci
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=MMC/SD Card PCI controller
+  KCONFIG:= \
+	CONFIG_MMC_SDHCI_PCI
+  DEPENDS:=kmod-mmc
+  FILES:= \
+	$(LINUX_DIR)/drivers/mmc/host/sdhci.ko \
+	$(LINUX_DIR)/drivers/mmc/host/sdhci-pci.ko \
+	$(LINUX_DIR)/drivers/mmc/host/sdhci-pltfm.ko
+endef
+
+define KernelPackage/sdhci-pci/description
+ Kernel support for MMC/SD PCI controller
+endef
+
+$(eval $(call KernelPackage,sdhci-pci))
 
 define KernelPackage/oprofile
   SUBMENU:=$(OTHER_MENU)

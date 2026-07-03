@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025 Keenetic Limited
+# Copyright (C) 2026 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -18,7 +18,7 @@ endef
 define Package/dropbear
   CATEGORY:=Network
   TITLE:=Small SSH2 client/server
-  DEPENDS:=+libc +SSP_SUPPORT:libssp +libndm +libopenssl
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +USE_GLIBC:libxcrypt +libndm +libopenssl
   DISABLE_RSTRIP:=y
 endef
 

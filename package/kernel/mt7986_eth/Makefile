@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025 Keenetic Limited
+# Copyright (C) 2026 Keenetic Limited
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -20,7 +20,7 @@ define KernelPackage/mt7986_eth
   SUBMENU:=Network Devices
   CATEGORY:=Kernel modules
   TITLE:=Ethernet switch driver for MediaTek MT7981/MT7986
-  DEPENDS:=@TARGET_mt7981||TARGET_mt7986 +TARGET_mt7981_KN_1012:kmod-i2c-mt65xx
+  DEPENDS:=@TARGET_mt7981||TARGET_mt7986 +(TARGET_mt7981_KN_1012):kmod-i2c-mt65xx
   DISABLE_RSTRIP:=y
 endef
 

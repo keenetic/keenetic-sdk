@@ -1,0 +1,30 @@
+diff --git a/src/applet/profile/list.c b/src/applet/profile/list.c
+index e3ee9f5..2e4eb75 100644
+--- a/src/applet/profile/list.c
++++ b/src/applet/profile/list.c
+@@ -33,8 +33,8 @@ static int applet_main(int argc, char **argv)
+         cJSON_AddStringOrNullToObject(jprofile, "profileNickname", rptr->profileNickname);
+         cJSON_AddStringOrNullToObject(jprofile, "serviceProviderName", rptr->serviceProviderName);
+         cJSON_AddStringOrNullToObject(jprofile, "profileName", rptr->profileName);
+-        cJSON_AddStringOrNullToObject(jprofile, "iconType", euicc_icontype2str(rptr->iconType));
+-        cJSON_AddStringOrNullToObject(jprofile, "icon", rptr->icon);
++//        cJSON_AddStringOrNullToObject(jprofile, "iconType", euicc_icontype2str(rptr->iconType));
++//        cJSON_AddStringOrNullToObject(jprofile, "icon", rptr->icon);
+         cJSON_AddStringOrNullToObject(jprofile, "profileClass", euicc_profileclass2str(rptr->profileClass));
+         cJSON_AddItemToArray(jdata, jprofile);
+
+diff --git a/src/applet/profile/download.c b/src/applet/profile/download.c
+index 4dee77b..6c38b2f 100644
+--- a/src/applet/profile/download.c
++++ b/src/applet/profile/download.c
+@@ -213,8 +213,8 @@ static int applet_main(int argc, char **argv)
+         cJSON_AddStringOrNullToObject(jmetadata, "iccid", profile_metadata->iccid);
+         cJSON_AddStringOrNullToObject(jmetadata, "serviceProviderName", profile_metadata->serviceProviderName);
+         cJSON_AddStringOrNullToObject(jmetadata, "profileName", profile_metadata->profileName);
+-        cJSON_AddStringOrNullToObject(jmetadata, "iconType", euicc_icontype2str(profile_metadata->iconType));
+-        cJSON_AddStringOrNullToObject(jmetadata, "icon", profile_metadata->icon);
++//        cJSON_AddStringOrNullToObject(jmetadata, "iconType", euicc_icontype2str(profile_metadata->iconType));
++//        cJSON_AddStringOrNullToObject(jmetadata, "icon", profile_metadata->icon);
+         cJSON_AddStringOrNullToObject(jmetadata, "profileClass", euicc_profileclass2str(profile_metadata->profileClass));
+ 
+         jprint_progress_obj("es8p_meatadata_parse", jmetadata);

@@ -22,7 +22,8 @@ BUILD_TYPES += host
 HOST_STAMP_PREPARED=$(HOST_BUILD_DIR)/.prepared$(if $(HOST_QUILT)$(DUMP),,$(shell $(call find_md5,${CURDIR} $(PKG_FILE_DEPENDS),)))
 HOST_STAMP_CONFIGURED:=$(HOST_BUILD_DIR)/.configured
 HOST_STAMP_BUILT:=$(HOST_BUILD_DIR)/.built
-HOST_STAMP_INSTALLED:=$(STAGING_DIR_HOST)/stamp/.$(PKG_NAME)_installed
+HOST_BUILD_PREFIX:=$(if $(IS_PACKAGE_BUILD),$(STAGING_DIR)/host,$(STAGING_DIR_HOST))
+HOST_STAMP_INSTALLED:=$(HOST_BUILD_PREFIX)/stamp/.$(PKG_NAME)_installed
 
 override MAKEFLAGS=
 
@@ -30,12 +31,11 @@ include $(INCLUDE_DIR)/quilt.mk
 include $(INCLUDE_DIR)/autotools.mk
 
 Host/Patch:=$(Host/Patch/Default)
-ifneq ($(strip $(HOST_UNPACK)),)
-  define Host/Prepare/Default
-	$(HOST_UNPACK)
+define Host/Prepare/Default
+	$(if $(strip $(HOST_UNPACK)),$(HOST_UNPACK))
+	[ ! -d ./src/ ] || $(CP) ./src/* $(HOST_BUILD_DIR)
 	$(Host/Patch)
-  endef
-endif
+endef
 
 define Host/Prepare
   $(call Host/Prepare/Default)
@@ -54,11 +54,11 @@ HOST_CONFIGURE_ARGS = \
 	--build=$(GNU_HOST_NAME) \
 	--program-prefix="" \
 	--program-suffix="" \
-	--prefix=$(STAGING_DIR_HOST) \
-	--exec-prefix=$(STAGING_DIR_HOST) \
-	--sysconfdir=$(STAGING_DIR_HOST)/etc \
-	--localstatedir=$(STAGING_DIR_HOST)/var \
-	--sbindir=$(STAGING_DIR_HOST)/bin
+	--prefix=$(HOST_BUILD_PREFIX) \
+	--exec-prefix=$(HOST_BUILD_PREFIX) \
+	--sysconfdir=$(HOST_BUILD_PREFIX)/etc \
+	--localstatedir=$(HOST_BUILD_PREFIX)/var \
+	--sbindir=$(HOST_BUILD_PREFIX)/bin
 
 HOST_MAKE_VARS = \
 	CFLAGS="$(HOST_CFLAGS)" \
@@ -101,7 +101,7 @@ define Host/Compile/Default
 endef
 
 define Host/Compile
-  $(call Host/Compile/Default)
+  $(call Host/Compile/Default,$(if $(PKG_SUBDIRS),SUBDIRS='$$$$(wildcard $(PKG_SUBDIRS))'))
 endef
 
 define Host/Install/Default
@@ -109,7 +109,7 @@ define Host/Install/Default
 endef
 
 define Host/Install
-  $(call Host/Install/Default)
+  $(call Host/Install/Default,$(HOST_BUILD_PREFIX))
 endef
 
 define Host/Clean/Default
@@ -125,10 +125,11 @@ ifneq ($(if $(HOST_QUILT),,$(CONFIG_AUTOREBUILD)),)
 endif
 
 define Host/Exports/Default
-  $(1) : export ACLOCAL_INCLUDE=$$(foreach p,$$(wildcard $$(STAGING_DIR_HOST)/share/aclocal $$(STAGING_DIR_HOST)/share/aclocal-*),-I $$(p))
-  $(1) : export STAGING_PREFIX=$$(STAGING_DIR_HOST)
-  $(1) : export PKG_CONFIG_PATH=$$(STAGING_DIR_HOST)/lib/pkgconfig
-  $(1) : export PKG_CONFIG_LIBDIR=$$(STAGING_DIR_HOST)/lib/pkgconfig
+  $(1) : export ACLOCAL_INCLUDE=$$(foreach p,$$(wildcard $$(STAGING_DIR_HOST)/share/aclocal $$(STAGING_DIR_HOST)/share/aclocal-* $(if $(IS_PACKAGE_BUILD),$$(STAGING_DIR)/host/share/aclocal $$(STAGING_DIR)/host/share/aclocal-*)),-I $$(p))
+  $(1) : export STAGING_PREFIX=$$(HOST_BUILD_PREFIX)
+  $(1) : export PKG_CONFIG_PATH=$$(STAGING_DIR_HOST)/lib/pkgconfig:$$(HOST_BUILD_PREFIX)/lib/pkgconfig
+  $(1) : export PKG_CONFIG_LIBDIR=$$(HOST_BUILD_PREFIX)/lib/pkgconfig
+  $(if $(IS_PACKAGE_BUILD),$(1) : export PATH=$$(TARGET_PATH_PKG))
 endef
 Host/Exports=$(Host/Exports/Default)
 
@@ -174,7 +175,7 @@ ifndef DUMP
 		touch $$@
 
     $(HOST_STAMP_INSTALLED): $(HOST_STAMP_BUILT) $(if $(FORCE_HOST_INSTALL),FORCE)
-		$(call Host/Install)
+		$(call Host/Install,$(HOST_BUILD_PREFIX))
 		$(foreach hook,$(Hooks/HostInstall/Post),$(call $(hook))$(sep))
 		mkdir -p $$(shell dirname $$@)
 		touch $$@

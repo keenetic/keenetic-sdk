@@ -27,7 +27,7 @@ $(eval $(call KernelPackage,atm))
 define KernelPackage/atmtcp
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
   TITLE:=ATM over TCP
-  DEPENDS:=kmod-atm
+  DEPENDS:=+kmod-atm
   KCONFIG:=CONFIG_ATM_TCP CONFIG_ATM_DRIVERS=y
   FILES:=$(LINUX_DIR)/drivers/atm/atmtcp.ko
   AUTOLOAD:=$(call AutoLoad,40,atmtcp)
@@ -474,9 +474,9 @@ $(eval $(call KernelPackage,iptunnel4))
 define KernelPackage/iptunnel6
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
   TITLE:=IPv6 tunneling
-  DEPENDS:= +kmod-ipv6
+  DEPENDS:=+kmod-ipv6
   KCONFIG:= \
-	CONFIG_INET6_TUNNEL
+	CONFIG_INET6_TUNNEL=y
   FILES:=$(LINUX_DIR)/net/ipv6/tunnel6.ko
   AUTOLOAD:=$(call AutoLoad,31,tunnel6)
 endef
@@ -497,7 +497,7 @@ define KernelPackage/ipv6
 	CONFIG_IPV6_MULTIPLE_TABLES=y \
 	CONFIG_IPV6_MROUTE=y \
 	CONFIG_IPV6_MROUTE_MULTIPLE_TABLES=y \
-	CONFIG_IPV6_SUBTREES=n \
+	CONFIG_IPV6_SUBTREES=y \
 	CONFIG_IPV6_PIMSM_V2=n
   FILES:=$(LINUX_DIR)/net/ipv6/ipv6.ko
   AUTOLOAD:=$(call AutoLoad,20,ipv6)
@@ -529,8 +529,8 @@ $(eval $(call KernelPackage,sit))
 define KernelPackage/ip6-tunnel
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
   TITLE:=IP-in-IPv6 tunnelling
-  DEPENDS:= +kmod-ipv6 +kmod-iptunnel6
-  KCONFIG:= CONFIG_IPV6_TUNNEL
+  DEPENDS:=+kmod-ipv6 +kmod-iptunnel6
+  KCONFIG:=CONFIG_IPV6_TUNNEL=y
   FILES:=$(LINUX_DIR)/net/ipv6/ip6_tunnel.ko
   AUTOLOAD:=$(call AutoLoad,32,ip6_tunnel)
 endef
@@ -610,7 +610,7 @@ $(eval $(call KernelPackage,ppp))
 define KernelPackage/ppp-synctty
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
   TITLE:=PPP sync tty support
-  DEPENDS:=kmod-ppp
+  DEPENDS:=+kmod-ppp
   KCONFIG:=CONFIG_PPP_SYNC_TTY
   FILES:=$(LINUX_DIR)/drivers/net/ppp/ppp_synctty.ko
   AUTOLOAD:=$(call AutoLoad,40,ppp_synctty)
@@ -626,7 +626,7 @@ $(eval $(call KernelPackage,ppp-synctty))
 define KernelPackage/pppox
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
   TITLE:=PPPoX helper
-  DEPENDS:=kmod-ppp
+  DEPENDS:=+kmod-ppp
   KCONFIG:=CONFIG_PPPOE
   FILES:=$(LINUX_DIR)/drivers/net/ppp/pppox.ko
   AUTOLOAD:=$(call AutoLoad,40,pppox)
@@ -642,7 +642,7 @@ $(eval $(call KernelPackage,pppox))
 define KernelPackage/pppoe
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
   TITLE:=PPPoE support
-  DEPENDS:=kmod-ppp +kmod-pppox
+  DEPENDS:=+kmod-ppp +kmod-pppox
   KCONFIG:=CONFIG_PPPOE
   FILES:=$(LINUX_DIR)/drivers/net/ppp/pppoe.ko
   AUTOLOAD:=$(call AutoLoad,41,pppoe)
@@ -658,7 +658,7 @@ $(eval $(call KernelPackage,pppoe))
 define KernelPackage/pppoa
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
   TITLE:=PPPoA support
-  DEPENDS:=kmod-ppp +kmod-atm
+  DEPENDS:=+kmod-ppp +kmod-atm
   KCONFIG:=CONFIG_PPPOATM CONFIG_ATM_DRIVERS=y
   FILES:=$(LINUX_DIR)/net/atm/pppoatm.ko
   AUTOLOAD:=$(call AutoLoad,40,pppoatm)
@@ -674,7 +674,7 @@ $(eval $(call KernelPackage,pppoa))
 define KernelPackage/pptp
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
   TITLE:=PPtP support
-  DEPENDS:=kmod-ppp +kmod-gre +kmod-pppox
+  DEPENDS:=+kmod-ppp +kmod-gre +kmod-pppox
   KCONFIG:=CONFIG_PPTP
   FILES:=$(LINUX_DIR)/drivers/net/ppp/pptp.ko
   AUTOLOAD:=$(call AutoLoad,41,pptp)
@@ -686,7 +686,7 @@ $(eval $(call KernelPackage,pptp))
 define KernelPackage/ipoa
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
   TITLE:=IPoA support
-  DEPENDS:=kmod-atm
+  DEPENDS:=+kmod-atm
   KCONFIG:=CONFIG_ATM_CLIP
   FILES:=$(LINUX_DIR)/net/atm/clip.ko
   AUTOLOAD:=$(call AutoLoad,40,clip)
@@ -702,7 +702,7 @@ $(eval $(call KernelPackage,ipoa))
 define KernelPackage/mppe
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
   TITLE:=Microsoft PPP compression/encryption
-  DEPENDS:=kmod-ppp +kmod-crypto-core +kmod-crypto-arc4 +kmod-crypto-sha1 +kmod-crypto-ecb
+  DEPENDS:=+kmod-ppp +kmod-crypto-core +kmod-crypto-arc4 +kmod-crypto-sha1 +kmod-crypto-ecb
   KCONFIG:= \
 	CONFIG_PPP_MPPE_MPPC \
 	CONFIG_PPP_MPPE

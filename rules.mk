@@ -22,6 +22,7 @@ DUMP:=1
 endif
 
 export TMP_DIR:=$(TOPDIR)/tmp
+export TMPDIR:=$(TMP_DIR)
 
 GREP_OPTIONS=
 export GREP_OPTIONS
@@ -140,6 +141,7 @@ LICENSES_DIR:=$(TOPDIR)/licenses
 
 BUILD_DIR_HOST:=$(if $(IS_PACKAGE_BUILD),$(BUILD_DIR)/host,$(BUILD_DIR_BASE)/host)
 STAGING_DIR_HOST:=$(TOPDIR)/staging_dir/host
+STAGING_DIR_HOSTPKG:=$(STAGING_DIR)/host
 
 ifneq ($(CONFIG_TARGET_SIGN_FIRMWARE),)
 -include $(TOPDIR)/include/private/ndm-sign.mk
@@ -201,14 +203,23 @@ TARGET_PATH_PKG:=$(STAGING_DIR)/host/bin:$(TARGET_PATH)
 
 ifeq ($(CONFIG_SOFT_FLOAT),y)
   SOFT_FLOAT_CONFIG_OPTION:=--with-float=soft
-  TARGET_CFLAGS+= -msoft-float
-  TARGET_CXXFLAGS+= -msoft-float
+  ifeq ($(CONFIG_arm),y)
+    TARGET_CFLAGS+= -mfloat-abi=soft
+    TARGET_CXXFLAGS+= -mfloat-abi=soft
+  else
+    TARGET_CFLAGS+= -msoft-float
+    TARGET_CXXFLAGS+= -msoft-float
+  endif
 else
   SOFT_FLOAT_CONFIG_OPTION:=
+  ifeq ($(CONFIG_arm),y)
+    TARGET_CFLAGS+= -mfloat-abi=hard
+    TARGET_CXXFLAGS+= -mfloat-abi=hard
+  endif
 endif
 
 export PATH:=$(TARGET_PATH)
-export STAGING_DIR
+export STAGING_DIR STAGING_DIR_HOST STAGING_DIR_HOSTPKG
 export SH_FUNC:=. $(INCLUDE_DIR)/shell.sh;
 
 PKG_CONFIG:=$(STAGING_DIR_HOST)/bin/pkg-config
@@ -218,9 +229,9 @@ export PKG_CONFIG
 HOSTCC:=gcc
 HOSTCXX:=g++
 HOST_OPTIMIZATION:=-O2
-HOST_CPPFLAGS:=-I$(STAGING_DIR_HOST)/include
-HOST_CFLAGS:=$(HOST_OPTIMIZATION) $(HOST_CPPFLAGS)
-HOST_LDFLAGS:=-L$(STAGING_DIR_HOST)/lib
+HOST_CPPFLAGS:=-I$(STAGING_DIR_HOST)/include $(if $(IS_PACKAGE_BUILD),-I$(STAGING_DIR)/host/include)
+HOST_CFLAGS:=$(HOST_OPTIMIZATION) $(HOST_CPPFLAGS) -fsigned-char
+HOST_LDFLAGS:=-L$(STAGING_DIR_HOST)/lib $(if $(IS_PACKAGE_BUILD),-L$(STAGING_DIR)/host/lib)
 
 TARGET_CC:=$(TARGET_CROSS)gcc
 TARGET_CPP:=$(TARGET_CROSS)cpp
@@ -327,6 +338,8 @@ endif
 ifeq ($(CONFIG_BUILD_LOG),y)
   BUILD_LOG:=1
 endif
+
+export HOST_GNULIB_SRCDIR:=$(STAGING_DIR_HOST)/share/gnulib
 
 define shvar
 V_$(subst .,_,$(subst -,_,$(subst /,_,$(1))))

@@ -272,7 +272,7 @@ define KernelPackage/ipt-ipset-base
   DEPENDS+= +kmod-ipt-core +kmod-nfnetlink 
   KCONFIG:= \
         CONFIG_IP_SET=y \
-        CONFIG_IP_SET_MAX=512 \
+        CONFIG_IP_SET_MAX=1024 \
         CONFIG_NETFILTER_XT_SET=y \
         CONFIG_IP_SET_HASH_IP=y \
         CONFIG_IP_SET_HASH_NET=y \

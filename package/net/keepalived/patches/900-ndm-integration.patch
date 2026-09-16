@@ -1,0 +1,109 @@
+--- a/keepalived/core/main.c
++++ b/keepalived/core/main.c
+@@ -2555,8 +2555,8 @@ keepalived_main(int argc, char **argv)
+ 					os_release = (unsigned)strtoul(end + 1, &end, 10);
+ 			}
+ 		}
+-		if (!os_major)
+-			log_message(LOG_INFO, "Unable to parse kernel version %s", uname_buf.release);
++		//if (!os_major)
++			//log_message(LOG_DEBUG, "Unable to parse kernel version %s", uname_buf.release);
+ 
+ 		/* config_id defaults to hostname */
+ 		if (!config_id) {
+@@ -2579,9 +2579,9 @@ keepalived_main(int argc, char **argv)
+ 		enable_console_log();
+ 
+ #ifdef GIT_COMMIT
+-	log_message(LOG_INFO, "Starting %s, git commit %s", version_string, GIT_COMMIT);
++	//log_message(LOG_DEBUG, "Starting %s, git commit %s", version_string, GIT_COMMIT);
+ #else
+-	log_message(LOG_INFO, "Starting %s", version_string);
++	//log_message(LOG_DEBUG, "Starting %s", version_string);
+ #endif
+ 
+ 	/* Handle any core file requirements */
+@@ -2909,9 +2909,9 @@ end:
+ 		}
+ 
+ #ifdef GIT_COMMIT
+-		log_message(LOG_INFO, "Stopped %s, git commit %s", version_string, GIT_COMMIT);
++	//	log_message(LOG_DEBUG, "Stopped %s, git commit %s", version_string, GIT_COMMIT);
+ #else
+-		log_message(LOG_INFO, "Stopped %s", version_string);
++	//	log_message(LOG_DEBUG, "Stopped %s", version_string);
+ #endif
+ 	}
+ 
+--- a/keepalived/vrrp/vrrp_daemon.c
++++ b/keepalived/vrrp/vrrp_daemon.c
+@@ -1051,8 +1051,8 @@ start_vrrp_child(void)
+ 		vrrp_child = pid;
+ 		vrrp_start_time = time_now;
+ 
+-		log_message(LOG_INFO, "Starting VRRP child process, pid=%d"
+-			       , pid);
++//		log_message(LOG_DEBUG, "Starting VRRP child process, pid=%d"
++//			       , pid);
+ 
+ 		/* Start respawning thread */
+ 		thread_add_child(master, vrrp_respawn_thread, NULL,
+--- a/lib/logger.c
++++ b/lib/logger.c
+@@ -56,7 +56,7 @@ enable_console_log(void)
+ void
+ open_syslog(const char *ident)
+ {
+-	openlog(ident, LOG_PID | ((__test_bit(LOG_CONSOLE_BIT, &debug)) ? LOG_CONS : 0), log_facility);
++	openlog(ident, ((__test_bit(LOG_CONSOLE_BIT, &debug)) ? LOG_CONS : 0), log_facility);
+ }
+ 
+ #ifdef ENABLE_LOG_TO_FILE
+--- a/lib/notify.c
++++ b/lib/notify.c
+@@ -845,7 +845,8 @@ check_script_secure(notify_script_t *scr
+ 		}
+ 	}
+ 
+-	real_path = realpath(script->args[0], NULL);
++	//real_path = realpath(script->args[0], NULL);
++	real_path = strdup(script->args[0]);
+ 	sav_errno = errno;
+ 
+ 	if (script->gid != our_gid || script->uid != our_uid) {
+--- a/lib/scheduler.c
++++ b/lib/scheduler.c
+@@ -449,11 +449,11 @@ log_options(const char *option, const ch
+ 
+ 		end = get_end(p, 100 - opt_len);
+ 		if (first_line) {
+-			log_message(LOG_INFO, "%*s%s: %.*s", (int)indent, "", option, (int)(end - p), p);
++			log_message(LOG_DEBUG, "%*s%s: %.*s", (int)indent, "", option, (int)(end - p), p);
+ 			first_line = false;
+ 		}
+ 		else
+-			log_message(LOG_INFO, "%*s%.*s", (int)(indent + opt_len + 2), "", (int)(end - p), p);
++			log_message(LOG_DEBUG, "%*s%.*s", (int)(indent + opt_len + 2), "", (int)(end - p), p);
+ 		p = end;
+ 	}
+ }
+@@ -480,7 +480,7 @@ RELAX_STRICT_OVERFLOW_END
+ 		p += sprintf(p, "%s'%s'", i ? " " : "", sav_argv[i]);
+ 	}
+ 
+-	log_options("Command line", log_str, indent);
++	//log_options("Command line", log_str, indent);
+ 
+ 	FREE(log_str);
+ }
+--- a/lib/parser.c
++++ b/lib/parser.c
+@@ -3302,7 +3302,7 @@ init_data(const char *conf_file, const v
+ 		/* Opened the first file */
+ 		file_opened = true;
+ 
+-		log_message(LOG_INFO, "Configuration file %s", conf_file);
++		//log_message(LOG_DEBUG, "Configuration file %s", conf_file);
+ 	} else
+ 		file_config_error(INCLUDE_R, "Failed to open configuration file");
+ 

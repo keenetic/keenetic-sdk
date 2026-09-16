@@ -1,0 +1,54 @@
+diff -Nuar iproute2-5.6.0/misc/nstat.c iproute2-5.6.0-patched/misc/nstat.c
+--- iproute2-5.6.0/misc/nstat.c	2020-03-30 18:06:08.000000000 +0300
++++ iproute2-5.6.0-patched/misc/nstat.c	2022-11-04 14:22:21.221098828 +0300
+@@ -15,13 +15,13 @@
+ #include <fcntl.h>
+ #include <string.h>
+ #include <errno.h>
++#include <poll.h>
+ #include <time.h>
+ #include <sys/time.h>
+ #include <fnmatch.h>
+ #include <sys/file.h>
+ #include <sys/socket.h>
+ #include <sys/un.h>
+-#include <sys/poll.h>
+ #include <sys/wait.h>
+ #include <sys/stat.h>
+ #include <signal.h>
+diff -Nuar iproute2-5.6.0/misc/ifstat.c iproute2-5.6.0-patched/misc/ifstat.c
+--- iproute2-5.6.0/misc/ifstat.c	2020-03-30 18:06:08.000000000 +0300
++++ iproute2-5.6.0-patched/misc/ifstat.c	2022-11-04 14:25:37.497958879 +0300
+@@ -15,13 +15,13 @@
+ #include <fcntl.h>
+ #include <string.h>
+ #include <errno.h>
++#include <poll.h>
+ #include <time.h>
+ #include <sys/time.h>
+ #include <fnmatch.h>
+ #include <sys/file.h>
+ #include <sys/socket.h>
+ #include <sys/un.h>
+-#include <sys/poll.h>
+ #include <sys/wait.h>
+ #include <sys/stat.h>
+ #include <signal.h>
+diff -Nuar iproute2-5.6.0/misc/rtacct.c iproute2-5.6.0-patched/misc/rtacct.c
+--- iproute2-5.6.0/misc/rtacct.c	2020-03-30 18:06:08.000000000 +0300
++++ iproute2-5.6.0-patched/misc/rtacct.c	2022-11-04 14:26:01.310065237 +0300
+@@ -16,13 +16,13 @@
+ #include <fcntl.h>
+ #include <string.h>
+ #include <errno.h>
++#include <poll.h>
+ #include <time.h>
+ #include <sys/time.h>
+ #include <fnmatch.h>
+ #include <sys/file.h>
+ #include <sys/socket.h>
+ #include <sys/un.h>
+-#include <sys/poll.h>
+ #include <sys/wait.h>
+ #include <sys/stat.h>
+ #include <sys/mman.h>

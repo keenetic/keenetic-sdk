@@ -1,0 +1,10 @@
+diff --git a/LICENCE.inside-secure b/LICENCE.inside-secure
+--- /dev/null
++++ b/LICENCE.inside-secure
+@@ -0,0 +1,6 @@
++Copyright (c) 2019 Verimatrix, Inc.
++
++Derived from proprietary unpublished source code.
++Permission is hereby granted for the distribution of this firmware
++as part of Linux or other Open Source operating system kernel,
++provided this copyright notice is accompanying it.

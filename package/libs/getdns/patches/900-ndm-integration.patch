@@ -1,0 +1,430 @@
+diff -Naur a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2021-06-04 21:53:14.000000000 +0300
++++ b/CMakeLists.txt	2021-10-19 11:05:31.000000000 +0300
+@@ -572,7 +572,7 @@
+   endif ()
+ endif ()
+ 
+-check_symbol_exists(TCP_USER_TIMEOUT "sys/socket.h;netinet/tcp.h" HAVE_DECL_TCP_USER_TIMEOUT)
++# check_symbol_exists(TCP_USER_TIMEOUT "sys/socket.h;netinet/tcp.h" HAVE_DECL_TCP_USER_TIMEOUT)
+ 
+ # Main library
+ add_library(getdns_objects OBJECT
+diff -Naur a/src/context.c b/src/context.c
+--- a/src/context.c	2021-06-04 21:53:14.000000000 +0300
++++ b/src/context.c	2021-10-29 17:24:18.000000000 +0300
+@@ -682,7 +682,7 @@
+ 	upstream->conn_setup_failed = 0;
+ 	upstream->conn_shutdowns = 0;
+ 	upstream->conn_backoffs++;
+-	_getdns_upstream_log(upstream, GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_NOTICE,
++	_getdns_upstream_log(upstream, GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_DEBUG,
+ 	    "%-40s : Upstream   : !Backing off %s on this upstream    - Will retry again in %ds at %s",
+ 	            upstream->addr_str,
+ 	            upstream->transport == GETDNS_TRANSPORT_TLS ? "TLS" : "TCP",
+@@ -766,13 +766,13 @@
+ 	             (upstream->transport == GETDNS_TRANSPORT_TLS ? "TLS" : "TCP"),
+ 	             (int)upstream->responses_received, (int)upstream->responses_timeouts,
+ 	             _getdns_auth_str(upstream->tls_auth_state), (int)upstream->keepalive_timeout);
+-	_getdns_upstream_log(upstream, GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_INFO,
++	_getdns_upstream_log(upstream, GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_DEBUG,
+ 	    "%-40s : Upstream   : %s - Resps=%6d, Timeouts  =%6d, Best_auth =%7s\n",
+ 	             upstream->addr_str,
+ 	             (upstream->transport == GETDNS_TRANSPORT_TLS ? "TLS" : "TCP"),
+ 	             (int)upstream->total_responses, (int)upstream->total_timeouts,
+ 	             _getdns_auth_str(upstream->best_tls_auth_state));
+-	_getdns_upstream_log(upstream, GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_INFO,
++	_getdns_upstream_log(upstream, GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_DEBUG,
+ 	    "%-40s : Upstream   : %s - Conns=%6d, Conn_fails=%6d, Conn_shuts=%7d, Backoffs     =%6d\n",
+ 	             upstream->addr_str,
+ 	             (upstream->transport == GETDNS_TRANSPORT_TLS ? "TLS" : "TCP"),
+@@ -926,6 +926,7 @@
+ 	/* For sharing a socket to this upstream with TCP  */
+ 	upstream->fd       = -1;
+ 	upstream->expires  = 0;
++	upstream->so_mark  = 0;
+ 	upstream->tls_fallback_ok = 0;
+ 	upstream->tls_obj  = NULL;
+ 	upstream->tls_session = NULL;
+@@ -941,6 +942,7 @@
+ 	upstream->last_tls_auth_state = GETDNS_AUTH_NONE;
+ 	upstream->best_tls_auth_state = GETDNS_AUTH_NONE;
+ 	upstream->tls_pubkey_pinset = NULL;
++	upstream->tls_ignore_time = 0;
+ 	upstream->loop = NULL;
+ 	(void) getdns_eventloop_event_init(
+ 	    &upstream->event, upstream, NULL, NULL, NULL);
+@@ -2933,6 +2935,8 @@
+ 		/* Loop to create upstreams as needed*/
+ 		for (j = 0; j < GETDNS_UPSTREAM_TRANSPORTS; j++) {
+ 			uint32_t port;
++			uint32_t so_mark = 0;
++			int tls_ignore_time = 1;
+ 			struct addrinfo *ai;
+ 			port = getdns_port_array[j];
+ 			if (port == GETDNS_PORT_ZERO)
+@@ -2947,6 +2951,11 @@
+ 			}
+ 			(void) snprintf(portstr, 1024, "%d", (int)port);
+ 
++			if (dict) {
++				(void) getdns_dict_get_int(dict, "so_mark", &so_mark);
++				(void) getdns_dict_get_int(dict, "tls_ignore_time", &tls_ignore_time);
++			}
++
+ 			if (getaddrinfo(addrstr, portstr, &hints, &ai))
+ 				goto invalid_parameter;
+ 			if (!ai)
+@@ -2960,6 +2969,8 @@
+ 			upstream->addr.ss_family = addr.ss_family;
+ 			upstream_init(upstream, upstreams, ai);
+ 			upstream->transport = getdns_upstream_transports[j];
++			upstream->so_mark = so_mark;
++			upstream->tls_ignore_time = tls_ignore_time;
+ 			if (dict && getdns_upstream_transports[j] == GETDNS_TRANSPORT_TLS) {
+ 				getdns_list *pubkey_pinset = NULL;
+ 				getdns_bindata *tls_cipher_list = NULL;
+diff -Naur a/src/context.h b/src/context.h
+--- a/src/context.h	2021-06-04 21:53:14.000000000 +0300
++++ b/src/context.h	2021-10-29 17:24:42.000000000 +0300
+@@ -176,6 +176,8 @@
+ 	getdns_eventloop_event   event;
+ 	getdns_eventloop        *loop;
+ 	getdns_tcp_state         tcp;
++	uint32_t                 so_mark;
++	int                      tls_ignore_time;
+ 	/* These are running totals or historical info */
+ 	size_t                   conn_completed;
+ 	size_t                   conn_shutdowns;
+diff -Naur a/src/openssl/keyraw-internal.c b/src/openssl/keyraw-internal.c
+--- a/src/openssl/keyraw-internal.c	2021-06-04 21:53:14.000000000 +0300
++++ b/src/openssl/keyraw-internal.c	2021-10-19 11:05:31.000000000 +0300
+@@ -115,6 +115,7 @@
+ #endif /* ifndef OPENSSL_NO_ENGINE */
+ #endif /* USE_GOST */
+ 
++#ifndef OPENSSL_NO_DSA
+ DSA *
+ gldns_key_buf2dsa_raw(unsigned char* key, size_t len)
+ {
+@@ -185,6 +186,7 @@
+ 
+ 	return dsa;
+ }
++#endif /* ifndef OPENSSL_NO_DSA */
+ 
+ RSA *
+ gldns_key_buf2rsa_raw(unsigned char* key, size_t len)
+diff -Naur a/src/openssl/tls.c b/src/openssl/tls.c
+--- a/src/openssl/tls.c	2021-06-04 21:53:14.000000000 +0300
++++ b/src/openssl/tls.c	2022-01-18 11:07:19.037686192 +0300
+@@ -890,8 +890,16 @@
+ 	/* Set up native OpenSSL hostname verification */
+ 	X509_VERIFY_PARAM *param;
+ 	param = SSL_get0_param(conn->ssl);
+-	X509_VERIFY_PARAM_set_hostflags(param, X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS);
+-	X509_VERIFY_PARAM_set1_host(param, auth_name, 0);
++
++	char b[sizeof(struct in6_addr)];
++
++	if (((inet_pton(AF_INET, auth_name, b) > 0) ||
++		 (inet_pton(AF_INET6, auth_name, b) > 0))) {
++		X509_VERIFY_PARAM_set1_ip_asc(param, auth_name);
++	} else {
++		X509_VERIFY_PARAM_set_hostflags(param, X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS);
++		X509_VERIFY_PARAM_set1_host(param, auth_name, 0);
++	}
+ #elif defined(USE_DANESSL)
+ 	/* Stash auth name away for use in cert verification. */
+ 	conn->auth_name = auth_name;
+diff -Naur a/src/request-internal.c b/src/request-internal.c
+--- a/src/request-internal.c	2021-06-04 21:53:14.000000000 +0300
++++ b/src/request-internal.c	2021-10-19 11:05:31.000000000 +0300
+@@ -167,7 +167,7 @@
+ network_req_init(getdns_network_req *net_req, getdns_dns_req *owner,
+     uint16_t request_type, int checking_disabled, int opportunistic,
+     int with_opt, int edns_maximum_udp_payload_size,
+-    uint8_t edns_extended_rcode, uint8_t edns_version, int edns_do_bit,
++    uint8_t edns_extended_rcode, uint8_t edns_version, int edns_do_bit, uint32_t sdns_profile,
+     uint16_t opt_options_size, size_t noptions, getdns_list *options,
+     size_t wire_data_sz, size_t max_query_sz, const getdns_dict *extensions)
+ {
+@@ -219,6 +219,7 @@
+ 	net_req->debug_tls_peer_cert.data = NULL;
+ 	net_req->debug_tls_version = NULL;
+ 	net_req->debug_udp = 0;
++	net_req->sdns_profile = sdns_profile;
+ 
+ 	/* Scheduling, touch only via _getdns_netreq_change_state!
+ 	 */
+@@ -246,7 +247,8 @@
+ 	gldns_write_uint16(buf + GLDNS_QDCOUNT_OFF, 1); /* 1 query */
+ 	gldns_write_uint16(buf + GLDNS_ANCOUNT_OFF, 0); /* 0 answers */
+ 	gldns_write_uint16(buf + GLDNS_NSCOUNT_OFF, 0); /* 0 authorities */
+-	gldns_write_uint16(buf + GLDNS_ARCOUNT_OFF, with_opt ? 1 : 0);
++	gldns_write_uint16(buf + GLDNS_ARCOUNT_OFF,
++		with_opt ? ((sdns_profile > 0) ? 2 : 1) : 0);
+ 
+ 	buf = netreq_reset(net_req);
+ 	gldns_buffer_init_frm_data(
+@@ -403,6 +405,35 @@
+   return GETDNS_RETURN_GOOD;
+ }
+ 
++void
++_getdns_network_req_add_sdns_profile(getdns_network_req *req)
++{
++	if (req->sdns_profile == 0) {
++		return;
++	}
++
++	uint16_t *len = (uint16_t *)(req->query - 2);
++	uint8_t *p = req->response;
++	uint32_t option = req->sdns_profile;
++
++	req->response += 15;
++	*len = ntohs(*len);
++	*len += 15;
++	*len = htons(*len);
++	*(p + 0) = 0; /* dname for . */
++	*(p + 1) = 0xff;
++	*(p + 2) = 0xed;
++	*(p + 3) = 0;
++	*(p + 4) = 0x1;
++	gldns_write_uint32(p + 5, 0);
++	*(p + 9) = 0;
++	*(p + 10) = 0x4;
++	*(p + 11) = 0xff & (option >> 24);
++	*(p + 12) = 0xff & (option >> 16);
++	*(p + 13) = 0xff & (option >>  8);
++	*(p + 14) = 0xff & (option >>  0);
++}
++
+ size_t
+ _getdns_network_req_add_tsig(getdns_network_req *req)
+ {
+@@ -416,8 +447,10 @@
+ 	/* Should only be called when in stub mode */
+ 	assert(req->query);
+ 
+-	if (upstream->tsig_alg == GETDNS_NO_TSIG || !upstream->tsig_dname_len)
++	if (upstream->tsig_alg == GETDNS_NO_TSIG || !upstream->tsig_dname_len) {
++		_getdns_network_req_add_sdns_profile(req);
+ 		return req->response - req->query;
++	}
+ 
+ 	arcount = gldns_read_uint16(req->query + 10);
+ 
+@@ -445,8 +478,10 @@
+ 	gldns_buffer_write_u16(&gbuf, 0);		/* Other len */
+ 
+ 	md_buf = _getdns_tls_hmac_hash(&req->owner->my_mf, upstream->tsig_alg, upstream->tsig_key, upstream->tsig_size, (void *)req->query, gldns_buffer_current(&gbuf) - req->query, &md_len);
+-	if (!md_buf)
++	if (!md_buf) {
++		_getdns_network_req_add_sdns_profile(req);
+ 		return req->response - req->query;
++	}
+ 
+ 	gldns_buffer_rewind(&gbuf);
+ 	gldns_buffer_write(&gbuf,
+@@ -468,13 +503,18 @@
+ 
+ 	GETDNS_FREE(req->owner->my_mf, md_buf);
+ 
+-	if (gldns_buffer_position(&gbuf) > gldns_buffer_limit(&gbuf))
++	if (gldns_buffer_position(&gbuf) > gldns_buffer_limit(&gbuf)) {
++		_getdns_network_req_add_sdns_profile(req);
+ 		return req->response - req->query;
++	}
+ 
+ 	DEBUG_STUB("Sending with TSIG, mac length: %d\n", (int)md_len);
+ 	req->tsig_status = GETDNS_DNSSEC_INSECURE;
+ 	gldns_write_uint16(req->query + 10, arcount + 1);
+ 	req->response = gldns_buffer_current(&gbuf);
++
++	_getdns_network_req_add_sdns_profile(req);
++
+ 	return req->response - req->query;
+ }
+ 
+@@ -710,6 +750,7 @@
+ 	uint32_t get_edns_maximum_udp_payload_size;
+ 	uint32_t edns_extended_rcode;
+ 	uint32_t edns_version;
++	uint32_t sdns_profile = 0;
+ 
+ 	getdns_dict *add_opt_parameters;
+ 	int     have_add_opt_parameters;
+@@ -766,6 +807,12 @@
+ 		add_opt_parameters = context->add_opt_parameters;
+ 		have_add_opt_parameters = 1;
+ 	}
++
++	if (have_add_opt_parameters) {
++		(void) getdns_dict_get_int(add_opt_parameters,
++		    "sdns_profile", &sdns_profile);
++	}
++
+ 	if (dnssec_extension_set) {
+ 		edns_maximum_udp_payload_size = -1;
+ 		edns_extended_rcode = 0;
+@@ -808,7 +855,8 @@
+ 	with_opt = edns_do_bit != 0 || edns_maximum_udp_payload_size != 512 ||
+ 	    edns_extended_rcode != 0 || edns_version != 0 || noptions ||
+ 	    edns_cookies || context->edns_client_subnet_private ||
+-	    context->tls_query_padding_blocksize > 1;
++	    context->tls_query_padding_blocksize > 1 ||
++	    sdns_profile > 0;
+ 
+ 	edns_maximum_udp_payload_size = with_opt &&
+ 	    ( edns_maximum_udp_payload_size == -1 ||
+@@ -848,6 +896,10 @@
+ 	                   ) + 1 /* +1 for udp overflow detection */
+ 	                     + 7 ) / 8 * 8;
+ 
++	if (sdns_profile > 0) {
++		max_query_sz += 15;
++	}
++
+ 	netreq_sz = ( sizeof(getdns_network_req)
+ 	            + max_query_sz + max_response_sz  + 7 ) / 8 * 8;
+ 	dnsreq_base_sz = (( sizeof(getdns_dns_req) 
+@@ -968,7 +1020,7 @@
+ 	network_req_init(result->netreqs[0], result,
+ 	    request_type, checking_disabled, opportunistic,
+ 	    with_opt, edns_maximum_udp_payload_size,
+-	    edns_extended_rcode, edns_version, edns_do_bit,
++	    edns_extended_rcode, edns_version, edns_do_bit, sdns_profile,
+ 	    (uint16_t) opt_options_size, noptions, options,
+ 	    netreq_sz - sizeof(getdns_network_req), max_query_sz,
+ 	    extensions);
+@@ -979,7 +1031,7 @@
+ 		    ? GETDNS_RRTYPE_AAAA : GETDNS_RRTYPE_A ),
+ 		    checking_disabled, opportunistic, with_opt,
+ 		    edns_maximum_udp_payload_size,
+-		    edns_extended_rcode, edns_version, edns_do_bit,
++		    edns_extended_rcode, edns_version, edns_do_bit, sdns_profile,
+ 		    (uint16_t) opt_options_size, noptions, options,
+ 		    netreq_sz - sizeof(getdns_network_req), max_query_sz,
+ 		    extensions);
+diff -Naur a/src/stub.c b/src/stub.c
+--- a/src/stub.c	2021-06-04 21:53:14.000000000 +0300
++++ b/src/stub.c	2021-10-29 17:27:10.000000000 +0300
+@@ -489,6 +489,17 @@
+ 	getdns_sock_nonblock(fd);
+ 	if (send_timeout != -1)
+ 		getdns_sock_tcp_send_timeout(upstream, fd, send_timeout);
++
++	if (upstream->so_mark != 0) {
++		if (setsockopt( fd, SOL_SOCKET, SO_MARK
++					  , (const char *)&upstream->so_mark
++					  ,  sizeof(upstream->so_mark)) < 0)
++			_getdns_upstream_log(upstream,
++				GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_WARNING,
++				"%-40s : Upstream   : Could not setup SO_MARK\n",
++				 upstream->addr_str);
++	}
++
+ #ifdef USE_OSX_TCP_FASTOPEN
+ 	sa_endpoints_t endpoints;
+ 	endpoints.sae_srcif = 0;
+@@ -719,7 +730,7 @@
+ 		netreq->fd = -1;
+ 		netreq->upstream->udp_timeouts++;
+ 		if (netreq->upstream->udp_timeouts % 100 == 0)
+-			_getdns_upstream_log(netreq->upstream, GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_INFO,
++			_getdns_upstream_log(netreq->upstream, GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_DEBUG,
+ 			    "%-40s : Upstream   : UDP - Resps=%6d, Timeouts  =%6d (logged every 100 responses)\n",
+ 			             netreq->upstream->addr_str,
+ 			             (int)netreq->upstream->udp_responses, (int)netreq->upstream->udp_timeouts);
+@@ -1135,8 +1146,16 @@
+ 		} else {
+ 			long verify_errno = 0;
+ 			const char* verify_errmsg = "Unknown verify error (fix reporting!)";
++			getdns_return_t res = _getdns_tls_connection_certificate_verify(upstream->tls_obj, &verify_errno, &verify_errmsg);
++
++			if (res && upstream->tls_ignore_time &&
++				(verify_errno == X509_V_ERR_CERT_NOT_YET_VALID ||
++				 verify_errno == X509_V_ERR_CERT_HAS_EXPIRED)) {
++				res = GETDNS_RETURN_GOOD;
++				verify_errno = 0;
++			}
+ 
+-			if (_getdns_tls_connection_certificate_verify(upstream->tls_obj, &verify_errno, &verify_errmsg)) {
++			if (res) {
+ 				upstream->tls_auth_state = GETDNS_AUTH_FAILED;
+ 				if (verify_errno != 0) {
+ 					_getdns_upstream_log(upstream,
+@@ -1370,6 +1389,7 @@
+ 					blksz = 128;
+ 				pkt_len = netreq->response - netreq->query;
+ 				pkt_len += 4; /* this accounts for the OPTION-CODE and OPTION-LENGTH of the padding */
++				pkt_len += (netreq->sdns_profile > 0) ? 15 : 0;
+ 				padding_sz = pkt_len % blksz;
+ 				if (padding_sz)
+ 					padding_sz = blksz - padding_sz;
+@@ -1549,7 +1569,7 @@
+ 	upstream->back_off = 1;
+ 	if (upstream->udp_responses == 1 || 
+ 	    upstream->udp_responses % 100 == 0)
+-		_getdns_upstream_log(upstream, GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_INFO,
++		_getdns_upstream_log(upstream, GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_DEBUG,
+ 		    "%-40s : Upstream   : UDP - Resps=%6d, Timeouts  =%6d (logged every 100 responses)\n",
+ 		    upstream->addr_str,
+ 		    (int)upstream->udp_responses, (int)upstream->udp_timeouts);
+@@ -2008,7 +2028,7 @@
+ 		if (upstreams->upstreams[i].conn_state == GETDNS_CONN_BACKOFF &&
+ 		    upstreams->upstreams[i].conn_retry_time < now) {
+ 			upstreams->upstreams[i].conn_state = GETDNS_CONN_CLOSED;
+-			_getdns_upstream_log(upstream, GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_WARNING,
++			_getdns_upstream_log(upstream, GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_DEBUG,
+ 			    "%-40s : Upstream   : Re-instating %s for this upstream\n",
+ 			     upstreams->upstreams[i].addr_str,
+ 			     upstreams->upstreams[i].transport == GETDNS_TRANSPORT_TLS ? "TLS" : "TCP");
+@@ -2077,7 +2097,7 @@
+ 		} while (i != upstreams->current_stateful);
+ 		upstream->conn_state = GETDNS_CONN_CLOSED;
+ 		upstream->conn_backoff_interval = 1;
+-		_getdns_upstream_log(upstream, GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_NOTICE,
++		_getdns_upstream_log(upstream, GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_DEBUG,
+ 		    "%-40s : Upstream   : No valid upstreams for %s... promoting this backed-off upstream for re-try...\n",
+ 		    upstream->addr_str,
+ 		    upstream->transport == GETDNS_TRANSPORT_TLS ? "TLS" : "TCP");
+@@ -2162,6 +2182,16 @@
+ 		    upstream->addr.ss_family, SOCK_DGRAM, IPPROTO_UDP)) == -1)
+ 			return -1;
+ 		getdns_sock_nonblock(fd);
++		if (upstream->so_mark != 0) {
++			if (setsockopt( fd, SOL_SOCKET, SO_MARK
++						  , (const char *)&upstream->so_mark
++						  ,  sizeof(upstream->so_mark)) < 0)
++				_getdns_upstream_log(upstream,
++					GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_WARNING,
++					"%-40s : Upstream   : Could not setup SO_MARK\n",
++					 upstream->addr_str);
++		}
++
+ 		break;
+ 
+ 	case GETDNS_TRANSPORT_TCP:
+@@ -2269,7 +2299,7 @@
+ 	}
+ 	/* Handle better, will give generic error*/
+ 	_getdns_log(&netreq->owner->context->log
+-	    , GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_ERR
++	    , GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_DEBUG
+ 	    , "   *FAILURE* no valid transports or upstreams available!\n");
+ 	return -1;
+ }
+diff -Naur a/src/types-internal.h b/src/types-internal.h
+--- a/src/types-internal.h	2021-06-04 21:53:14.000000000 +0300
++++ b/src/types-internal.h	2021-10-19 11:05:31.000000000 +0300
+@@ -250,6 +250,8 @@
+ 	unsigned                cookie_sent    : 1;
+ 	uint8_t                 client_cookie[8];
+ 
++	uint32_t                sdns_profile;
++
+ 	/* When more space is needed for the wire_data response than is
+ 	 * available in wire_data[], it will be allocated separately.
+ 	 * response will then not point to wire_data anymore.

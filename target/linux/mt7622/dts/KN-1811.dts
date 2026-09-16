@@ -1,0 +1,173 @@
+/*
+ * Copyright (c) 2017 MediaTek Inc.
+ * Author: Ming Huang <ming.huang@mediatek.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/dts-v1/;
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/pinctrl/mt65xx.h>
+#include <mediatek/mt7622.dtsi>
+#include <mediatek/mt6380.dtsi>
+
+/ {
+	model = "Keenetic KN-1811";
+	compatible = "keenetic,kn-1811", "mediatek,mt7622";
+
+	chosen {
+		bootargs = "console=ttyS0,115200n1 loglevel=8 swiotlb=512 rootfstype=squashfs";
+	};
+
+	memory@40000000 {
+		device_type = "memory";
+		reg = <0 0x40000000 0 0x20000000>;
+	};
+
+	reg_fixed_3p3v: regulator-3p3v {
+		compatible = "regulator-fixed";
+		regulator-name = "fixed-3.3V";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-always-on;
+	};
+
+	reg_fixed_5v: regulator-5v {
+		compatible = "regulator-fixed";
+		regulator-name = "fixed-5V";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		regulator-always-on;
+	};
+};
+
+&bch {
+	status = "disabled";
+};
+
+&cpu0 {
+	proc-supply = <&mt6380_vcpu_reg>;
+	sram-supply = <&mt6380_vm_reg>;
+};
+
+&cpu1 {
+	proc-supply = <&mt6380_vcpu_reg>;
+	sram-supply = <&mt6380_vm_reg>;
+};
+
+&efuse {
+	status = "okay";
+};
+
+&gsw {
+	interrupt-parent = <&pio>;
+	interrupts = <53 IRQ_TYPE_LEVEL_HIGH>,
+		     <19 IRQ_TYPE_LEVEL_LOW>;
+	status = "okay";
+};
+
+&raeth {
+	dma-coherent;
+	status = "okay";
+};
+
+&wed2 {
+	status = "disabled";
+};
+
+&i2c0 {
+	status = "disabled";
+};
+
+&i2c1 {
+	status = "disabled";
+};
+
+&i2c2 {
+	status = "disabled";
+};
+
+&pio {
+	uart3_pins: uart3-pins {
+		mux {
+			function = "uart";
+			groups = "uart3_1_tx_rx",
+				 "uart3_1_rts_cts";
+		};
+	};
+
+	snand_pins_default: snand-pins-default {
+		mux {
+			function = "flash";
+			groups = "snfi";
+		};
+
+		conf-cmd-dat {
+			pins = "SPI_WP", "SPI_HOLD", "SPI_MOSI",
+			       "SPI_MISO", "SPI_CS";
+			input-enable;
+			drive-strength = <MTK_DRIVE_16mA>;
+			bias-pull-up;
+		};
+
+		conf-clk {
+			pins = "SPI_CLK";
+			drive-strength = <MTK_DRIVE_16mA>;
+			bias-pull-down;
+		};
+	};
+
+	wbsys_pins_default: wbsysdefault {
+	};
+};
+
+&pwm {
+	status = "okay";
+};
+
+&snand {
+	pinctrl-names = "default";
+	pinctrl-0 = <&snand_pins_default>;
+	status = "okay";
+};
+
+&svs {
+	vproc-supply = <&mt6380_vcpu_reg>;
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart3_pins>;
+	status = "okay";
+};
+
+&usb1 {
+	vusb33-supply = <&reg_fixed_3p3v>;
+	vbus-supply = <&reg_fixed_5v>;
+	status = "okay";
+};
+
+&u3phy1 {
+	status = "okay";
+};
+
+&sata {
+	status = "disabled";
+};
+
+&wbsys {
+	pinctrl-names = "default";
+	pinctrl-0 = <&wbsys_pins_default>;
+	status = "okay";
+};

@@ -1,0 +1,23 @@
+diff -Nuar libiconv-1.17/configure libiconv-1.17-patched/configure
+--- libiconv-1.17/configure	2022-05-15 15:58:59.000000000 +0300
++++ libiconv-1.17-patched/configure	2022-09-08 14:10:23.242860640 +0300
+@@ -5356,7 +5356,7 @@
+   ac_save_c_werror_flag=$ac_c_werror_flag
+    ac_c_werror_flag=yes
+    ac_cv_prog_cc_g=no
+-   CFLAGS="-g"
++   CFLAGS="-g $CFLAGS"
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -5604,8 +5604,8 @@
+   # though they will create one.
+   am_cv_prog_cc_c_o=yes
+   for am_i in 1 2; do
+-    if { echo "$as_me:$LINENO: $CC -c conftest.$ac_ext -o conftest2.$ac_objext" >&5
+-   ($CC -c conftest.$ac_ext -o conftest2.$ac_objext) >&5 2>&5
++    if { echo "$as_me:$LINENO: $CC $CFLAGS -c conftest.$ac_ext -o conftest2.$ac_objext" >&5
++   ($CC $CFLAGS -c conftest.$ac_ext -o conftest2.$ac_objext) >&5 2>&5
+    ac_status=$?
+    echo "$as_me:$LINENO: \$? = $ac_status" >&5
+    (exit $ac_status); } \

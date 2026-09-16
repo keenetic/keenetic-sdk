@@ -1,0 +1,57 @@
+Ragel assumes C and C++'s "char" type is signed by default but this is not
+true for every architecture gcc supports.  Prevent build failures of dependent
+packages (on architectures such as AArch64 where "char" is normally unsigned)
+by making explicit Ragel's assumption of character signedness.
+
+This is functionally very similar to upstream commit e2650a7, "common: Fix
+ambiguous CHAR_MIN/MAX definition", which is also meant to address this issue.
+However this patch applies to Ragel version 6 and it removes altogether the
+ambiguous "char" type from generated C code, causing Ragel to instead specify
+"signed char" or "unsigned char" as appropriate.
+
+diff --git a/ragel/common.cpp b/ragel/common.cpp
+--- a/ragel/common.cpp
++++ b/ragel/common.cpp
+@@ -27,7 +27,7 @@
+ 
+ HostType hostTypesC[] =
+ {
+-	{ "char",     0,       "char",    true,   true,  false,  CHAR_MIN,  CHAR_MAX,   0, 0,              sizeof(char) },
++	{ "signed",   "char",  "char",    true,   true,  false,  SCHAR_MIN, SCHAR_MAX,  0, 0,              sizeof(char) },
+ 	{ "unsigned", "char",  "uchar",   false,  true,  false,  0, 0,                  0,     UCHAR_MAX,  sizeof(unsigned char) },
+ 	{ "short",    0,       "short",   true,   true,  false,  SHRT_MIN,  SHRT_MAX,   0, 0,              sizeof(short) },
+ 	{ "unsigned", "short", "ushort",  false,  true,  false,  0, 0,                  0,     USHRT_MAX,  sizeof(unsigned short) },
+@@ -66,7 +66,7 @@ HostType hostTypesC[] =
+ 
+ HostType hostTypesD[] =
+ {
+-	{ "byte",    0,  "byte",    true,   true,  false,  CHAR_MIN,  CHAR_MAX,    0, 0,                   1 },
++	{ "byte",    0,  "byte",    true,   true,  false,  SCHAR_MIN, SCHAR_MAX,  0, 0,                   1 },
+ 	{ "ubyte",   0,  "ubyte",   false,  true,  false,  0, 0,                   0,         UCHAR_MAX,   1 },
+ 	{ "char",    0,  "char",    false,  true,  false,  0, 0,                   0,         UCHAR_MAX,   1 },
+ 	{ "short",   0,  "short",   true,   true,  false,  SHRT_MIN,  SHRT_MAX,    0, 0,                   2 },
+@@ -93,7 +93,7 @@ HostType hostTypesGo[] =
+ 
+ HostType hostTypesJava[] = 
+ {
+-	{ "byte",    0,  "byte",   true,   true,  false,  CHAR_MIN,  CHAR_MAX,    0, 0,                   1 },
++	{ "byte",    0,  "byte",   true,   true,  false,  SCHAR_MIN, SCHAR_MAX,   0, 0,                   1 },
+ 	{ "short",   0,  "short",  true,   true,  false,  SHRT_MIN,  SHRT_MAX,    0, 0,                   2 },
+ 	{ "char",    0,  "char",   false,  true,  false,  0, 0,                   0,         USHRT_MAX,   2 },
+ 	{ "int",     0,  "int",    true,   true,  false,  INT_MIN,   INT_MAX,     0, 0,                   4 },
+@@ -102,13 +102,13 @@ HostType hostTypesJava[] =
+ /* What are the appropriate types for ruby? */
+ HostType hostTypesRuby[] = 
+ {
+-	{ "char",    0,  "char",   true,   true,  false,  CHAR_MIN,  CHAR_MAX,    0, 0, 1 },
++	{ "char",    0,  "char",   true,   true,  false,  SCHAR_MIN, SCHAR_MAX,   0, 0, 1 },
+ 	{ "int",     0,  "int",    true,   true,  false,  INT_MIN,   INT_MAX,     0, 0, 4 },
+ };
+ 
+ HostType hostTypesCSharp[] =
+ {
+-	{ "sbyte",   0,  "sbyte",   true,   true,  false,  CHAR_MIN,  CHAR_MAX,    0, 0,                   1 },
++	{ "sbyte",   0,  "sbyte",   true,   true,  false,  SCHAR_MIN, SCHAR_MAX,   0, 0,                   1 },
+ 	{ "byte",    0,  "byte",    false,  true,  false,  0, 0,                   0,         UCHAR_MAX,   1 },
+ 	{ "short",   0,  "short",   true,   true,  false,  SHRT_MIN,  SHRT_MAX,    0, 0,                   2 },
+ 	{ "ushort",  0,  "ushort",  false,  true,  false,  0, 0,                   0,         USHRT_MAX,   2 },

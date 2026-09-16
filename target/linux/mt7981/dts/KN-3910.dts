@@ -1,0 +1,117 @@
+/dts-v1/;
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/pinctrl/mt65xx.h>
+#include <mediatek/mt7981.dtsi>
+/ {
+	model = "Keenetic KN-3910";
+	compatible = "keenetic,kn-3910", "mediatek,mt7981";
+
+	chosen {
+		bootargs = "console=ttyS0,115200n1 loglevel=8 earlycon=uart8250,mmio32,0x11002000";
+	};
+
+	memory@40000000 {
+		device_type = "memory";
+		reg = <0 0x40000000 0 0x20000000>;
+	};
+
+	nmbm_spim_nand {
+		compatible = "generic,nmbm";
+		lower-mtd-device = <&spi_nand>;
+		forced-create;
+	};
+
+	phy0: phy-sgmii0 {
+		compatible = "ethernet-phy-id03a2.a411";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <10>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&gbe_int_pin>;
+		interrupt-parent = <&pio>;
+		interrupts = <38 IRQ_TYPE_LEVEL_LOW>;
+	};
+
+	phy1: phy-sgmii1 {
+		compatible = "ethernet-phy-id03a2.a411";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <11>;
+		interrupt-parent = <&pio>;
+		interrupts = <23 IRQ_TYPE_LEVEL_LOW>;
+	};
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&watchdog {
+	status = "okay";
+};
+
+&eth {
+	mediatek,phy = <&phy0>, <&phy1>;
+	status = "okay";
+};
+
+&hnat {
+	eth-max-gmac = <2>;
+	status = "okay";
+};
+
+&spi0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi0_flash_pins>;
+	status = "okay";
+
+	spi_nand: spi_nand@0 {
+		compatible = "spi-nand";
+		reg = <0>;
+		spi-max-frequency = <52000000>;
+		spi-tx-bus-width = <4>;
+		spi-rx-bus-width = <4>;
+	};
+};
+
+&wbsys {
+	status = "okay";
+};
+
+&wed {
+	wdma_rx_ring_depth = <1024>;
+	wdma_tx_ring_depth = <1024>;
+	status = "okay";
+};
+
+&wed_pcie {
+	status = "disabled";
+};
+
+&pio {
+	spi0_flash_pins: spi0-pins-16-to-21 {
+		mux {
+			function = "spi";
+			groups = "spi0", "spi0_wp_hold";
+		};
+
+		conf-pu {
+			pins = "SPI0_CS", "SPI0_HOLD", "SPI0_WP";
+			drive-strength = <MTK_DRIVE_8mA>;
+			mediatek,pull-up-adv = <3>;	/* pull-up 75k */
+		};
+
+		conf-pd {
+			pins = "SPI0_CLK", "SPI0_MOSI", "SPI0_MISO";
+			drive-strength = <MTK_DRIVE_8mA>;
+			mediatek,pull-down-adv = <3>;	/* pull-down 75k */
+		};
+	};
+
+	gbe_int_pin: int-pin-38 {
+		conf-pu {
+			pins = "GBE_INT";
+			mediatek,pull-up-adv = <2>;	/* pull-up 50k */
+		};
+	};
+};

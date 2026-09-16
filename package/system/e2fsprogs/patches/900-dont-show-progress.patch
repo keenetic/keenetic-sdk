@@ -1,0 +1,14 @@
+diff -Naur a/misc/mke2fs.c b/misc/mke2fs.c
+--- a/misc/mke2fs.c	2020-04-18 14:26:00.481774065 +0300
++++ b/misc/mke2fs.c	2020-04-18 13:30:39.298770000 +0300
+@@ -2878,8 +2878,10 @@
+ 	 * or whatever we've written so far.  The quiet flag disables
+ 	 * this, along with a lot of other output.
+ 	 */
++#if 0
+ 	if (!quiet)
+ 		flags |= EXT2_FLAG_PRINT_PROGRESS;
++#endif
+ 	if (android_sparse_file) {
+ 		char *android_sparse_params = malloc(strlen(device_name) + 48);
+ 

@@ -1,0 +1,23 @@
+diff --git a/avahi-daemon/main.c b/avahi-daemon/main.c
+index d46f40a..2cd7900 100644
+--- a/avahi-daemon/main.c
++++ b/avahi-daemon/main.c
+@@ -725,6 +725,8 @@ static int load_config_file(DaemonConfig *c) {
+ 
+                     c->n_entries_per_entry_group_max = k;
+ #endif
++                } else if (strcasecmp(p->key, "debug") == 0) {
++                    c->debug = is_yes(p->value);
+                 } else {
+                     avahi_log_error("Invalid configuration key \"%s\" in group \"%s\"\n", p->key, g->name);
+                     goto finish;
+@@ -859,6 +861,9 @@ static void log_function(AvahiLogLevel level, const char *txt) {
+     assert(level < AVAHI_LOG_LEVEL_MAX);
+     assert(txt);
+ 
++    if (!config.debug && level == AVAHI_LOG_INFO)
++        return;
++
+     if (!config.debug && level == AVAHI_LOG_DEBUG)
+         return;
+ 

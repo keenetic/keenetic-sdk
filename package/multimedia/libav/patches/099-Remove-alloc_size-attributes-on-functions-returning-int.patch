@@ -1,0 +1,12 @@
+diff -Nuar libav-11.7/libavutil/mem.h libav-11.7-patched/libavutil/mem.h
+--- libav-11.7/libavutil/mem.h	2016-05-25 03:36:32.000000000 +0300
++++ libav-11.7-patched/libavutil/mem.h	2021-08-01 01:08:52.329212944 +0300
+@@ -171,7 +171,7 @@
+  *          The situation is undefined according to POSIX and may crash with
+  *          some libc implementations.
+  */
+-av_alloc_size(2, 3) int av_reallocp_array(void *ptr, size_t nmemb, size_t size);
++int av_reallocp_array(void *ptr, size_t nmemb, size_t size);
+ 
+ /**
+  * Free a memory block which has been allocated with av_malloc(z)() or

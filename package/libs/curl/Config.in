@@ -1,0 +1,23 @@
+if PACKAGE_libcurl
+
+comment "Supported protocols"
+
+config LIBCURL_NGHTTP2
+	bool "HTTP2 protocol"
+	default n
+
+config LIBCURL_NGHTTP3
+	bool "HTTP3 protocol"
+	default n
+
+comment "Miscellaneous"
+
+config LIBCURL_CA
+	bool "Enable CA bundle support"
+	default n
+
+config LIBCURL_BACKTRACE
+	bool "Log a backtrace on a process crash"
+	default n
+
+endif

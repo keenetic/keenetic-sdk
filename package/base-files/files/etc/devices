@@ -1,0 +1,63 @@
+tts      d
+pts      d
+rd       d
+net      d
+
+full     c 1 7 1
+fuse     c 10 229 1
+phr      c 209 0
+kmem     c 1 2
+kmsg     c 1 11
+mem      c 1 1
+null     c 1 3 1
+vdsl     c 109 0
+
+port     c 1 4
+ppp      c 108 0
+rdm0     c 223 0
+console  c 5 1
+ptmx     c 5 2 1
+pts/0    c 136 0
+pts/1    c 136 1
+pts/2    c 136 2
+pts/3    c 136 3
+random   c 1 8 1
+spi0     c 153 0
+spi1     c 153 1
+spi2     c 153 2
+spi3     c 153 3
+tts/0    c 4 64
+tts/1    c 4 65
+tty      c 5 0 1
+ttyS0    c 4 64
+ttyS1    c 4 65
+urandom  c 1 9 1
+zero     c 1 5 1
+
+loop0   b 7 0
+loop1   b 7 1
+loop2   b 7 2
+loop3   b 7 3
+loop4   b 7 4
+loop5   b 7 5
+loop6   b 7 6
+loop7   b 7 7
+
+rd/0 b 1 0
+rd/1 b 1 1
+rd/2 b 1 2
+rd/3 b 1 3
+rd/4 b 1 4
+rd/5 b 1 5
+rd/6 b 1 6
+
+net/tun c 10 200 1
+
+zram0   b 240 0
+zram1   b 240 1
+zram2   b 240 2
+zram3   b 240 3
+
+ubi0    c 241 0
+ubi0_0  c 241 1
+ubi0_1  c 241 2

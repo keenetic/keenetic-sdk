@@ -1,0 +1,11 @@
+diff -Nuar a/build/gen.py b/build/gen.py
+--- a/build/gen.py	2022-11-09 11:52:47.651252344 +0300
++++ b/build/gen.py	2022-11-09 11:54:44.831789365 +0300
+@@ -445,7 +445,6 @@
+         '-Wextra',
+         '-Wno-unused-parameter',
+ 
+-        '-Wextra-semi',
+         '-Wundef',
+ 
+         '-std=c++17'

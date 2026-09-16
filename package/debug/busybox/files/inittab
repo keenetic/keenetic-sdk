@@ -1,0 +1,2 @@
+::sysinit:/etc/init.d/rcS
+DEV_CONSOLE::askfirst:-/bin/sh

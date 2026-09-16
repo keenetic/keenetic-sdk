@@ -1,0 +1,42 @@
+diff -Nuar gdb-8.2.1/readline/mbutil.c gdb-8.2.1-patched/readline/mbutil.c
+--- gdb-8.2.1/readline/mbutil.c	2017-06-04 18:51:27.000000000 +0300
++++ gdb-8.2.1-patched/readline/mbutil.c	2020-01-17 15:49:10.909242592 +0300
+@@ -56,6 +56,10 @@
+ #include "rlprivate.h"
+ #include "xmalloc.h"
+ 
++#if defined (HANDLE_MULTIBYTE)
++extern int wcwidth (wchar_t __c) __THROW;
++#endif
++
+ /* Declared here so it can be shared between the readline and history
+    libraries. */
+ #if defined (HANDLE_MULTIBYTE)
+diff -Nuar gdb-8.2.1/readline/complete.c gdb-8.2.1-patched/readline/complete.c
+--- gdb-8.2.1/readline/complete.c	2017-06-04 18:51:27.000000000 +0300
++++ gdb-8.2.1-patched/readline/complete.c	2020-01-17 17:00:27.061722603 +0300
+@@ -64,6 +64,10 @@
+ #include "xmalloc.h"
+ #include "rlprivate.h"
+ 
++#if defined (HANDLE_MULTIBYTE)
++extern int wcwidth (wchar_t __c) __THROW;
++#endif
++
+ #ifdef __STDC__
+ typedef int QSFUNC (const void *, const void *);
+ #else
+diff -Nuar gdb-8.2.1/readline/display.c gdb-8.2.1-patched/readline/display.c
+--- gdb-8.2.1/readline/display.c	2017-06-04 18:51:27.000000000 +0300
++++ gdb-8.2.1-patched/readline/display.c	2020-01-17 17:23:47.281747668 +0300
+@@ -59,6 +59,10 @@
+ #include "rlprivate.h"
+ #include "xmalloc.h"
+ 
++#if defined (HANDLE_MULTIBYTE)
++extern int wcwidth (wchar_t __c) __THROW;
++#endif
++
+ #if !defined (strchr) && !defined (__STDC__)
+ extern char *strchr (), *strrchr ();
+ #endif /* !strchr && !__STDC__ */

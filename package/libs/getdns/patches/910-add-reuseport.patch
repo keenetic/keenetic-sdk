@@ -1,0 +1,15 @@
+diff -Naur a/src/server.c b/src/server.c
+--- a/src/server.c	2023-09-26 12:01:23.977204753 +0300
++++ b/src/server.c	2023-09-26 11:53:45.157061000 +0300
+@@ -885,6 +885,11 @@
+ 			/* IO error */
+ 			break;
+ 
++		if (setsockopt(l->fd, SOL_SOCKET, SO_REUSEPORT,
++		    &enable, sizeof(enable)) < 0) {
++			; /* Ignore */
++		}
++
+ 		if (setsockopt(l->fd, SOL_SOCKET, SO_REUSEADDR,
+ 		    &enable, sizeof(enable)) < 0) {
+ 			; /* Ignore */

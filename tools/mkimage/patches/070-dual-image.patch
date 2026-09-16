@@ -1,0 +1,101 @@
+diff --git a/include/image.h b/include/image.h
+index 1dc1800d..87d687ab 100644
+--- a/include/image.h
++++ b/include/image.h
+@@ -314,7 +314,7 @@ static inline int image_ph_type(int image_ph_type)
+ 
+ #define LZ4F_MAGIC	0x184D2204	/* LZ4 Magic Number		*/
+ #define IH_MAGIC	0x27051956	/* Image Magic Number		*/
+-#define IH_NMLEN		32	/* Image Name Length		*/
++#define IH_NMLEN		31	/* Image Name Length		*/
+ 
+ /* Reused from common.h */
+ #define ROUND(a, b)		(((a) + (b) - 1) & ~((b) - 1))
+@@ -336,6 +336,7 @@ struct legacy_img_hdr {
+ 	uint8_t		ih_type;	/* Image Type			*/
+ 	uint8_t		ih_comp;	/* Compression Type		*/
+ 	uint8_t		ih_name[IH_NMLEN];	/* Image Name		*/
++	uint8_t		ih_dual_image;	/* Dual Image			*/
+ };
+ 
+ struct image_info {
+@@ -925,6 +926,7 @@ image_set_hdr_b(os)		/* image_set_os */
+ image_set_hdr_b(arch)		/* image_set_arch */
+ image_set_hdr_b(type)		/* image_set_type */
+ image_set_hdr_b(comp)		/* image_set_comp */
++image_set_hdr_b(dual_image)	/* image_set_dual_image */
+ 
+ static inline void image_set_name(struct legacy_img_hdr *hdr, const char *name)
+ {
+diff --git a/tools/default_image.c b/tools/default_image.c
+index 42922fb3..b2bd108b 100644
+--- a/tools/default_image.c
++++ b/tools/default_image.c
+@@ -156,6 +156,7 @@ static void image_set_header(void *ptr, struct stat *sbuf, int ifd,
+ 	image_set_arch(hdr, params->arch);
+ 	image_set_type(hdr, type);
+ 	image_set_comp(hdr, params->comp);
++	image_set_dual_image(hdr, params->dual_image);
+ 
+ 	image_set_name(hdr, params->imagename);
+ 
+diff --git a/tools/imagetool.h b/tools/imagetool.h
+index b43d2e05..a5781949 100644
+--- a/tools/imagetool.h
++++ b/tools/imagetool.h
+@@ -67,6 +67,7 @@ struct image_tool_params {
+ 	int arch;
+ 	int type;
+ 	int comp;
++	int dual_image;
+ 	unsigned int magic;
+ 	char *dtc;
+ 	unsigned int addr;
+diff --git a/tools/mkimage.c b/tools/mkimage.c
+index 3d020a0c..dde2b3b8 100644
+--- a/tools/mkimage.c
++++ b/tools/mkimage.c
+@@ -90,7 +90,7 @@ static void usage(const char *msg)
+ 			 "          -q ==> quiet\n",
+ 		params.cmdname);
+ 	fprintf(stderr,
+-		"       %s [-x] -A arch -O os -T type -C comp -M magic -a addr -e ep -n name -d data_file[:data_file...] image\n"
++		"       %s [-u] [-x] -A arch -O os -T type -C comp -M magic -a addr -e ep -n name -d data_file[:data_file...] image\n"
+ 		"          -A ==> set architecture to 'arch'\n"
+ 		"          -O ==> set operating system to 'os'\n"
+ 		"          -T ==> set image type to 'type'\n"
+@@ -98,6 +98,7 @@ static void usage(const char *msg)
+ 		"          -M ==> set image magic to 'magic'\n"
+ 		"          -a ==> set load address to 'addr' (hex)\n"
+ 		"          -e ==> set entry point to 'ep' (hex)\n"
++		"          -u ==> set dual image mark\n"
+ 		"          -n ==> set image name to 'name'\n"
+ 		"          -R ==> set second image name to 'name'\n"
+ 		"          -d ==> use image data from 'datafile'\n"
+@@ -164,7 +165,7 @@ static int add_content(int type, const char *fname)
+ }
+ 
+ static const char optstring[] =
+-	"a:A:b:B:c:C:d:D:e:Ef:Fg:G:i:k:K:lM:n:N:o:O:p:qrR:stT:vVxy:Y:";
++	"a:A:b:B:c:C:d:D:e:Ef:Fg:G:i:k:K:lM:n:N:o:O:p:qrR:stT:uvVxy:Y:";
+ 
+ static const struct option longopts[] = {
+ 	{ "load-address", required_argument, NULL, 'a' },
+@@ -197,6 +198,7 @@ static const struct option longopts[] = {
+ 	{ "no-copy", no_argument, NULL, 's' },
+ 	{ "touch", no_argument, NULL, 't' },
+ 	{ "type", required_argument, NULL, 'T' },
++	{ "dual-image", no_argument, NULL, 'u' },
+ 	{ "verbose", no_argument, NULL, 'v' },
+ 	{ "version", no_argument, NULL, 'V' },
+ 	{ "xip", no_argument, NULL, 'x' },
+@@ -372,6 +374,9 @@ static void process_args(int argc, char **argv)
+ 				usage("Invalid image type");
+ 			}
+ 			break;
++		case 'u':
++			params.dual_image = 1;
++			break;
+ 		case 'v':
+ 			params.vflag++;
+ 			break;

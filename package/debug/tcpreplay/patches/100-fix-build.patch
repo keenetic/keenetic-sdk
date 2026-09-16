@@ -1,0 +1,39 @@
+diff -Naur a/src/common/sendpacket.h b/src/common/sendpacket.h
+--- a/src/common/sendpacket.h	2023-06-11 03:39:42.000000000 +0300
++++ b/src/common/sendpacket.h	2024-03-04 11:24:21.720619000 +0300
+@@ -49,9 +49,7 @@
+ #undef icmp_seq
+ #undef icmp_data
+ #undef icmp_mask
+-#ifdef HAVE_DNET_H
+ #include <dnet.h>
+-#endif
+ #ifdef HAVE_DUMBNET_H
+ #include <dumbnet.h>
+ #endif
+diff -Naur a/src/fragroute/pkt.h b/src/fragroute/pkt.h
+--- a/src/fragroute/pkt.h	2023-06-11 03:39:42.000000000 +0300
++++ b/src/fragroute/pkt.h	2024-03-04 11:24:25.836527000 +0300
+@@ -19,9 +19,7 @@
+ #undef icmp_seq
+ #undef icmp_data
+ #undef icmp_mask
+-#ifdef HAVE_DNET_H
+ #include <dnet.h>
+-#endif
+ #ifdef HAVE_DUMBNET_H
+ #include <dumbnet.h>
+ #endif
+diff -Naur a/src/fragroute/randutil.c b/src/fragroute/randutil.c
+--- a/src/fragroute/randutil.c	2023-06-11 03:39:42.000000000 +0300
++++ b/src/fragroute/randutil.c	2024-03-04 11:24:50.755983000 +0300
+@@ -14,9 +14,7 @@
+ #undef icmp_seq
+ #undef icmp_data
+ #undef icmp_mask
+-#ifdef HAVE_DNET_H
+ #include <dnet.h>
+-#endif
+ #ifdef HAVE_DUMBNET_H
+ #include <dumbnet.h>
+ #endif

@@ -1,0 +1,24 @@
+diff --git a/gdb/printcmd.c b/gdb/printcmd.c
+--- a/gdb/printcmd.c
++++ b/gdb/printcmd.c
+@@ -1272,7 +1272,7 @@ static void
+ info_symbol_command (const char *arg, int from_tty)
+ {
+   struct minimal_symbol *msymbol;
+-  struct obj_section *osect;
++  struct obj_section *osect = NULL;
+   CORE_ADDR addr, sect_addr;
+   int matches = 0;
+   unsigned int offset;
+diff --git a/gdb/symfile.c b/gdb/symfile.c
+--- a/gdb/symfile.c
++++ b/gdb/symfile.c
+@@ -3255,7 +3255,7 @@ static void
+ list_overlays_command (const char *args, int from_tty)
+ {
+   int nmapped = 0;
+-  struct obj_section *osect;
++  struct obj_section *osect = NULL;
+ 
+   if (overlay_debugging)
+     {

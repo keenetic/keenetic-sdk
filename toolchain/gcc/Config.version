@@ -1,0 +1,34 @@
+config GCC_VERSION_4_4_7
+	bool
+
+config GCC_VERSION_4_6_LINARO
+	default y if GCC_DEFAULT_VERSION_4_6_LINARO
+	default y if !TOOLCHAINOPTS
+	bool
+
+config GCC_VERSION
+	string
+	default "4.4.7"	    if GCC_VERSION_4_4_7
+	default "4.6.2"	    if GCC_VERSION_4_6_2
+	default "4.7.0"	    if GCC_VERSION_4_7_0
+	default "4.5-linaro"    if GCC_VERSION_4_5_LINARO
+	default "4.6-linaro"    if GCC_VERSION_4_6_LINARO
+	default "4.7-linaro"    if GCC_VERSION_4_7_LINARO
+	default "llvm"	    if GCC_VERSION_LLVM
+	default "4.6-linaro"
+
+config GCC_VERSION_4_4
+	bool
+	default y	if GCC_VERSION_4_4_7
+
+config GCC_VERSION_4_5
+	bool
+	default y       if GCC_VERSION_4_5_LINARO
+
+config GCC_VERSION_4_6
+	bool
+	default y       if (GCC_VERSION_4_6_2 || GCC_VERSION_4_6_LINARO)
+
+config GCC_VERSION_4_7
+	bool
+	default y       if (GCC_VERSION_4_7_0 || GCC_VERSION_4_7_LINARO)

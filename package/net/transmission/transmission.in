@@ -1,0 +1,9 @@
+# transmission configuration
+
+if PACKAGE_transmission-daemon
+
+config TRANSMISSION_DAEMON_BACKTRACE
+	bool "Log a backtrace on a daemon crash"
+	default n
+
+endif

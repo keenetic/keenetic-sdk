@@ -1,0 +1,171 @@
+/dts-v1/;
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/pinctrl/mt65xx.h>
+#include <mediatek/mt7981.dtsi>
+/ {
+	model = "Keenetic KN-1012";
+	compatible = "keenetic,kn-1012", "mediatek,mt7981";
+
+	chosen {
+		bootargs = "console=ttyS0,115200n1 loglevel=8 earlycon=uart8250,mmio32,0x11002000";
+	};
+
+	memory@40000000 {
+		device_type = "memory";
+		reg = <0 0x40000000 0 0x20000000>;
+	};
+
+	nmbm_spim_nand {
+		compatible = "generic,nmbm";
+		lower-mtd-device = <&spi_nand>;
+		forced-create;
+	};
+
+	gsw: gsw-sgmii0 {
+		compatible = "mediatek,mt7531";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		mediatek,ethsys = <&ethsys>;
+	};
+
+	gbe0: gbe-gmii1 {
+		compatible = "ethernet-phy-id03a2.9461";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0>;
+		nvmem-cells = <&phy_calibration>;
+		nvmem-cell-names = "phy-cal-data";
+	};
+
+	sfp0: sfp-p5 {
+		compatible = "sff,sfp";
+		i2c-bus = <&i2c0>;
+		mod-def0-gpios = <&pio 23 GPIO_ACTIVE_LOW>;
+		los-gpios = <&pio 1 GPIO_ACTIVE_HIGH>;
+		tx-fault-gpios = <&pio 10 GPIO_ACTIVE_HIGH>;
+		tx-disable-gpios = <&pio 2 GPIO_ACTIVE_HIGH>;
+		power-gpios = <&pio 28 GPIO_ACTIVE_HIGH>;
+		mux-gpios = <&pio 27 GPIO_ACTIVE_LOW>;
+		led-gpios = <&pio 25 GPIO_ACTIVE_LOW>;
+		maximum-power-milliwatt = <3000>;
+	};
+
+	reg_fixed_3p3v: regulator-3p3v {
+		compatible = "regulator-fixed";
+		regulator-name = "fixed-3.3V";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-always-on;
+	};
+
+	reg_fixed_5v: regulator-5v {
+		compatible = "regulator-fixed";
+		regulator-name = "fixed-5V";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		regulator-always-on;
+	};
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&watchdog {
+	status = "okay";
+};
+
+&gsw {
+	interrupt-parent = <&pio>;
+	interrupts = <38 IRQ_TYPE_LEVEL_HIGH>,
+		     <0 IRQ_TYPE_LEVEL_LOW>;
+	interrupt-names = "gsw", "intb";
+	sfp = <&sfp0>;
+	status = "okay";
+};
+
+&eth {
+	mediatek,gsw = <&gsw>;
+	mediatek,phy = <&gbe0>;
+	status = "okay";
+};
+
+&hnat {
+	eth-max-gmac = <2>;
+	status = "okay";
+};
+
+&i2c0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c_pins_g1>;
+	status = "okay";
+};
+
+&spi0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi0_flash_pins>;
+	status = "okay";
+
+	spi_nand: spi_nand@0 {
+		compatible = "spi-nand";
+		reg = <0>;
+		spi-max-frequency = <52000000>;
+		spi-tx-bus-width = <4>;
+		spi-rx-bus-width = <4>;
+	};
+};
+
+&usb_phy {
+	status = "okay";
+};
+
+&xhci {
+	mediatek,u3p-dis-msk = <0x0>;
+	phys = <&u2port0 PHY_TYPE_USB2>,
+	       <&u3port0 PHY_TYPE_USB3>;
+	vusb33-supply = <&reg_fixed_3p3v>;
+	vbus-supply = <&reg_fixed_5v>;
+	status = "okay";
+};
+
+&wbsys {
+	status = "okay";
+};
+
+&wed {
+	wdma_rx_ring_depth = <1024>;
+	wdma_tx_ring_depth = <1024>;
+	status = "okay";
+};
+
+&wed_pcie {
+	status = "disabled";
+};
+
+&pio {
+	spi0_flash_pins: spi0-pins-16-to-21 {
+		mux {
+			function = "spi";
+			groups = "spi0", "spi0_wp_hold";
+		};
+
+		conf-pu {
+			pins = "SPI0_CS", "SPI0_HOLD", "SPI0_WP";
+			drive-strength = <MTK_DRIVE_8mA>;
+			mediatek,pull-up-adv = <3>;	/* pull-up 75k */
+		};
+
+		conf-pd {
+			pins = "SPI0_CLK", "SPI0_MOSI", "SPI0_MISO";
+			drive-strength = <MTK_DRIVE_8mA>;
+			mediatek,pull-down-adv = <3>;	/* pull-down 75k */
+		};
+	};
+
+	i2c_pins_g1: i2c-pins-30-31 {
+		mux {
+			function = "i2c";
+			groups = "i2c0_1";
+		};
+	};
+};

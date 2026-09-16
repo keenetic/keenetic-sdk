@@ -1,0 +1,30 @@
+diff --git a/avahi-daemon/main.c b/avahi-daemon/main.c
+index 2cd7900..bb23e63 100644
+--- a/avahi-daemon/main.c
++++ b/avahi-daemon/main.c
+@@ -1107,7 +1107,7 @@ static int run_server(DaemonConfig *c) {
+     ignore_signal(SIGPIPE);
+ 
+     if (!(nss_support = avahi_nss_support()))
+-        avahi_log_warn("WARNING: No NSS support for mDNS detected, consider installing nss-mdns!");
++        avahi_log_info("WARNING: No NSS support for mDNS detected, consider installing nss-mdns!");
+ 
+     if (!(simple_poll_api = avahi_simple_poll_new())) {
+         avahi_log_error("Failed to create main loop object.");
+@@ -1633,14 +1633,14 @@ int main(int argc, char *argv[]) {
+                 goto finish;
+             }
+ #endif
+-        avahi_log_info("%s "PACKAGE_VERSION" starting up.", argv0);
++        avahi_log_notice("%s "PACKAGE_VERSION" starting up.", argv0);
+         sd_notifyf(0, "STATUS=%s "PACKAGE_VERSION" starting up.", argv0);
+         avahi_set_proc_title(argv0, "%s: starting up", argv0);
+ 
+         if (run_server(&config) == 0)
+             r = 0;
+ 
+-        avahi_log_info("%s "PACKAGE_VERSION" exiting.", argv0);
++        avahi_log_notice("%s "PACKAGE_VERSION" exiting.", argv0);
+         sd_notifyf(0, "STATUS=%s "PACKAGE_VERSION" exiting.", argv0);
+     }
+ 

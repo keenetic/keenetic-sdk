@@ -1,0 +1,20 @@
+diff -Nuar gnutls-3.8.3/configure.ac gnutls-3.8.3-patched/configure.ac
+--- gnutls-3.8.3/configure.ac	2024-01-16 12:10:33.000000000 +0300
++++ gnutls-3.8.3-patched/configure.ac	2024-04-19 18:23:12.093289681 +0300
+@@ -544,6 +544,8 @@
+ AM_CONDITIONAL(ENABLE_OLDGNUTLS_INTEROP, test "$enable_oldgnutls_interop" != "no")
+ 
+ # check for libev - used in full test suite
++save_LDFLAGS="$LDFLAGS"
++LDFLAGS="$LDFLAGS -lm"
+ AC_LIB_HAVE_LINKFLAGS(ev,, [#include <ev.h>], [ev_run(0,0);])
+ if test "$ac_cv_libev" = yes; then
+         AC_SUBST([LIBEV_LIBS], [$LIBEV])
+@@ -552,6 +554,7 @@
+ *** libev4 was not found.
+ ***]])
+ fi
++LDFLAGS="$save_LDFLAGS"
+ 
+ dnl GCC warnings to enable
+ 

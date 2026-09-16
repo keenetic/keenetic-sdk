@@ -1,0 +1,9 @@
+# https-dns-proxy configuration
+
+if PACKAGE_https-dns-proxy
+
+config HTTPS_DNS_PROXY_BACKTRACE
+	bool "Log a backtrace on a process crash"
+	default n
+
+endif

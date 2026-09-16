@@ -1,0 +1,91 @@
+menu "Firmware Options"
+
+	comment "Build Options ---"
+
+	config TARGET_DEFAULT_PRODUCT
+		string  "Default product name"
+
+	config TARGET_DEVICE_MANUFACTURER
+		string  "Device manufacturer"
+
+	config TARGET_DEVICE_ID
+		string "Device ID"
+
+	config TARGET_EMB_MODEM_BOARD
+		depends on HAS_EMB_MODEM
+		string
+		default "EM-2210" if TARGET_mt7628_KN_2210 || TARGET_mt7621_KN_2310
+		default "EM-2211" if TARGET_mt7628_KN_2211 || TARGET_mt7621_KN_2910
+		default "EM-2311" if TARGET_mt7621_KN_2311
+		default "EM-2212" if TARGET_mt7628_KN_2212 || TARGET_mt7628_KN_4910
+		default "EM-2312" if TARGET_mt7981_KN_2312 || TARGET_mt7621_KN_2911
+		default "EM-2312" if TARGET_mt7981_KN_2313
+		default "EM-4110" if TARGET_mt7981_KN_4110
+		default ""
+
+	config TARGET_EULA_ROOT_DIRECTORY
+		string
+		prompt "Root directory for EULA documents"
+		default "/usr/share/eula"
+
+	config TARGET_DPN_ROOT_DIRECTORY
+		string
+		prompt "Root directory for DPN documents"
+		default "/usr/share/dpn"
+
+	config TARGET_FEATURES
+		string
+		prompt "Webadmin Features"
+		default ""
+
+	config TARGET_DEVICE_WITHOUT_WLAN_LED
+		depends on TARGET_DEVICE_WIRELESS_SUPPORT
+		bool "Device without WLAN ACT LED"
+		default n
+
+comment "Marketing Options ---"
+
+	config TARGET_VENDOR
+		string "Vendor"
+		default "NDM Systems, Inc."
+
+	config TARGET_VENDOR_SHORT
+		string "Vendor (short variant)"
+		default "NDM"
+
+	config TARGET_VENDOR_OS
+		string "Vendor operating system"
+		default "NDMS"
+
+	config TARGET_VENDOR_DNS
+		string "Vendor DNS service"
+		default "NdmDNS"
+
+	config TARGET_VENDOR_EASY_CONFIG_DOMAIN
+		string "Vendor EasyConfig domain"
+		default "my.ndmsystems.com"
+
+	config TARGET_VENDOR_EMAIL
+		string "Vendor e-mail"
+		default "info@ndmsystems.com"
+
+	config TARGET_VENDOR_GET_APP_URL
+		string "Vendor mobile application URL"
+		default "https://ndmsystems.com/getapp"
+
+	config TARGET_VENDOR_URL
+		string "Vendor URL"
+		default "https://ndmsystems.com"
+
+	config TARGET_VENDOR_LEGAL_URL
+		string "Vendor legal URL"
+		default "https://ndmsystems.com/legal"
+
+	config TARGET_MODEL_SERIES
+		string "Model series"
+		default "Keenetic series"
+
+	config TARGET_CUSTOMER
+		string "Customer"
+		default "NDM"
+endmenu

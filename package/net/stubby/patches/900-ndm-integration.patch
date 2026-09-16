@@ -1,0 +1,414 @@
+diff --git a/src/log.c b/src/log.c
+index 401966c..a69ca36 100644
+--- a/src/log.c
++++ b/src/log.c
+@@ -35,39 +35,35 @@
+ #include <sys/timeb.h>
+ #endif
+ 
++#include <syslog.h>
++
+ #include "log.h"
+ 
++static long log_level = GETDNS_LOG_INFO;
++
+ static void default_stubby_verror(getdns_loglevel_type level, const char *fmt, va_list ap)
+ {
+-        (void) level;
+-        (void) vfprintf(stderr, fmt, ap);
+-        (void) fputc('\n', stderr);
++	if (level > log_level) {
++		return;
++	}
++
++	openlog("stubby", LOG_CONS, LOG_DAEMON);
++	vsyslog(level, fmt, ap);
+ }
+ 
+ static void default_stubby_vlog(void *userarg, uint64_t system,
+                                 getdns_loglevel_type level,
+                                 const char *fmt, va_list ap)
++
+ {
+-        struct timeval tv;
+-        struct tm tm;
+-        char buf[10];
+-#if defined(STUBBY_ON_WINDOWS)
+-        struct _timeb timeb;
+-        time_t tsec;
+-
+-        _ftime_s(&timeb);
+-        tsec = (time_t)timeb.time;
+-        tv.tv_usec = timeb.millitm * 1000;
+-        gmtime_s(&tm, &tsec);
+-#else
+-        gettimeofday(&tv, NULL);
+-        gmtime_r(&tv.tv_sec, &tm);
+-#endif
+-        strftime(buf, 10, "%H:%M:%S", &tm);
+-        (void)userarg; (void)system; (void)level;
+-        (void) fprintf(stderr, "[%s.%.6d] STUBBY: ", buf, (int)tv.tv_usec);
+-        (void) vfprintf(stderr, fmt, ap);
+-        (void) fputc('\n', stderr);
++	(void)userarg; (void)system;
++
++	if (level > log_level) {
++		return;
++	}
++
++	openlog("stubby", LOG_CONS, LOG_DAEMON);
++	vsyslog(level, fmt, ap);
+ }
+ 
+ static stubby_verror_t stubby_verror = default_stubby_verror;
+@@ -114,5 +110,11 @@ void stubby_set_log_funcs(stubby_verror_t errfunc, stubby_vlog_t logfunc)
+ 
+ void stubby_set_getdns_logging(getdns_context *context, int loglevel)
+ {
++        log_level = loglevel;
+         (void) getdns_context_set_logfunc(context, NULL, GETDNS_LOG_UPSTREAM_STATS, loglevel, stubby_vlog);
+ }
++
++void stubby_set_logging(int loglevel)
++{
++        log_level = loglevel;
++}
+diff --git a/src/log.h b/src/log.h
+index 7c53df8..f9ad0e7 100644
+--- a/src/log.h
++++ b/src/log.h
+@@ -52,5 +52,6 @@ void stubby_debug(const char *fmt, ...);
+ void stubby_set_log_funcs(stubby_verror_t errfunc, stubby_vlog_t logfunc);
+ 
+ void stubby_set_getdns_logging(getdns_context *context, int loglevel);
++void stubby_set_logging(int loglevel);
+ 
+ #endif
+diff -Naur a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2021-06-04 21:50:11.000000000 +0300
++++ b/CMakeLists.txt	2022-06-02 11:09:36.626395000 +0300
+@@ -183,6 +183,8 @@
+ endif ()
+ set_property(TARGET stubby PROPERTY C_STANDARD 11)
+ 
++target_link_libraries(stubby PRIVATE ndm)
++
+ install(TARGETS stubby RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
+ if (ENABLE_WINDOWS_SERVICE)
+   install(TARGETS stubres LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+diff -Naur a/src/server.h b/src/server.h
+--- a/src/server.h	2021-06-04 21:50:11.000000000 +0300
++++ b/src/server.h	2022-06-02 11:21:48.538505000 +0300
+@@ -30,6 +30,6 @@
+ 
+ #include <getdns/getdns.h>
+ 
+-int server_listen(getdns_context *context, int validate_dnssec);
++int server_listen(getdns_context *context, int validate_dnssec, const char *upstream);
+ 
+ #endif
+diff -Naur a/src/server.c b/src/server.c
+--- a/src/server.c	2021-06-04 21:50:11.000000000 +0300
++++ b/src/server.c	2024-03-18 09:23:09.587404000 +0300
+@@ -31,6 +31,8 @@
+ #include <errno.h>
+ #include <string.h>
+ 
++#include <signal.h>
++
+ #include <getdns/getdns.h>
+ #include <getdns/getdns_extra.h>
+ 
+@@ -39,7 +41,14 @@
+ #include "server.h"
+ #include "util.h"
+ 
++#include <arpa/inet.h>
++
++#include <ndm/time.h>
++
+ static int dnssec_validation = 0;
++static struct timespec last_succ;
++static size_t errors = 0;
++static const char *ups = NULL;
+ 
+ #if defined(STUBBY_ON_WINDOWS)
+ #define DEBUG_ON(...) do { \
+@@ -188,6 +197,24 @@
+ #endif
+         assert(msg);
+ 
++        if (callback_type == GETDNS_CALLBACK_COMPLETE) {
++                errors = 0;
++                ndm_time_get_monotonic(&last_succ);
++        } else {
++                struct timespec now;
++
++                ndm_time_get_monotonic(&now);
++                ndm_time_sub_sec(&now, 150);
++                errors++;
++
++                if (ndm_time_greater(&now, &last_succ) && errors > 30) {
++                        stubby_error("\"%s\": too many failed requests, try to reload process", ups);
++                        raise(SIGINT);
++                        errors = 0;
++                        ndm_time_get_monotonic(&last_succ);
++                }
++        }
++
+         if (callback_type != GETDNS_CALLBACK_COMPLETE)
+                 SERVFAIL("Callback type not complete",
+                     (int)callback_type, msg, &response);
+@@ -397,13 +424,48 @@
+                 (void)getdns_dict_set_list(qext,
+                     "/add_opt_parameters/options", list);
+ 
++        if (!getdns_dict_get_list(
++            request, "additional", &list)) {
++            if ((r = getdns_list_get_length(list,  &len))) {
++                stubby_error("Could not get additional list length: %s",
++                    stubby_getdns_strerror(r));
++            } else {
++                for (size_t k = 0; k < len; ++k) {
++                    char buffer[64];
++
++                    snprintf(buffer, sizeof(buffer), "/additional/%zu/type", k);
++
++                    if (!getdns_dict_get_int(request, buffer, &n)) {
++                        if (n == 65517) {
++                            getdns_bindata *bin;
++
++                            snprintf(buffer, sizeof(buffer),
++                                "/additional/%zu/rdata/rdata_raw", k);
++
++                            if (!getdns_dict_get_bindata(request, buffer, &bin) &&
++                                 bin->size == sizeof(uint32_t)) {
++                                 n = htonl(*((uint32_t *)bin->data));
++                                 (void)getdns_dict_set_int(qext,
++                                     "/add_opt_parameters/sdns_profile", n);
++                            }
++                        }
++                    }
++                }
++            }
++        }
++
+         if ((r = getdns_dict_get_bindata(request,"/question/qname",&qname)))
+                 stubby_error("Could not get qname from query: %s",
+                     stubby_getdns_strerror(r));
+ 
+-        else if ((r = getdns_convert_dns_name_to_fqdn(qname, &qname_str)))
++        else if ((r = getdns_convert_dns_name_to_fqdn(qname, &qname_str))) {
+                 stubby_error("Could not convert qname: %s",
+                     stubby_getdns_strerror(r));
++                goto error;
++        }
++
++        if (strcmp(qname_str, "servfail.invalid.") == 0)
++                goto error;
+ 
+         else if ((r=getdns_dict_get_int(request,"/question/qtype",&qtype)))
+                 stubby_error("Could get qtype from query: %s",
+@@ -419,7 +481,7 @@
+ 
+         else if ((r = getdns_general(context, qname_str, qtype,
+             qext, msg, &transaction_id, request_cb)))
+-                stubby_error("Could not schedule query: %s",
++                stubby_debug("Could not schedule query: %s",
+                     stubby_getdns_strerror(r));
+         else {
+                 DEBUG_SERVER("scheduled: %p %"PRIu64" for %s %d\n",
+@@ -459,10 +521,14 @@
+                 getdns_dict_destroy(response);
+ }
+ 
+-int server_listen(getdns_context *context, int validate_dnssec)
++int server_listen(getdns_context *context, int validate_dnssec, const char *upstream)
+ {
+         const getdns_list *listen_list;
+ 
++        ndm_time_get_monotonic(&last_succ);
++        errors = 0;
++        ups = upstream;
++
+         dnssec_validation = validate_dnssec;
+ 
+         listen_list = get_config_listen_list();
+diff -Naru a/src/stubby.c b/src/stubby.c
+--- a/src/stubby.c	2021-06-04 21:50:11.000000000 +0300
++++ b/src/stubby.c	2025-03-14 12:08:30.987490588 +0300
+@@ -34,6 +34,8 @@
+ #include <limits.h>
+ #include <signal.h>
+ #include <limits.h>
++#include <grp.h>
++#include <pwd.h>
+ #ifndef HAVE_GETOPT
+ #include "getopt.h"
+ #else
+@@ -54,6 +56,19 @@
+ #define STUBBYPIDFILE RUNSTATEDIR"/stubby.pid"
+ #endif
+ 
++#include <sys/syscall.h>
++#include <sys/prctl.h>
++#include <linux/capability.h>
++#ifndef CAP_NET_ADMIN
++#define CAP_NET_ADMIN  12
++#endif
++#if !defined(capset)
++int capset(cap_user_header_t hdrp, const cap_user_data_t datap)
++{
++    return syscall(SYS_capset, hdrp, datap);
++}
++#endif
++
+ void
+ print_usage(FILE *out)
+ {
+@@ -111,13 +126,18 @@
+ 	int windows_service = 0;
+ 	const char *windows_service_arg = NULL;
+ #endif
++	const char *upstream = NULL;
+ 	getdns_context  *context = NULL;
+ 	getdns_return_t r;
+ 	int opt;
+ 	long log_level = 7; 
+ 	char *ep;
++	uid_t uid = -1;
++	uid_t gid = -1;
++	struct passwd *p = NULL;
++	struct group *g = NULL;
+ 
+-	while ((opt = getopt(argc, argv, "C:ighlv:w:V")) != -1) {
++	while ((opt = getopt(argc, argv, "C:ighlv:w:VU:G:u:")) != -1) {
+ 		switch (opt) {
+ 		case 'C':
+ 			custom_config_fn = optarg;
+@@ -145,6 +165,9 @@
+ 				exit(EXIT_FAILURE);
+ 			}
+ 			break;
++		case 'u':
++			upstream = optarg;
++			break;
+ #if defined(ENABLE_WINDOWS_SERVICE)
+ 		case 'w':
+ 			windows_service = 1;
+@@ -154,14 +177,67 @@
+                 case 'V':
+ 			print_version(stdout);
+ 			exit(EXIT_SUCCESS);
++		case 'U':
++			if (!(p = getpwnam(optarg)) || !p->pw_uid) {
++				stubby_error("Username (%s) invalid.\n", optarg);
++				exit(EXIT_FAILURE);
++			}
++			uid = p->pw_uid;
++			break;
++		case 'G':
++			if (!(g = getgrnam(optarg)) || !g->gr_gid) {
++				stubby_error("Group (%s) invalid.\n", optarg);
++				exit(EXIT_FAILURE);
++			}
++			gid = g->gr_gid;
++			break;
+ 		default:
+ 			print_usage(stderr);
+ 			exit(EXIT_FAILURE);
+ 		}
+ 	}
+ 
+-	stubby_log(NULL,GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_INFO,
+-		   "Stubby version: %s", STUBBY_PACKAGE_STRING);
++	if (prctl(PR_SET_KEEPCAPS, 1, 0, 0, 0) == -1) {
++		stubby_error("prctl(PR_SET_KEEPCAPS) failed");
++		exit(EXIT_FAILURE);
++	}
++
++	if (gid != (uid_t)-1 && setgid(gid)) {
++		stubby_error("Failed to set gid.");
++	}
++	if (uid != (uid_t)-1 && setuid(uid)) {
++		stubby_error("Failed to set uid.");
++	}
++
++	/* For SO_MARK */
++
++	{
++		struct __user_cap_header_struct header = {
++			.version = _LINUX_CAPABILITY_VERSION_3,
++		};
++		struct __user_cap_data_struct caps[2];
++
++		memset(&caps, 0, sizeof(caps));
++
++		caps[0].effective |= 1 << CAP_NET_ADMIN;
++		caps[0].permitted |= 1 << CAP_NET_ADMIN;
++		caps[0].inheritable |= 1 << CAP_NET_ADMIN;
++
++		if (capset(&header, caps) != 0) {
++			stubby_error("capset(CAP_DAC_READ_SEARCH) failed");
++			exit(EXIT_FAILURE);
++		}
++	}
++
++	if (prctl(PR_SET_KEEPCAPS, 0, 0, 0, 0) == -1) {
++		stubby_error("prctl(PR_SET_KEEPCAPS) failed");
++		exit(EXIT_FAILURE);
++	}
++
++	stubby_set_logging(log_level);
++
++	stubby_log(NULL,GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_DEBUG,
++		   "starting %s", STUBBY_PACKAGE_STRING);
+ 
+ #if defined(ENABLE_WINDOWS_SERVICE)
+ 	if ( windows_service ) {
+@@ -191,7 +267,7 @@
+ 		goto tidy_and_exit;
+ 	}
+ 
+-	if ( !server_listen(context, dnssec_validation) ) {
++	if ( !server_listen(context, dnssec_validation, upstream) ) {
+ 		r = EXIT_FAILURE;
+ 		goto tidy_and_exit;
+ 	}
+@@ -250,13 +326,13 @@
+ #endif
+ 	{
+ 		/* Report basic config options which specifically affect privacy and validation*/
+-		stubby_log(NULL,GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_INFO,
++		stubby_log(NULL,GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_DEBUG,
+ 			   "DNSSEC Validation is %s", dnssec_validation==1 ? "ON":"OFF");
+ 		size_t transport_count = 0;
+ 		getdns_transport_list_t *transport_list;
+ 		getdns_context_get_dns_transport_list(context, 
+ 		                                 &transport_count, &transport_list);
+-		stubby_log(NULL,GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_INFO,
++		stubby_log(NULL,GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_DEBUG,
+ 			   "Transport list is:");
+ 		for (size_t i = 0; i < transport_count; i++) {
+ 			char* transport_name;
+@@ -274,17 +350,17 @@
+ 					transport_name = "Unknown transport type";
+ 					break;
+ 				}
+-			stubby_log(NULL,GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_INFO,
++			stubby_log(NULL,GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_DEBUG,
+ 			                 "  - %s", transport_name);
+ 		}
+ 		free(transport_list);
+ 		getdns_tls_authentication_t auth;
+ 		getdns_context_get_tls_authentication(context, &auth);
+-		stubby_log(NULL,GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_INFO,
++		stubby_log(NULL,GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_DEBUG,
+ 			   "Privacy Usage Profile is %s",
+ 			   auth==GETDNS_AUTHENTICATION_REQUIRED ?
+ 			   "Strict (Authentication required)":"Opportunistic");
+-		stubby_log(NULL,GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_INFO,
++		stubby_log(NULL,GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_DEBUG,
+ 			   "(NOTE a Strict Profile only applies when TLS is the ONLY transport!!)");
+ 		stubby_log(NULL,GETDNS_LOG_UPSTREAM_STATS, GETDNS_LOG_DEBUG,
+ 			   "Starting DAEMON....");

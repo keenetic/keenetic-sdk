@@ -1,0 +1,12 @@
+diff -Nuar wireless_tools.29/iwpriv.c wireless_tools.29-patched/iwpriv.c
+--- wireless_tools.29/iwpriv.c	2019-06-26 14:19:03.085573215 +0300
++++ wireless_tools.29-patched/iwpriv.c	2019-06-26 14:19:18.521348934 +0300
+@@ -259,7 +259,7 @@
+ 		int		priv_num)	/* Number of descriptions */
+ {
+   struct iwreq	wrq;
+-  u_char	buffer[4096];	/* Only that big in v25 and later */
++  u_char	buffer[65536];	/* Only that big in v25 and later */
+   int		i = 0;		/* Start with first command arg */
+   int		k;		/* Index in private description table */
+   int		temp;

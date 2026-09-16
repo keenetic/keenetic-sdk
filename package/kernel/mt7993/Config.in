@@ -1,0 +1,22 @@
+if PACKAGE_kmod-mt7993
+
+choice
+	prompt "SKU type"
+
+	config MT7993_SKU_BE19000
+		bool "BE19000 (Eagle, 3-adie, 2+5+6)"
+	config MT7993_SKU_BE13500
+		bool "BE13500 (Eagle, 2-adie, 2+5+6)"
+	config MT7993_SKU_BE13000
+		bool "BE13000 (Eagle, 3-adie, 2+5+5)"
+	config MT7993_SKU_BE7200
+		bool "BE7200 (Kite)"
+	config MT7993_SKU_BE6500
+		bool "BE6500 (Kite)"
+	config MT7993_SKU_BE5040
+		bool "BE5040 (Kite)"
+	config MT7993_SKU_BE3600
+		bool "BE3600 (Griffin)"
+endchoice
+
+endif

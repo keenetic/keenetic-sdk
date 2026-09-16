@@ -1,0 +1,55 @@
+diff -Naur a/extensions/libxt_mac.c b/extensions/libxt_mac.c
+--- a/extensions/libxt_mac.c	2018-11-13 08:45:21.000000000 +0300
++++ b/extensions/libxt_mac.c	2024-02-02 14:15:15.024915000 +0300
+@@ -91,21 +91,38 @@
+ 	return 1;
+ }
+ 
+-static struct xtables_match mac_match = {
+-	.family		= NFPROTO_UNSPEC,
+-	.name		= "mac",
+-	.version	= XTABLES_VERSION,
+-	.size		= XT_ALIGN(sizeof(struct xt_mac_info)),
+-	.userspacesize	= XT_ALIGN(sizeof(struct xt_mac_info)),
+-	.help		= mac_help,
+-	.x6_parse	= mac_parse,
+-	.print		= mac_print,
+-	.save		= mac_save,
+-	.x6_options	= mac_opts,
+-	.xlate		= mac_xlate,
++static struct xtables_match mac_match[] = {
++	{
++		.family		= NFPROTO_UNSPEC,
++		.name		= "mac",
++		.revision	= 0,
++		.version	= XTABLES_VERSION,
++		.size		= XT_ALIGN(sizeof(struct xt_mac_info)),
++		.userspacesize	= XT_ALIGN(sizeof(struct xt_mac_info)),
++		.help		= mac_help,
++		.x6_parse	= mac_parse,
++		.print		= mac_print,
++		.save		= mac_save,
++		.x6_options	= mac_opts,
++		.xlate		= mac_xlate,
++	},
++	{
++		.family		= NFPROTO_UNSPEC,
++		.name		= "mac",
++		.revision	= 1,
++		.version	= XTABLES_VERSION,
++		.size		= XT_ALIGN(sizeof(struct xt_mac_info)),
++		.userspacesize	= XT_ALIGN(sizeof(struct xt_mac_info)),
++		.help		= mac_help,
++		.x6_parse	= mac_parse,
++		.print		= mac_print,
++		.save		= mac_save,
++		.x6_options	= mac_opts,
++		.xlate		= mac_xlate,
++	},
+ };
+ 
+ void _init(void)
+ {
+-	xtables_register_match(&mac_match);
++	xtables_register_matches(mac_match, ARRAY_SIZE(mac_match));
+ }

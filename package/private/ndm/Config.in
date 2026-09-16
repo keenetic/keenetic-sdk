@@ -1,0 +1,75 @@
+menu "Configuration"
+	depends on PACKAGE_ndm
+
+config NDM_BACKTRACE
+	bool "Log a backtrace on a daemon crash"
+	select KERNEL_STACKTRACE
+
+config NDM_BACKTRACE_MINIMAL
+	depends on NDM_BACKTRACE
+	bool "Keep minimal backtrace information"
+
+config NDM_GENERIC_DEBUG
+	bool "Generic debug"
+
+config NDM_ASSERTS
+	bool "Enable asserts"
+
+config NDM_BUILD_TESTS
+	bool "Build tests"
+
+if NDM_GENERIC_DEBUG
+	config NDM_TIMER_DEBUG
+		bool "Timer debug"
+
+	config NDM_IO_DEBUG
+		bool "I/O debug"
+
+	config NDM_CLOUD_DEBUG
+		bool "Cloud debug"
+endif
+
+config NDM_EVENT_DEBUG
+	bool "Event debug"
+
+if NDM_EVENT_DEBUG
+	config NDM_EVENT_DBKEY_DEBUG
+		bool "Event::DbKey debug"
+
+	config NDM_EVENT_DEVICE_DEBUG
+		bool "Event::Device debug"
+
+	config NDM_EVENT_STATS_DEBUG
+		bool "Event::Stats debug"
+
+	config NDM_EVENT_TASK_DEBUG
+		bool "Event::TaskDone debug"
+endif
+
+config NDM_ASAN_DEBUG
+	bool "Enable address sanitizer"
+	select NDM_BACKTRACE
+
+config NDM_TSAN_DEBUG
+	bool "Enable thread sanitizer"
+	select NDM_BACKTRACE
+
+config NDM_UBSAN_DEBUG
+	bool "Enable undefined behaviour sanitizer"
+	select NDM_BACKTRACE
+
+config NDM_DEBUG_SYMBOLS
+	bool "Install debug symbol files"
+	select NDM_BACKTRACE
+
+if NDM_DEBUG_SYMBOLS
+	config NDM_DEBUG_OPTS
+		string "Additional debug options"
+		default "-ggdb -gdwarf-4 -O0"
+
+	config NDM_DEBUG_NO_LTO
+		bool "Disable link time optimization"
+		default y
+endif
+
+endmenu

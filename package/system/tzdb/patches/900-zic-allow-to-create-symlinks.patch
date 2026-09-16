@@ -1,0 +1,12 @@
+diff --git a/zic.c b/zic.c
+--- a/zic.c
++++ b/zic.c
+@@ -1507,7 +1507,7 @@ dolink(char const *target, char const *linkname, bool staysymlink)
+ 	    fprintf(stderr, _("%s: Can't link %s/%s to %s/%s: %s\n"),
+ 		    progname, directory, target, directory, outname,
+ 		    strerror(link_errno));
+-	    exit(EXIT_FAILURE);
++	    break;
+ 	  }
+ 	}
+ 	if (link_errno != 0) {

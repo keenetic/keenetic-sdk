@@ -1,0 +1,19 @@
+if PACKAGE_kmod-mt7916
+
+if TARGET_mt7986
+
+config MT7986_ADIE_MT7975
+	bool "MT7986 A-die MT7975"
+	default n
+
+endif
+
+if !TARGET_mt7981
+
+config MT7916AN_NIC
+	bool "MT7916AN PCIe NIC"
+	default n
+
+endif
+
+endif

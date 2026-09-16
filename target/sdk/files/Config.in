@@ -1,0 +1,6 @@
+config MODULES
+	bool
+	default y
+	option modules
+
+source "tmp/.config-package.in"

@@ -1,0 +1,36 @@
+From 146555785fa4564992e7375d91303dca59e1b6a3 Mon Sep 17 00:00:00 2001
+From: Christian Hesse <mail@eworm.de>
+Date: Mon, 23 Feb 2026 10:43:29 +0100
+Subject: [PATCH 1/1] fix build with recent gcc
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+With recent gcc (15.2.1+) the build fails with:
+
+ftp.c: In function ‘got_something_from_data_connection’:
+ftp.c:771:99: error: assignment of read-only location ‘*(const char *)strchr((const char *)ud, 1)’
+
+Let's use a temporary variable here...
+
+Signed-off-by: Christian Hesse <mail@eworm.de>
+---
+ ftp.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/ftp.c b/ftp.c
+index 7a8d05d..d521829 100644
+--- a/ftp.c
++++ b/ftp.c
+@@ -768,7 +768,10 @@ do {								\
+ } while (0)
+ 		A(ftp_head);
+ 		ud = stracpy(get_url_data(c->url));
+-		if (strchr(cast_const_char ud, POST_CHAR)) *strchr(cast_const_char ud, POST_CHAR) = 0;
++		if (strchr(cast_const_char ud, POST_CHAR)) {
++			char* tmp = strchr(cast_const_char ud, POST_CHAR);
++			*tmp = 0;
++		}
+ 		s0 = init_str();
+ 		s0l = 0;
+ 		add_conv_str(&s0, &s0l, ud, (int)strlen(cast_const_char ud), -1);

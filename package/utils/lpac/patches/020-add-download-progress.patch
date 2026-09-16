@@ -1,0 +1,47 @@
+diff --git a/euicc/es10b.c b/euicc/es10b.c
+index 33744fd..a23cbe8 100644
+--- a/euicc/es10b.c
++++ b/euicc/es10b.c
+@@ -5,6 +5,7 @@
+ #include "hexutil.h"
+ #include "base64.h"
+ #include "sha256.h"
++#include "../src/jprint.h"
+ 
+ #include <inttypes.h>
+ #include <stdio.h>
+@@ -185,6 +186,13 @@ static int es10b_load_bound_profile_package_tx(struct euicc_ctx *ctx, struct es1
+     int fret = 0;
+     uint8_t *respbuf = NULL;
+     unsigned resplen;
++    cJSON *jmetadata = NULL;
++
++    jmetadata = cJSON_CreateObject();
++
++    cJSON_AddNumberToObject(jmetadata, "proceed", reqbuf_len);
++
++    jprint_progress_obj("es10b_load_bound_profile_package_tx", jmetadata);
+ 
+     result->bppCommandId = ES10B_BPP_COMMAND_ID_UNDEFINED;
+     result->errorReason = ES10B_ERROR_REASON_UNDEFINED;
+@@ -302,6 +310,7 @@ int es10b_load_bound_profile_package_r(struct euicc_ctx *ctx, struct es10b_load_
+ 
+     const uint8_t *reqbuf;
+     int reqbuf_len;
++    cJSON *jmetadata = NULL;
+ 
+     struct euicc_derutil_node tmpnode, tmpchildnode, n_BoundProfilePackage;
+ 
+@@ -320,6 +329,12 @@ int es10b_load_bound_profile_package_r(struct euicc_ctx *ctx, struct es10b_load_
+         goto err;
+     }
+ 
++    jmetadata = cJSON_CreateObject();
++
++    cJSON_AddNumberToObject(jmetadata, "profileSize", n_BoundProfilePackage.length);
++
++    jprint_progress_obj("es10b_load_bound_profile_package_r", jmetadata);
++
+     if (euicc_derutil_unpack_find_tag(&tmpnode, 0xBF23, n_BoundProfilePackage.value, n_BoundProfilePackage.length) < 0)
+     {
+         goto err;

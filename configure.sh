@@ -18,7 +18,7 @@ kconfig_string_value () {
 
 # $1 - config
 config_boardname_get () {
-	kconfig_string_value $cfg CONFIG_TARGET_DESCRIPTION
+	kconfig_string_value $1 CONFIG_TARGET_DESCRIPTION
 }
 
 # $1 - config
@@ -107,6 +107,8 @@ cfg_cleanup() {
 }
 
 presets_list () {
+	local t
+
 	if [ -e $PRESETS_CFG ]; then
 		t=$(jq -r 'keys | join(" ")' $PRESETS_CFG)
 	fi
@@ -191,11 +193,13 @@ list_configs () {
 		for d in $devices; do
 			if [ -f target/linux/$t/$d/ndwrt.config ]; then
 				DESCRIPTION=$(grep DESCRIPTION target/linux/$t/$d/target.mk | cut -d = -f 2)
+				RADIO=$(grep "^CONFIG_HAS_.*_RADIO=y" target/linux/$t/$d/ndwrt.config | \
+					sed -e 's/^CONFIG_HAS_//' -e 's/_RADIO=y$//' | tr '\n' '+' | sed 's/+$//')
 
 				if [ $d == "generic" ]; then
-					printf "\t%-10s\t%-25s\r\n" "${t}" "${DESCRIPTION}"
+					printf "\t%-10s\t%-25s\t%s\r\n" "${t}" "${DESCRIPTION}" "${RADIO}"
 				else
-					printf "\t%-10s\t%-25s\r\n" "${d}" "${DESCRIPTION}"
+					printf "\t%-10s\t%-25s\t%s\r\n" "${d}" "${DESCRIPTION}" "${RADIO}"
 				fi
 
 				profiles=$(find target/linux/$t/$d \
@@ -207,7 +211,7 @@ list_configs () {
 				if [ -n "$profiles" ]; then
 					for p in $profiles; do
 						profile_name=$(grep NAME target/linux/$t/$d/profiles/${p}.mk | cut -d = -f 2)
-						printf "\t%-10s\t%-25s\t%s\r\n" "${d}_${p}" "${DESCRIPTION}" "${profile_name}"
+						printf "\t%-10s\t%-25s\t%-25s\t%s\r\n" "${d}_${p}" "${DESCRIPTION}" "${RADIO}" "${profile_name}"
 					done
 				fi
 			fi
@@ -345,7 +349,7 @@ usage () {
 	echo -e "\t-h - display this help and exit"
 	echo -e "\t-i - display information about current config"
 	echo -e "\t-l - list all devices"
-	echo -e "\t-p <preset>" - apply given preset
+	echo -e "\t-p <preset> - apply given preset"
 	echo -e "\t-r - remove components selected as modules (only with -p)"
 	echo -e "\t-s - save current config"
 	echo

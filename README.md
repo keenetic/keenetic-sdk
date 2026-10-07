@@ -26,7 +26,7 @@ Connect to the Keenetic web interface and go to the 'System settings' page.
 In the 'System files' section, select the firmware file and click the 'Save to computer' button to
 download the copy of this file.
 
-Write down the version of KeeneticOS (e.g. `5.01.C.6.0-1`).
+Write down the version of KeeneticOS (e.g. `5.01.C.7.0-4`).
 
 ## Step 2. Set up your environment
 
@@ -50,7 +50,7 @@ We recommend to use the latest long-term support (LTS) version of Ubuntu (https:
 
 	$ make -j$(grep processor /proc/cpuinfo | wc -l)
 
-You can find the firmware file in the 'bin' directory (e.g. `bin/mt7621/20260916_2212_KN-1010-5.01.C.6.0-1.bin`)
+You can find the firmware file in the 'bin' directory (e.g. `bin/mt7621/20261007_1611_KN-1010-5.01.C.7.0-4.bin`)
 
 ## Step 6. Customization
 

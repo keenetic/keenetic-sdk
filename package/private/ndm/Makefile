@@ -970,6 +970,22 @@ endef
 
 $(eval $(call BuildPackage,ndm-mod-isp-snmp))
 
+define Package/ndm-mod-isp-test
+  SUBMENU:=Extras
+  CATEGORY:=NDM
+  TITLE:=NDM ISP test module
+  DEPENDS:=+libc +SSP_SUPPORT:libssp +ndm +libsupcxx +NDM_BACKTRACE:libunwind +ndm-mod-isp-lock
+  DISABLE_RSTRIP:=y
+endef
+
+define Package/ndm-mod-isp-test/install
+	if [ -d ./files-ndm-mod-isp-test ]; then \
+		$(CP) ./files-ndm-mod-isp-test/* $(1); \
+	fi
+endef
+
+$(eval $(call BuildPackage,ndm-mod-isp-test))
+
 define Package/ndm-mod-isp-tools-get
   SUBMENU:=Extras
   CATEGORY:=NDM

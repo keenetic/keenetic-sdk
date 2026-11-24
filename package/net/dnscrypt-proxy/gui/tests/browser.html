@@ -1,0 +1,110 @@
+<!doctype html>
+<!--
+  Drives ../index.html in a real browser. Serve the gui directory over HTTP and open this page:
+
+    cd package/net/dnscrypt-proxy/gui
+    python3 -m http.server 8000
+    # then open http://127.0.0.1:8000/tests/browser.html
+
+  The result is written to the page and to the title ("DONE pass=N fail=M"). A headless run:
+
+    msedge --headless=new --virtual-time-budget=40000 --dump-dom http://127.0.0.1:8000/tests/browser.html
+
+  The page is loaded into a frame, so that script errors of the page can be collected.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>browser test</title>
+<style>body{font:13px monospace;margin:8px} #out{background:#f4f4f4;padding:6px;white-space:pre-wrap} iframe{width:1100px;height:2100px;border:1px solid #999}</style>
+</head>
+<body>
+<pre id="out">running...</pre>
+<iframe id="f"></iframe>
+<script src="../core.js"></script>
+<script>
+(function () {
+  var out = document.getElementById('out');
+  var pass = 0, fail = 0, log = [];
+  function step(name, fn) {
+    try { fn(); pass++; log.push('ok   ' + name); }
+    catch (e) { fail++; log.push('FAIL ' + name + ' :: ' + (e && e.message)); }
+  }
+  function eq(a, b, m) { if (a !== b) throw new Error((m || 'values differ') + ': ' + JSON.stringify(a) + ' !== ' + JSON.stringify(b)); }
+  function ok(c, m) { if (!c) throw new Error(m || 'assertion failed'); }
+  var GOOD = 'sdns://AQcAAAAAAAAADTE5Mi4wLjIuMTo0NDMgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbMi5kbnNjcnlwdC1jZXJ0LmV4YW1wbGUuY29t';
+
+  fetch('../index.html').then(function (r) { return r.text(); }).then(function (html) {
+    var guard = '<base href="../"><script>window.__errs=[];window.addEventListener("error",function(e){window.__errs.push(e.message)});window.addEventListener("unhandledrejection",function(e){window.__errs.push("rejection: "+e.reason)});<\/script>';
+    var f = document.getElementById('f');
+    f.srcdoc = html.replace('<head>', '<head>' + guard);
+    f.onload = function () { setTimeout(run, 1500); };
+  });
+
+  function run() {
+    var w = document.getElementById('f').contentWindow, d = w.document;
+    var $ = function (id) { return d.getElementById(id); };
+    function fire(e, t) { e.dispatchEvent(new w.Event(t, { bubbles: true })); }
+    function set(id, v) { $(id).value = v; fire($(id), 'input'); fire($(id), 'change'); }
+    function check(id, on) { $(id).checked = on; fire($(id), 'change'); }
+    function mode(m) { var r = d.querySelector('input[name="mode"][value="' + m + '"]'); r.checked = true; fire(r, 'change'); }
+    function click(id) { $(id).dispatchEvent(new w.MouseEvent('click', { bubbles: true, cancelable: true })); }
+    var rows = function () { return d.querySelectorAll('#server-table tbody tr').length; };
+
+    step('the page ran without script errors so far', function () { eq(w.__errs.length, 0, w.__errs.join(' | ')); });
+    step('the sample list was fetched over HTTP', function () { ok(/6 servers and 3 relays/.test($('list-status').textContent), $('list-status').textContent); });
+    step('layout: the page does not overflow sideways at 1100 px', function () {
+      ok(d.documentElement.scrollWidth <= d.documentElement.clientWidth + 1, 'scrollWidth ' + d.documentElement.scrollWidth + ' > ' + d.documentElement.clientWidth);
+    });
+    step('the port note is not under the post-quantum option', function () {
+      var pq = $('o-pq').closest('fieldset');
+      ok(!/port 443/.test(pq.textContent), 'the port note is inside the transport block');
+      ok(/Ports/.test(d.body.textContent), 'the Ports block is missing');
+    });
+    step('the add panel is hidden at first and the table is empty', function () { eq($('add-panel').hidden, true); eq(rows(), 0); ok($('add-panel').getBoundingClientRect().height === 0, 'panel takes space while hidden'); });
+    step('add a server from the list', function () {
+      click('add-link'); ok($('add-panel').getBoundingClientRect().height > 100, 'panel did not open');
+      set('pick', 'example-dnscrypt-443'); click('save-server');
+      eq(rows(), 1); ok($('toml').value.indexOf("server_names = ['example-dnscrypt-443']") !== -1, 'toml');
+    });
+    step('add a personal DoH address', function () {
+      click('add-link'); mode('doh'); set('doh-name', 'my-doh'); set('doh-url', 'https://dns.example/abc123'); click('save-server');
+      eq(rows(), 2); ok(/\[static\.my-doh\]/.test($('toml').value), 'static entry');
+    });
+    step('add a custom stamp and change its port', function () {
+      click('add-link'); mode('stamp'); set('stamp-name', 'mine');
+      set('stamp-input', 'sdns://AQcAAAAAAAAADTE5Mi4wLjIuMTo0NDMgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbMi5kbnNjcnlwdC1jZXJ0LmV4YW1wbGUuY29t');
+      set('stamp-port', '8443'); click('stamp-port-apply'); ok(/port 8443/.test($('stamp-info').textContent), $('stamp-info').textContent);
+      click('save-server'); eq(rows(), 3);
+    });
+    step('a stamp with text that is not UTF-8 gives a readable message', function () {
+      click('add-link'); mode('stamp');
+      var bytes = Array.from(DnsCryptCore.b64urlDecode(GOOD.slice(7)));
+      bytes[bytes.length - 1] = 0xff;                // the last byte of the provider name
+      set('stamp-input', 'sdns://' + DnsCryptCore.b64urlEncode(Uint8Array.from(bytes)));
+      ok(/not valid UTF-8/.test($('stamp-info').textContent), $('stamp-info').textContent);
+      click('cancel-server');
+    });
+    step('options reach the configuration', function () {
+      check('o-http3', true); check('o-tcp', true); set('o-mark', '4660');
+      var t = $('toml').value; ok(t.indexOf('http3 = true') !== -1 && t.indexOf('force_tcp = true') !== -1 && t.indexOf('socket_mark = 4660') !== -1, 'options missing');
+    });
+    step('delete a server', function () { d.querySelector('#server-table tbody tr button').click(); eq(rows(), 2); });
+    step('a hostile list is shown as text only', function () {
+      w.DnsCryptApp.loadList([{ name: '<img src=x onerror="window.pwned=1">', proto: 'DoH', ports: [443], dnssec: true, nolog: true, nofilter: true, description: '<script>window.pwned=2<\/script><b>bold</b>' }]);
+      click('add-link'); mode('list'); set('pick', '<img src=x onerror="window.pwned=1">');
+      eq(d.querySelectorAll('#add-panel img, #add-panel script, #add-panel b').length, 0, 'markup became elements');
+      ok(/<script>/.test($('pick-info').textContent), 'text not shown'); eq(w.pwned, undefined, 'script ran');
+      click('save-server'); ok(/unsupported characters/.test($('add-errors').textContent), 'name was accepted'); click('cancel-server');
+    });
+    step('the copy button is enabled for a valid configuration', function () { eq($('copy-toml').disabled, false); });
+    step('no script errors happened during the whole run', function () { eq(w.__errs.length, 0, w.__errs.join(' | ')); });
+    log.push('     ' + navigator.userAgent);
+
+    out.textContent = log.join('\n') + '\n\n' + pass + ' passed, ' + fail + ' failed';
+    document.title = 'DONE pass=' + pass + ' fail=' + fail;
+  }
+})();
+</script>
+</body>
+</html>

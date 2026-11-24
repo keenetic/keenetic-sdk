@@ -11,11 +11,12 @@ The daemon supports:
 
 This is a plain SDK package, like `stubby` (DNS-over-TLS) and `https-dns-proxy`
 (DNS-over-HTTPS). It provides the daemon and a default configuration.
-It does not provide a KeeneticOS component: the NDM side is closed source and
-is not part of this SDK (see "Integration" below).
+It does not provide a KeeneticOS component: NDM sources are not part of this
+repository (see "Integration" below).
 
-This package is an AI-assisted research contribution. It has not been built as
-part of a full SDK image and has not been run on a router.
+This package is an AI-assisted research contribution, submitted for review. It
+has not had an independent security audit, has not been built as part of a full
+SDK image, and has not been run on a router.
 
 ## Build requirements
 
@@ -130,17 +131,24 @@ Useful options for process management: `-pidfile <file>`, `-check`
   dependency and is not changed by this package.
 - Dependency licenses (vendored, 33 modules): MIT, BSD, ISC, Apache-2.0,
   zlib-style, and MPL-2.0 for `hashicorp/go-immutable-radix` and
-  `hashicorp/golang-lru`. MPL-2.0 is file-level copyleft and allows combination
-  with GPL-licensed code. The source of these modules is part of the
-  upstream source tarball.
+  `hashicorp/golang-lru`. The licenses were identified by reading the license
+  files in the vendored sources, not by a formal review. MPL-2.0 has file-level
+  copyleft terms, so redistribution and notice requirements should be confirmed
+  by someone qualified before this is shipped in an image. The source of these
+  modules is part of the upstream source tarball.
 
 ## Integration
 
-Nothing in the SDK starts the daemon, adds it to a component list, or exposes it
-in the web interface or CLI. For DoT and DoH this is done by the closed-source
-NDM, which writes a stubby or https-dns-proxy configuration pointing to a
-loopback address. DNSCrypt needs the equivalent NDM change, which can only be
-made by Keenetic.
+Nothing in this package starts the daemon, adds it to a component list, points
+the system resolver at it, or exposes it in the web interface or CLI.
+How the existing `stubby` and `https-dns-proxy` packages are started and
+configured is not documented in this repository, so this package makes no
+assumption about it.
+
+A user-facing feature would need integration work on the Keenetic side, in
+components that are not part of this repository. This package does not request
+or depend on access to that code. Until such integration exists, the daemon
+can only be started and configured by hand.
 
 ## Verification
 

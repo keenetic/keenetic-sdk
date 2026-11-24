@@ -13,12 +13,14 @@
 listen_addresses = ['127.0.0.1:5359']
 max_clients = 250
 
-## Protocols. All of them are enabled.
+## Protocols. DNSCrypt and DoH are enabled. Oblivious DoH is supported by the
+## daemon, but it only works through a relay, so it is disabled until relay
+## routes are configured (see the [anonymized_dns] section at the end).
 ipv4_servers = true
 ipv6_servers = false
 dnscrypt_servers = true
 doh_servers = true
-odoh_servers = true
+odoh_servers = false
 
 ## Required server properties. Only resolvers that validate DNSSEC, keep no
 ## logs and do no filtering are used.
@@ -78,28 +80,34 @@ cache_neg_max_ttl = 600
   refresh_delay = 73
   prefix = ''
 
-  ## Oblivious DoH servers and relays
-  [sources.odoh-servers]
-  urls = [
-    'https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/odoh-servers.md',
-    'https://download.dnscrypt.info/resolvers-list/v3/odoh-servers.md',
-    'https://cdn.jsdelivr.net/gh/DNSCrypt/dnscrypt-resolvers@master/v3/odoh-servers.md'
-  ]
-  cache_file = '/tmp/dnscrypt-proxy/odoh-servers.md'
-  minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
-  refresh_delay = 73
-  prefix = ''
+  ## Oblivious DoH servers and relays. To use ODoH, uncomment these two
+  ## sources, set odoh_servers = true and define routes (see below).
+  # [sources.odoh-servers]
+  # urls = [
+  #   'https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/odoh-servers.md',
+  #   'https://download.dnscrypt.info/resolvers-list/v3/odoh-servers.md',
+  #   'https://cdn.jsdelivr.net/gh/DNSCrypt/dnscrypt-resolvers@master/v3/odoh-servers.md'
+  # ]
+  # cache_file = '/tmp/dnscrypt-proxy/odoh-servers.md'
+  # minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
+  # refresh_delay = 73
+  # prefix = ''
+  #
+  # [sources.odoh-relays]
+  # urls = [
+  #   'https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/odoh-relays.md',
+  #   'https://download.dnscrypt.info/resolvers-list/v3/odoh-relays.md',
+  #   'https://cdn.jsdelivr.net/gh/DNSCrypt/dnscrypt-resolvers@master/v3/odoh-relays.md'
+  # ]
+  # cache_file = '/tmp/dnscrypt-proxy/odoh-relays.md'
+  # minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
+  # refresh_delay = 73
+  # prefix = ''
 
-  [sources.odoh-relays]
-  urls = [
-    'https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/odoh-relays.md',
-    'https://download.dnscrypt.info/resolvers-list/v3/odoh-relays.md',
-    'https://cdn.jsdelivr.net/gh/DNSCrypt/dnscrypt-resolvers@master/v3/odoh-relays.md'
-  ]
-  cache_file = '/tmp/dnscrypt-proxy/odoh-relays.md'
-  minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
-  refresh_delay = 73
-  prefix = ''
+## The monitoring web interface is disabled. Upstream's defaults for it include
+## the credentials admin/changeme, so do not enable it without changing them.
+[monitoring_ui]
+enabled = false
 
 ## Anonymized DNSCrypt and Oblivious DoH routes.
 ##

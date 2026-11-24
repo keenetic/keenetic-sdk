@@ -20,6 +20,9 @@ PKG_LICENSE_FILES:=LICENSE
 # All dependencies are vendored by upstream, so no network access is needed
 # during the build. The binary is pure Go (CGO_ENABLED=0) and statically
 # linked, so it does not depend on the target C library.
+# -buildvcs=false keeps Go from stamping the revision of the SDK git checkout
+# (the build directory is inside it) into the binary. GOMIPS=softfloat is used
+# because the kernel is built without the MIPS FPU emulator.
 DNSCRYPT_PROXY_GO ?= go
 
 ifeq ($(ARCH),aarch64)
@@ -71,10 +74,12 @@ define Build/Compile
 		$(if $(DNSCRYPT_PROXY_GOMIPS),GOMIPS=$(DNSCRYPT_PROXY_GOMIPS)) \
 		CGO_ENABLED=0 \
 		GOFLAGS=-mod=vendor \
+		GOPROXY=off \
+		GOWORK=off \
 		GOTOOLCHAIN=local \
 		GOCACHE=$(PKG_BUILD_DIR)/.go-cache \
 		GOPATH=$(PKG_BUILD_DIR)/.go-path \
-		$(DNSCRYPT_PROXY_GO) build -trimpath -ldflags '-s -w' \
+		$(DNSCRYPT_PROXY_GO) build -trimpath -buildvcs=false -ldflags '-s -w' \
 			-o $(PKG_BUILD_DIR)/dnscrypt-proxy.bin ./dnscrypt-proxy
 endef
 
@@ -82,7 +87,7 @@ define Package/dnscrypt-proxy/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/dnscrypt-proxy.bin $(1)/usr/sbin/dnscrypt-proxy
 	$(INSTALL_DIR) $(1)/etc/dnscrypt-proxy
-	$(INSTALL_CONF) ./files/dnscrypt-proxy.toml $(1)/etc/dnscrypt-proxy/dnscrypt-proxy.toml
+	$(INSTALL_DATA) ./files/dnscrypt-proxy.toml $(1)/etc/dnscrypt-proxy/dnscrypt-proxy.toml
 endef
 
 $(eval $(call BuildPackage,dnscrypt-proxy))

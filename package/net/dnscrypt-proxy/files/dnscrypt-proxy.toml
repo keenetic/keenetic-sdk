@@ -28,9 +28,45 @@ require_dnssec = true
 require_nolog = true
 require_nofilter = true
 
-## Connection settings
+## Server selection. Without server_names, the fastest servers that match the
+## filters above are used. To pin servers, list their names from
+## public-resolvers.md (`dnscrypt-proxy -list` prints the ones that match), or
+## the names of [static] entries at the end of this file.
+## The require_* filters apply only while server_names is empty. A server that is
+## named here is used even if it does not meet them, so check what you pin with
+## `dnscrypt-proxy -list-all -json`.
+# server_names = ['scaleway-fr', 'quad9-dnscrypt-ip4-nofilter-pri']
+# disabled_server_names = []
+
+## Connection settings.
+##
+## The destination port is part of each server's stamp and is chosen by the
+## server operator, not here. To use port 443, pick servers or relays whose
+## stamps use it. Most DNSCrypt servers and relays in the public lists do,
+## and DoH always runs over HTTPS.
+##
+## force_tcp sends DNSCrypt queries over TCP instead of UDP. TCP is needed when
+## UDP is blocked or fragments are dropped, which also affects Anonymized
+## DNSCrypt. It adds latency. DoH always uses TCP unless http3 is enabled.
 force_tcp = false
+
+## HTTP/3 (QUIC, UDP) for DNS-over-HTTPS. With http3 = true a server is first
+## reached over HTTP/2 and the proxy switches to HTTP/3 when the server announces
+## it. Add http3_probe = true to try HTTP/3 first. HTTP/3 needs UDP port 443 to
+## be reachable.
 http3 = false
+# http3_probe = false
+
+## Post-quantum key exchange (PQDNSCrypt) is used when a server supports it.
+## This is the upstream default and is listed here to make it visible.
+# pqdnscrypt = true
+
+## Linux only, needs a patch that this package applies: set this SO_MARK value on
+## every socket used to reach upstream servers, relays, resolver lists and
+## bootstrap resolvers, so that routing rules can match it. Needs
+## CAP_NET_ADMIN and cannot be combined with user_name. 0 turns it off.
+# socket_mark = 0
+
 timeout = 5000
 keepalive = 30
 
@@ -38,8 +74,10 @@ keepalive = 30
 use_syslog = true
 # log_level = 2
 
-## The system resolver forwards to this proxy, so it must not be used to
-## resolve the proxy's own upstream names (that would create a loop).
+## Names of upstream servers are resolved with these plain DNS servers. If none of
+## them answers, the proxy still falls back to the system resolver as a last
+## resort, whatever ignore_system_dns says. When the system resolver forwards to
+## this proxy, that fallback can loop, so keep the bootstrap resolvers reachable.
 bootstrap_resolvers = ['9.9.9.9:53', '1.1.1.1:53']
 ignore_system_dns = true
 netprobe_timeout = 60
@@ -111,13 +149,27 @@ enabled = false
 
 ## Anonymized DNSCrypt and Oblivious DoH routes.
 ##
-## Queries are sent through a relay only when a route is defined. Relay and
-## server names come from relays.md, public-resolvers.md and odoh-*.md.
-## Choose a relay and a server operated by different entities.
+## Queries are sent through a relay only when a route is defined. Relay names
+## come from relays.md and odoh-relays.md (`dnscrypt-proxy -list -include-relays`).
+## A relay can also be given directly as a relay stamp. Choose a relay and a
+## server operated by different entities.
 ## Example (names are placeholders):
 # [anonymized_dns]
 # routes = [
-#   { server_name='*', via=['anon-example-1', 'anon-example-2'] }
+#   { server_name='scaleway-fr', via=['anon-example-1', 'anon-example-2'] },
+#   { server_name='custom-dnscrypt', via=['sdns://gQ0xOTIuMC4yLjI6NDQz'] }
 # ]
 # skip_incompatible = false
-# direct_cert_fallback = true
+# direct_cert_fallback = false
+
+## Custom servers that are not in the public lists, for example a private
+## DNSCrypt server or a resolver profile. Each entry needs the server's DNS stamp
+## (sdns://...), which encodes the protocol, address, port and keys. Add the
+## entry name to server_names above to use it. A stamp can contain a personal
+## profile identifier, so treat it as private.
+## Example. The stamps in this file are well-formed placeholders that use the
+## documentation address range 192.0.2.0/24 and an all-zero key, so they never
+## reach a real server.
+# [static]
+#   [static.custom-dnscrypt]
+#   stamp = 'sdns://AQcAAAAAAAAADTE5Mi4wLjIuMTo0NDMgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbMi5kbnNjcnlwdC1jZXJ0LmV4YW1wbGUuY29t'

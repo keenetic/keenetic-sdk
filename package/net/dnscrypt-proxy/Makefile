@@ -15,15 +15,18 @@ PKG_HASH:=8427c2d3c16a0509db89abaebe7a4390014c7e5919290d5dabef8130c5ff7019
 PKG_LICENSE:=ISC
 PKG_LICENSE_FILES:=LICENSE
 
-# The SDK has no Go toolchain package. The daemon is built with the Go
-# toolchain installed on the build host (see README.md in this directory).
+# The daemon is built with the host Go toolchain from package/devel/golang
+# (the version must satisfy the "go" line of the upstream go.mod). To use a
+# different Go, set DNSCRYPT_PROXY_GO=/path/to/go (see README.md in this
+# directory).
 # All dependencies are vendored by upstream, so no network access is needed
 # during the build. The binary is pure Go (CGO_ENABLED=0) and statically
 # linked, so it does not depend on the target C library.
 # -buildvcs=false keeps Go from stamping the revision of the SDK git checkout
 # (the build directory is inside it) into the binary. GOMIPS=softfloat is used
 # because the kernel is built without the MIPS FPU emulator.
-DNSCRYPT_PROXY_GO ?= go
+PKG_BUILD_DEPENDS:=golang/host
+DNSCRYPT_PROXY_GO ?= $(STAGING_DIR_HOST)/lib/go/bin/go
 
 ifeq ($(ARCH),aarch64)
   DNSCRYPT_PROXY_GOARCH:=arm64
@@ -63,9 +66,8 @@ endef
 define Build/Compile
 	$(if $(DNSCRYPT_PROXY_GOARCH),,$(error dnscrypt-proxy: unsupported architecture '$(ARCH)'))
 	@command -v $(DNSCRYPT_PROXY_GO) >/dev/null 2>&1 || { \
-		echo "dnscrypt-proxy: Go toolchain '$(DNSCRYPT_PROXY_GO)' not found in PATH." >&2; \
-		echo "dnscrypt-proxy: install Go (see go.mod in the source for the minimum version)" >&2; \
-		echo "dnscrypt-proxy: or set DNSCRYPT_PROXY_GO=/path/to/go." >&2; \
+		echo "dnscrypt-proxy: Go toolchain '$(DNSCRYPT_PROXY_GO)' was not found." >&2; \
+		echo "dnscrypt-proxy: build package/devel/golang first, or set DNSCRYPT_PROXY_GO=/path/to/go." >&2; \
 		exit 1; \
 	}
 	cd $(PKG_BUILD_DIR) && \

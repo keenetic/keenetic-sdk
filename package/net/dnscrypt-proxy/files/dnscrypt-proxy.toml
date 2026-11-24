@@ -1,0 +1,115 @@
+# dnscrypt-proxy default configuration for KeeneticOS.
+#
+# Based on upstream example-dnscrypt-proxy.toml (2.1.21). Only the options
+# that matter on a router are set here. See the upstream file for the full
+# list of options and their documentation.
+#
+# The daemon is expected to be started by the system with
+#   mkdir -p /tmp/dnscrypt-proxy
+#   dnscrypt-proxy -config /etc/dnscrypt-proxy/dnscrypt-proxy.toml
+# because /etc is read-only and all runtime state is kept under /tmp.
+
+## Local address the proxy listens on. Port 53 is left to the system resolver.
+listen_addresses = ['127.0.0.1:5359']
+max_clients = 250
+
+## Protocols. All of them are enabled.
+ipv4_servers = true
+ipv6_servers = false
+dnscrypt_servers = true
+doh_servers = true
+odoh_servers = true
+
+## Required server properties. Only resolvers that validate DNSSEC, keep no
+## logs and do no filtering are used.
+require_dnssec = true
+require_nolog = true
+require_nofilter = true
+
+## Connection settings
+force_tcp = false
+http3 = false
+timeout = 5000
+keepalive = 30
+
+## Logging goes to syslog. There is no persistent storage for log files.
+use_syslog = true
+# log_level = 2
+
+## The system resolver forwards to this proxy, so it must not be used to
+## resolve the proxy's own upstream names (that would create a loop).
+bootstrap_resolvers = ['9.9.9.9:53', '1.1.1.1:53']
+ignore_system_dns = true
+netprobe_timeout = 60
+netprobe_address = '9.9.9.9:53'
+
+## Cache
+cache = true
+cache_size = 4096
+cache_min_ttl = 2400
+cache_max_ttl = 86400
+cache_neg_min_ttl = 60
+cache_neg_max_ttl = 600
+
+## Resolver lists. Cache files go to /tmp, the directory must exist
+## before the daemon starts.
+[sources]
+
+  [sources.public-resolvers]
+  urls = [
+    'https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md',
+    'https://download.dnscrypt.info/resolvers-list/v3/public-resolvers.md',
+    'https://cdn.jsdelivr.net/gh/DNSCrypt/dnscrypt-resolvers@master/v3/public-resolvers.md'
+  ]
+  cache_file = '/tmp/dnscrypt-proxy/public-resolvers.md'
+  minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
+  refresh_delay = 73
+  prefix = ''
+
+  ## Anonymized DNSCrypt relays
+  [sources.relays]
+  urls = [
+    'https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/relays.md',
+    'https://download.dnscrypt.info/resolvers-list/v3/relays.md',
+    'https://cdn.jsdelivr.net/gh/DNSCrypt/dnscrypt-resolvers@master/v3/relays.md'
+  ]
+  cache_file = '/tmp/dnscrypt-proxy/relays.md'
+  minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
+  refresh_delay = 73
+  prefix = ''
+
+  ## Oblivious DoH servers and relays
+  [sources.odoh-servers]
+  urls = [
+    'https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/odoh-servers.md',
+    'https://download.dnscrypt.info/resolvers-list/v3/odoh-servers.md',
+    'https://cdn.jsdelivr.net/gh/DNSCrypt/dnscrypt-resolvers@master/v3/odoh-servers.md'
+  ]
+  cache_file = '/tmp/dnscrypt-proxy/odoh-servers.md'
+  minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
+  refresh_delay = 73
+  prefix = ''
+
+  [sources.odoh-relays]
+  urls = [
+    'https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/odoh-relays.md',
+    'https://download.dnscrypt.info/resolvers-list/v3/odoh-relays.md',
+    'https://cdn.jsdelivr.net/gh/DNSCrypt/dnscrypt-resolvers@master/v3/odoh-relays.md'
+  ]
+  cache_file = '/tmp/dnscrypt-proxy/odoh-relays.md'
+  minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
+  refresh_delay = 73
+  prefix = ''
+
+## Anonymized DNSCrypt and Oblivious DoH routes.
+##
+## Queries are sent through a relay only when a route is defined. Relay and
+## server names come from relays.md, public-resolvers.md and odoh-*.md.
+## Choose a relay and a server operated by different entities.
+## Example (names are placeholders):
+# [anonymized_dns]
+# routes = [
+#   { server_name='*', via=['anon-example-1', 'anon-example-2'] }
+# ]
+# skip_incompatible = false
+# direct_cert_fallback = true

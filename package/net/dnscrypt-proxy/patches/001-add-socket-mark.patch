@@ -1,0 +1,483 @@
+diff --git a/dnscrypt-proxy/config.go b/dnscrypt-proxy/config.go
+index 8a93530..d9816e9 100644
+--- a/dnscrypt-proxy/config.go
++++ b/dnscrypt-proxy/config.go
+@@ -50,6 +50,7 @@ type Config struct {
+ 	BlockUnqualified         bool               `toml:"block_unqualified"`
+ 	BlockUndelegated         bool               `toml:"block_undelegated"`
+ 	EnableHotReload          bool               `toml:"enable_hot_reload"`
++	SocketMark               int                `toml:"socket_mark"`
+ 	Cache                    bool
+ 	CacheSize                int                         `toml:"cache_size"`
+ 	CacheNegTTL              uint32                      `toml:"cache_neg_ttl"`
+@@ -380,6 +381,9 @@ func ConfigLoad(proxy *Proxy, flags *ConfigFlags) error {
+ 	proxy.logMaxAge = config.LogMaxAge
+ 	proxy.logMaxBackups = config.LogMaxBackups
+ 	proxy.userName = config.UserName
++	if err := setSocketMark(config.SocketMark, config.UserName); err != nil {
++		dlog.Fatal(err)
++	}
+ 	proxy.child = *flags.Child
+ 	proxy.enableHotReload = config.EnableHotReload
+ 	proxy.xTransport = NewXTransport()
+diff --git a/dnscrypt-proxy/dnsutils.go b/dnscrypt-proxy/dnsutils.go
+index 414ba6f..14f503f 100644
+--- a/dnscrypt-proxy/dnsutils.go
++++ b/dnscrypt-proxy/dnsutils.go
+@@ -512,7 +512,7 @@ func _dnsExchange(
+ 			proxy.prepareForRelay(udpAddr.IP, udpAddr.Port, &binQuery)
+ 			upstreamAddr = relay.RelayUDPAddr
+ 		}
+-		pc, err := net.DialTimeout("udp", upstreamAddr.String(), proxy.timeout)
++		pc, err := dialTimeout("udp", upstreamAddr.String(), proxy.timeout)
+ 		if err != nil {
+ 			return DNSExchangeResponse{err: err}
+ 		}
+@@ -558,7 +558,7 @@ func _dnsExchange(
+ 		var pc net.Conn
+ 		proxyDialer := proxy.xTransport.proxyDialer
+ 		if proxyDialer == nil {
+-			pc, err = net.DialTimeout("tcp", upstreamAddr.String(), proxy.timeout)
++			pc, err = dialTimeout("tcp", upstreamAddr.String(), proxy.timeout)
+ 		} else {
+ 			pc, err = (*proxyDialer).Dial("tcp", upstreamAddr.String())
+ 		}
+diff --git a/dnscrypt-proxy/example-dnscrypt-proxy.toml b/dnscrypt-proxy/example-dnscrypt-proxy.toml
+index 686a73e..4017aa7 100644
+--- a/dnscrypt-proxy/example-dnscrypt-proxy.toml
++++ b/dnscrypt-proxy/example-dnscrypt-proxy.toml
+@@ -52,6 +52,14 @@ max_clients = 250
+ 
+ # user_name = 'nobody'
+ 
++## Linux only: set this SO_MARK value on every socket used to reach upstream
++## servers (resolvers, relays, resolver lists and bootstrap lookups), so that
++## routing rules can match it. Needs CAP_NET_ADMIN and cannot be combined with user_name.
++## 0 disables it. Traffic sent through the 'proxy' option or by forwarding
++## rules is not marked.
++
++# socket_mark = 0
++
+ 
+ ###############################################################################
+ #                            Server Selection                                  #
+diff --git a/dnscrypt-proxy/netprobe_others.go b/dnscrypt-proxy/netprobe_others.go
+index ce727bb..8d83dbe 100644
+--- a/dnscrypt-proxy/netprobe_others.go
++++ b/dnscrypt-proxy/netprobe_others.go
+@@ -34,7 +34,7 @@ func NetProbe(proxy *Proxy, address string, timeout int) error {
+ 		var err error
+ 		for _, remoteUDPAddr := range remoteUDPAddrs {
+ 			var pc net.Conn
+-			pc, err = net.DialTimeout("udp", remoteUDPAddr.String(), proxy.timeout)
++			pc, err = dialTimeout("udp", remoteUDPAddr.String(), proxy.timeout)
+ 			if err == nil {
+ 				pc.Close()
+ 				break
+diff --git a/dnscrypt-proxy/proxy.go b/dnscrypt-proxy/proxy.go
+index e84d451..29aa7f8 100644
+--- a/dnscrypt-proxy/proxy.go
++++ b/dnscrypt-proxy/proxy.go
+@@ -762,7 +762,7 @@ func (proxy *Proxy) exchangeWithTCPServer(
+ 	var pc net.Conn
+ 	proxyDialer := proxy.xTransport.proxyDialer
+ 	if proxyDialer == nil {
+-		pc, err = net.DialTimeout("tcp", upstreamAddr.String(), serverInfo.Timeout)
++		pc, err = dialTimeout("tcp", upstreamAddr.String(), serverInfo.Timeout)
+ 	} else {
+ 		pc, err = (*proxyDialer).Dial("tcp", upstreamAddr.String())
+ 	}
+diff --git a/dnscrypt-proxy/socketmark_linux.go b/dnscrypt-proxy/socketmark_linux.go
+new file mode 100755
+index 0000000..d492ead
+--- /dev/null
++++ b/dnscrypt-proxy/socketmark_linux.go
+@@ -0,0 +1,111 @@
++package main
++
++import (
++	"context"
++	"errors"
++	"fmt"
++	"net"
++	"syscall"
++	"time"
++
++	"golang.org/x/sys/unix"
++)
++
++// socketMark is the SO_MARK value set on every socket that carries traffic
++// to upstream servers. Zero disables the feature, and then the functions
++// below are plain wrappers around the net package.
++var socketMark int
++
++// defaultResolver is the standard resolver, restored when the mark is disabled.
++var defaultResolver = net.DefaultResolver
++
++// setSocketMark validates and activates the socket_mark option. Setting
++// SO_MARK needs CAP_NET_ADMIN. The capability is lost when user_name makes
++// the process switch to another user, so the two options cannot be combined.
++func setSocketMark(mark int, userName string) error {
++	socketMark = 0
++	net.DefaultResolver = defaultResolver
++	if mark == 0 {
++		return nil
++	}
++	if mark < 0 || mark > 0x7fffffff {
++		return fmt.Errorf("socket_mark [%d] is out of range", mark)
++	}
++	if len(userName) > 0 {
++		return errors.New(
++			"socket_mark cannot be combined with user_name: the CAP_NET_ADMIN capability would be lost when switching user",
++		)
++	}
++	socketMark = mark
++	lc := net.ListenConfig{Control: socketMarkControl()}
++	pc, err := lc.ListenPacket(context.Background(), "udp4", "127.0.0.1:0")
++	if err != nil {
++		socketMark = 0
++		return fmt.Errorf("unable to set socket_mark, CAP_NET_ADMIN is required: %w", err)
++	}
++	if err := pc.Close(); err != nil {
++		return err
++	}
++	// net.LookupIP, the last resort to resolve server host names, goes through
++	// net.DefaultResolver. Mark its sockets too.
++	net.DefaultResolver = &net.Resolver{
++		PreferGo: true,
++		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
++			dialer := net.Dialer{Control: socketMarkControl()}
++			return dialer.DialContext(ctx, network, address)
++		},
++	}
++	return nil
++}
++
++// socketMarkControl returns a control function for net.Dialer and
++// net.ListenConfig that sets SO_MARK, or nil if no mark is configured.
++// A failure to set the mark fails the connection, so that traffic is never
++// sent unmarked.
++func socketMarkControl() func(network, address string, c syscall.RawConn) error {
++	mark := socketMark
++	if mark == 0 {
++		return nil
++	}
++	return func(network, address string, c syscall.RawConn) error {
++		var sockErr error
++		if err := c.Control(func(fd uintptr) {
++			sockErr = unix.SetsockoptInt(int(fd), unix.SOL_SOCKET, unix.SO_MARK, mark)
++		}); err != nil {
++			return err
++		}
++		return sockErr
++	}
++}
++
++func dialTimeout(network, address string, timeout time.Duration) (net.Conn, error) {
++	if socketMark == 0 {
++		return net.DialTimeout(network, address, timeout)
++	}
++	dialer := net.Dialer{Timeout: timeout, Control: socketMarkControl()}
++	return dialer.Dial(network, address)
++}
++
++func dialUDP(network string, addr *net.UDPAddr) (*net.UDPConn, error) {
++	if socketMark == 0 {
++		return net.DialUDP(network, nil, addr)
++	}
++	dialer := net.Dialer{Control: socketMarkControl()}
++	conn, err := dialer.Dial(network, addr.String())
++	if err != nil {
++		return nil, err
++	}
++	return conn.(*net.UDPConn), nil
++}
++
++func listenUDP(network string) (*net.UDPConn, error) {
++	if socketMark == 0 {
++		return net.ListenUDP(network, nil)
++	}
++	lc := net.ListenConfig{Control: socketMarkControl()}
++	pc, err := lc.ListenPacket(context.Background(), network, ":0")
++	if err != nil {
++		return nil, err
++	}
++	return pc.(*net.UDPConn), nil
++}
+diff --git a/dnscrypt-proxy/socketmark_linux_test.go b/dnscrypt-proxy/socketmark_linux_test.go
+new file mode 100755
+index 0000000..9f83222
+--- /dev/null
++++ b/dnscrypt-proxy/socketmark_linux_test.go
+@@ -0,0 +1,184 @@
++package main
++
++import (
++	"context"
++	"net"
++	"os"
++	"syscall"
++	"testing"
++	"time"
++
++	"golang.org/x/sys/unix"
++)
++
++func markOf(t *testing.T, c syscall.Conn) int {
++	t.Helper()
++	rc, err := c.SyscallConn()
++	if err != nil {
++		t.Fatal(err)
++	}
++	mark := -1
++	var sockErr error
++	if err := rc.Control(func(fd uintptr) {
++		mark, sockErr = unix.GetsockoptInt(int(fd), unix.SOL_SOCKET, unix.SO_MARK)
++	}); err != nil {
++		t.Fatal(err)
++	}
++	if sockErr != nil {
++		t.Fatal(sockErr)
++	}
++	return mark
++}
++
++func TestSocketMarkValidation(t *testing.T) {
++	defer func() { socketMark = 0 }()
++	if err := setSocketMark(0, "nobody"); err != nil {
++		t.Fatalf("mark 0 must always be accepted: %v", err)
++	}
++	if err := setSocketMark(-1, ""); err == nil {
++		t.Fatal("negative mark must be rejected")
++	}
++	if err := setSocketMark(0x80000000, ""); err == nil {
++		t.Fatal("out of range mark must be rejected")
++	}
++	if err := setSocketMark(1, "nobody"); err == nil {
++		t.Fatal("socket_mark together with user_name must be rejected")
++	}
++	if socketMark != 0 {
++		t.Fatal("a rejected configuration must leave the mark disabled")
++	}
++}
++
++func TestSocketMarkDisabledHasNoControl(t *testing.T) {
++	socketMark = 0
++	if socketMarkControl() != nil {
++		t.Fatal("no control function expected when the mark is disabled")
++	}
++}
++
++func TestSocketMarkApplied(t *testing.T) {
++	if os.Geteuid() != 0 {
++		t.Skip("SO_MARK needs CAP_NET_ADMIN")
++	}
++	defer func() { socketMark = 0 }()
++	const want = 0x2a
++	if err := setSocketMark(want, ""); err != nil {
++		t.Skipf("cannot set SO_MARK in this environment: %v", err)
++	}
++
++	tcpL, err := net.Listen("tcp", "127.0.0.1:0")
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer tcpL.Close()
++	go func() {
++		for {
++			c, err := tcpL.Accept()
++			if err != nil {
++				return
++			}
++			c.Close()
++		}
++	}()
++	udpL, err := net.ListenPacket("udp", "127.0.0.1:0")
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer udpL.Close()
++
++	tcpConn, err := dialTimeout("tcp", tcpL.Addr().String(), time.Second)
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer tcpConn.Close()
++	if got := markOf(t, tcpConn.(syscall.Conn)); got != want {
++		t.Errorf("dialTimeout tcp: mark %#x, want %#x", got, want)
++	}
++
++	udpConn, err := dialTimeout("udp", udpL.LocalAddr().String(), time.Second)
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer udpConn.Close()
++	if got := markOf(t, udpConn.(syscall.Conn)); got != want {
++		t.Errorf("dialTimeout udp: mark %#x, want %#x", got, want)
++	}
++
++	dialed, err := dialUDP("udp", udpL.LocalAddr().(*net.UDPAddr))
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer dialed.Close()
++	if got := markOf(t, dialed); got != want {
++		t.Errorf("dialUDP: mark %#x, want %#x", got, want)
++	}
++
++	listened, err := listenUDP("udp4")
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer listened.Close()
++	if got := markOf(t, listened); got != want {
++		t.Errorf("listenUDP: mark %#x, want %#x", got, want)
++	}
++
++	dialer := net.Dialer{Timeout: time.Second, Control: socketMarkControl()}
++	viaDialer, err := dialer.Dial("tcp", tcpL.Addr().String())
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer viaDialer.Close()
++	if got := markOf(t, viaDialer.(syscall.Conn)); got != want {
++		t.Errorf("net.Dialer with control: mark %#x, want %#x", got, want)
++	}
++}
++
++func TestSocketMarkOffLeavesSocketsUnmarked(t *testing.T) {
++	socketMark = 0
++	udpL, err := net.ListenPacket("udp", "127.0.0.1:0")
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer udpL.Close()
++	conn, err := dialUDP("udp", udpL.LocalAddr().(*net.UDPAddr))
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer conn.Close()
++	if got := markOf(t, conn); got != 0 {
++		t.Errorf("mark %#x, want 0", got)
++	}
++}
++
++func TestSocketMarkAppliesToDefaultResolver(t *testing.T) {
++	if os.Geteuid() != 0 {
++		t.Skip("SO_MARK needs CAP_NET_ADMIN")
++	}
++	defer func() { _ = setSocketMark(0, "") }()
++	udpL, err := net.ListenPacket("udp", "127.0.0.1:0")
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer udpL.Close()
++	const want = 0x2a
++	if err := setSocketMark(want, ""); err != nil {
++		t.Skipf("cannot set SO_MARK in this environment: %v", err)
++	}
++	if net.DefaultResolver.Dial == nil {
++		t.Fatal("the default resolver must dial through the marked dialer")
++	}
++	conn, err := net.DefaultResolver.Dial(context.Background(), "udp", udpL.LocalAddr().String())
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer conn.Close()
++	if got := markOf(t, conn.(syscall.Conn)); got != want {
++		t.Errorf("default resolver socket: mark %#x, want %#x", got, want)
++	}
++	if err := setSocketMark(0, ""); err != nil {
++		t.Fatal(err)
++	}
++	if net.DefaultResolver != defaultResolver {
++		t.Fatal("the standard resolver must be restored when the mark is disabled")
++	}
++}
+diff --git a/dnscrypt-proxy/socketmark_others.go b/dnscrypt-proxy/socketmark_others.go
+new file mode 100755
+index 0000000..9129263
+--- /dev/null
++++ b/dnscrypt-proxy/socketmark_others.go
+@@ -0,0 +1,33 @@
++//go:build !linux
++
++package main
++
++import (
++	"errors"
++	"net"
++	"syscall"
++	"time"
++)
++
++func setSocketMark(mark int, userName string) error {
++	if mark != 0 {
++		return errors.New("socket_mark is only supported on Linux")
++	}
++	return nil
++}
++
++func socketMarkControl() func(network, address string, c syscall.RawConn) error {
++	return nil
++}
++
++func dialTimeout(network, address string, timeout time.Duration) (net.Conn, error) {
++	return net.DialTimeout(network, address, timeout)
++}
++
++func dialUDP(network string, addr *net.UDPAddr) (*net.UDPConn, error) {
++	return net.DialUDP(network, nil, addr)
++}
++
++func listenUDP(network string) (*net.UDPConn, error) {
++	return net.ListenUDP(network, nil)
++}
+diff --git a/dnscrypt-proxy/udp_conn_pool.go b/dnscrypt-proxy/udp_conn_pool.go
+index 4de84ec..1bf4d0a 100644
+--- a/dnscrypt-proxy/udp_conn_pool.go
++++ b/dnscrypt-proxy/udp_conn_pool.go
+@@ -107,7 +107,7 @@ func (p *UDPConnPool) Get(addr *net.UDPAddr) (*net.UDPConn, error) {
+ 	}
+ 	shard.Unlock()
+ 
+-	return net.DialUDP("udp", nil, addr)
++	return dialUDP("udp", addr)
+ }
+ 
+ func (p *UDPConnPool) Put(addr *net.UDPAddr, conn *net.UDPConn) {
+diff --git a/dnscrypt-proxy/xtransport.go b/dnscrypt-proxy/xtransport.go
+index ac1b6c4..5c03538 100644
+--- a/dnscrypt-proxy/xtransport.go
++++ b/dnscrypt-proxy/xtransport.go
+@@ -324,7 +324,12 @@ func (xTransport *XTransport) rebuildTransport() {
+ 
+ 			dial := func(address string) (net.Conn, error) {
+ 				if xTransport.proxyDialer == nil {
+-					dialer := &net.Dialer{Timeout: timeout, KeepAlive: xTransport.keepAlive, DualStack: true}
++					dialer := &net.Dialer{
++						Timeout:   timeout,
++						KeepAlive: xTransport.keepAlive,
++						DualStack: true,
++						Control:   socketMarkControl(),
++					}
+ 					return dialer.DialContext(ctx, network, address)
+ 				}
+ 				return (*xTransport.proxyDialer).Dial(network, address)
+@@ -498,7 +503,7 @@ type udpTarget struct {
+ 					}
+ 					continue
+ 				}
+-				udpConn, err := net.ListenUDP(target.network, nil)
++				udpConn, err := listenUDP(target.network)
+ 				if err != nil {
+ 					lastErr = err
+ 					if idx < len(targets)-1 {
+@@ -554,6 +559,7 @@ func (xTransport *XTransport) resolveUsingResolver(
+ ) (ips []net.IP, ttl time.Duration, err error) {
+ 	transport := dns.NewTransport()
+ 	transport.ReadTimeout = ResolverReadTimeout
++	transport.Dialer.Control = socketMarkControl()
+ 	dnsClient := dns.Client{Transport: transport}
+ 	queryType := make([]uint16, 0, 2)
+ 	if returnIPv4 {

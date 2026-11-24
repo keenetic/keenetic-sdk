@@ -1,0 +1,33 @@
+:root { color-scheme: light; --line: #d5dae1; --muted: #5b6573; --accent: #0a6cff; --err: #b3261e; --warn: #8a5a00; }
+* { box-sizing: border-box; }
+body { margin: 0; font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #1c2430; background: #f5f7fa; }
+.top { background: #fff; border-bottom: 1px solid var(--line); padding: 14px 24px; }
+.crumbs { color: var(--muted); }
+.banner { margin: 8px 0 0; padding: 8px 12px; background: #fff7e0; border: 1px solid #f0d98a; border-radius: 6px; }
+main { max-width: 860px; margin: 0 auto; padding: 16px 24px 48px; }
+section { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 8px 20px 16px; margin: 16px 0; }
+h2 { font-size: 17px; margin: 14px 0 6px; }
+.hint { color: var(--muted); margin: 4px 0 8px; font-size: 13.5px; }
+table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 13px; }
+fieldset { border: 1px solid var(--line); border-radius: 6px; margin: 10px 0; padding: 6px 12px 8px; }
+legend { padding: 0 6px; color: var(--muted); font-size: 13px; }
+fieldset label { display: block; margin: 3px 0; }
+.filters { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 8px 0; }
+.filters label { display: inline-block; }
+label.field { display: block; margin: 10px 0; }
+label.field input[type=text], label.field input[type=number], label.field select, label.field textarea { display: block; width: 100%; margin-top: 4px; padding: 6px 8px; font: inherit; border: 1px solid var(--line); border-radius: 6px; }
+label.field input[type=number] { max-width: 180px; display: inline-block; }
+textarea { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+select[size] { min-height: 120px; }
+.panel { border: 1px solid var(--accent); border-radius: 8px; padding: 4px 16px 8px; margin-top: 8px; background: #fbfdff; }
+button { font: inherit; padding: 6px 14px; border: 1px solid var(--line); border-radius: 6px; background: #fff; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button.link { border: 0; background: none; color: var(--accent); padding: 0; }
+a { color: var(--accent); }
+.problems ul { margin: 6px 0; padding-left: 20px; }
+.problems .error { color: var(--err); }
+.problems .warning { color: var(--warn); }
+code { background: #eef1f5; padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+[hidden] { display: none !important; }

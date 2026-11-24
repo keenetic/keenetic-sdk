@@ -1,0 +1,20 @@
+[
+  { "name": "example-dnscrypt-443", "proto": "DNSCrypt", "ipv6": false, "ports": [443], "dnssec": true, "nolog": true, "nofilter": true,
+    "description": "Sample entry for the prototype. Not a real server." },
+  { "name": "example-dnscrypt-8443", "proto": "DNSCrypt", "ipv6": false, "ports": [8443], "dnssec": true, "nolog": true, "nofilter": true,
+    "description": "Sample entry that listens on a port other than 443." },
+  { "name": "example-dnscrypt-filtered", "proto": "DNSCrypt", "ipv6": false, "ports": [443], "dnssec": true, "nolog": true, "nofilter": false,
+    "description": "Sample entry that filters content." },
+  { "name": "example-doh", "proto": "DoH", "ipv6": false, "ports": [443], "dnssec": true, "nolog": true, "nofilter": true,
+    "description": "Sample DNS-over-HTTPS entry." },
+  { "name": "example-doh-logging", "proto": "DoH", "ipv6": true, "ports": [443], "dnssec": false, "nolog": false, "nofilter": true,
+    "description": "Sample entry that keeps logs and does not advertise DNSSEC." },
+  { "name": "example-odoh", "proto": "oDoH target", "ipv6": false, "ports": [443], "dnssec": true, "nolog": true, "nofilter": true,
+    "description": "Sample Oblivious DoH target. It needs a relay." },
+  { "name": "example-relay-1", "proto": "DNSCrypt relay", "ipv6": false, "ports": [443], "nolog": true, "nofilter": true,
+    "description": "Sample Anonymized DNSCrypt relay." },
+  { "name": "example-relay-2", "proto": "DNSCrypt relay", "ipv6": false, "ports": [8443], "nolog": true, "nofilter": true,
+    "description": "Sample relay on a port other than 443." },
+  { "name": "example-odoh-relay", "proto": "oDoH relay", "ipv6": false, "ports": [443], "nolog": true, "nofilter": true,
+    "description": "Sample Oblivious DoH relay." }
+]

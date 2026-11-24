@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DNSCrypt proxy settings (design prototype)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="crumbs">Network rules &rsaquo; Internet safety &rsaquo; <strong>DNS configuration</strong></div>
+    <p class="banner">Design prototype. It is not part of KeeneticOS and is not installed on a device. It builds a
+      <code>dnscrypt-proxy.toml</code> that you can check with <code>dnscrypt-proxy -check</code>.</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>DNSCrypt, DNS-over-HTTPS and Oblivious DoH servers</h2>
+      <p class="hint">The proxy sends queries to these servers, balanced by measured response time. At most
+        <span id="max-servers">8</span> servers can be used, as on the DNS-over-TLS and DNS-over-HTTPS pages.
+        Use servers from different operators for stable name resolution.</p>
+
+      <table id="server-table">
+        <thead>
+          <tr><th>Name</th><th>Type</th><th>Address and port</th><th>Relay</th><th>Source</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p id="empty-note" class="hint">No servers yet.</p>
+      <p><a href="#" id="add-link">Add server</a></p>
+
+      <div id="add-panel" class="panel" hidden>
+        <fieldset>
+          <legend>Server</legend>
+          <label><input type="radio" name="mode" value="list" checked> Choose from the resolver list</label>
+          <label><input type="radio" name="mode" value="stamp"> Enter a DNS stamp (sdns://)</label>
+          <label><input type="radio" name="mode" value="doh"> Enter a DNS-over-HTTPS address</label>
+        </fieldset>
+
+        <div id="mode-list">
+          <div class="filters">
+            <label><input type="checkbox" id="f-dnscrypt" checked> DNSCrypt</label>
+            <label><input type="checkbox" id="f-doh" checked> DNS-over-HTTPS</label>
+            <label><input type="checkbox" id="f-odoh"> Oblivious DoH</label>
+            <label><input type="checkbox" id="f-443"> Port 443 only</label>
+            <label><input type="checkbox" id="f-dnssec"> DNSSEC</label>
+            <label><input type="checkbox" id="f-nolog"> No logs</label>
+            <label><input type="checkbox" id="f-nofilter"> No filtering</label>
+            <label><input type="checkbox" id="f-ipv6"> Include IPv6-only</label>
+          </div>
+          <label class="field">Search <input type="text" id="f-text" autocomplete="off"></label>
+          <label class="field">Servers <select id="pick" size="8"></select></label>
+          <p id="pick-info" class="hint"></p>
+        </div>
+
+        <div id="mode-stamp" hidden>
+          <label class="field">Name <input type="text" id="stamp-name" placeholder="my-server" autocomplete="off"></label>
+          <label class="field">DNS stamp <input type="text" id="stamp-input" placeholder="sdns://..." autocomplete="off" spellcheck="false"></label>
+          <p id="stamp-info" class="hint"></p>
+          <label class="field">Port
+            <input type="number" id="stamp-port" min="1" max="65535" placeholder="443">
+            <button type="button" id="stamp-port-apply">Change port in the stamp</button>
+          </label>
+          <p class="hint">The port is part of the stamp and is chosen by the server operator. A server answers only on
+            the ports it listens on. A server that does not listen on the new port is not reachable.</p>
+        </div>
+
+        <div id="mode-doh" hidden>
+          <label class="field">Name <input type="text" id="doh-name" placeholder="my-nextdns" autocomplete="off"></label>
+          <label class="field">Address <input type="text" id="doh-url" placeholder="https://dns.example/dns-query" autocomplete="off" spellcheck="false"></label>
+          <label class="field">Server IP address (optional) <input type="text" id="doh-ip" placeholder="192.0.2.1" autocomplete="off"></label>
+          <div class="filters">
+            <label><input type="checkbox" id="doh-dnssec"> DNSSEC</label>
+            <label><input type="checkbox" id="doh-nolog"> No logs</label>
+            <label><input type="checkbox" id="doh-nofilter"> No filtering</label>
+          </div>
+          <p class="hint">These three boxes only describe the server. For a personal profile, the address contains the
+            profile identifier. Treat it as private.</p>
+          <p id="doh-info" class="hint"></p>
+        </div>
+
+        <fieldset id="anon-set">
+          <legend>Relay (Anonymized DNSCrypt and Oblivious DoH)</legend>
+          <label><input type="radio" name="anon" value="none" checked> None. Connect to the server directly</label>
+          <label><input type="radio" name="anon" value="auto"> Automatic. The proxy picks relays</label>
+          <label><input type="radio" name="anon" value="choose"> Choose relays</label>
+          <div id="relay-choose" hidden>
+            <label class="field">Relays from the list <select id="relay-pick" multiple size="6"></select></label>
+            <label class="field">Relay stamps, one per line <textarea id="relay-extra" rows="2" spellcheck="false"></textarea></label>
+          </div>
+          <p class="hint">A relay hides your address from the server, and the server's answer is hidden from the relay.
+            Use a relay and a server that are run by different operators. Oblivious DoH always needs a relay.</p>
+          <p id="anon-note" class="hint"></p>
+        </fieldset>
+
+        <label class="field">Connection interface
+          <select id="iface" disabled><option>Any interface</option></select>
+        </label>
+        <p class="hint">Choosing an interface needs the system integration. The proxy can mark its sockets with the
+          <em>Socket mark</em> option below, and the system could map an interface to that mark.</p>
+
+        <div id="add-errors" class="problems"></div>
+        <p>
+          <button type="button" id="save-server">Save</button>
+          <button type="button" id="cancel-server">Cancel</button>
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Connection options</h2>
+      <fieldset>
+        <legend>Protocols</legend>
+        <label><input type="checkbox" id="p-dnscrypt" checked> DNSCrypt</label>
+        <label><input type="checkbox" id="p-doh" checked> DNS-over-HTTPS</label>
+        <label><input type="checkbox" id="p-odoh"> Oblivious DoH</label>
+        <label><input type="checkbox" id="p-ipv6"> Use IPv6 servers</label>
+      </fieldset>
+      <fieldset>
+        <legend>Transport</legend>
+        <label><input type="checkbox" id="o-tcp"> Use TCP for DNSCrypt</label>
+        <p class="hint">DNSCrypt uses UDP by default. TCP helps when UDP is blocked or large packets are dropped, as
+          can happen with relays. It adds delay.</p>
+        <label><input type="checkbox" id="o-http3"> Use HTTP/3 (QUIC) for DNS-over-HTTPS</label>
+        <p class="hint">Uses UDP. It falls back to HTTP/2 when a server does not support it.</p>
+        <label><input type="checkbox" id="o-pq" checked> Post-quantum key exchange (PQDNSCrypt) when the server supports it</label>
+        <p class="hint">Protects recorded queries against being decrypted by a future quantum computer. It is used only
+          with servers that support it.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Ports</legend>
+        <p class="hint">The port of each server is part of its stamp and is chosen by the server operator. Servers on
+          port 443 are less likely to be blocked by port-based rules. This does not hide that the traffic is DNSCrypt,
+          and it is not protection against traffic analysis.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Servers that are chosen from the list</legend>
+        <label><input type="checkbox" id="r-dnssec" checked> Must support DNSSEC</label>
+        <label><input type="checkbox" id="r-nolog" checked> Must not keep logs</label>
+        <label><input type="checkbox" id="r-nofilter" checked> Must not filter content</label>
+        <p class="hint">These filters apply when no server is chosen by name. A server chosen by name is used even if it
+          does not meet them.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Advanced</legend>
+        <label class="field">Listen address <input type="text" id="o-listen" value="127.0.0.1:5359"></label>
+        <label class="field">Bootstrap resolvers <input type="text" id="o-bootstrap" value="9.9.9.9:53, 1.1.1.1:53"></label>
+        <p class="hint">Bootstrap resolvers are asked with plain DNS to find the addresses of the resolver list hosts.</p>
+        <label class="field">Socket mark <input type="number" id="o-mark" min="0" max="2147483647" value="0"></label>
+        <p class="hint">0 turns it off. A mark needs the CAP_NET_ADMIN capability.</p>
+      </fieldset>
+    </section>
+
+    <section>
+      <h2>Resolver list</h2>
+      <p class="hint">The page needs the list of servers and relays. Create it on a computer or router with
+        <code>dnscrypt-proxy -list-all -include-relays -json &gt; resolvers.json</code> and open it here.
+        Without it, only a few sample entries are shown.</p>
+      <label class="field">Resolver list file <input type="file" id="list-file" accept="application/json,.json"></label>
+      <p id="list-status" class="hint"></p>
+    </section>
+
+    <section>
+      <h2>Result</h2>
+      <div id="problems" class="problems"></div>
+      <label class="field">dnscrypt-proxy.toml <textarea id="toml" rows="22" readonly spellcheck="false"></textarea></label>
+      <p><button type="button" id="copy-toml">Copy</button> <span id="copy-status" class="hint"></span></p>
+    </section>
+  </main>
+
+  <script src="core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
